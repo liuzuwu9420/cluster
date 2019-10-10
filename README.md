@@ -98,7 +98,7 @@ English | [简体中文](./README.zh-CN.md)
 
 ```bash
 # clone the project
-git clone -b i18n git@github.com:liuzuwu9420/cluster.git
+git clone -b git@github.com:liuzuwu9420/cluster.git
 
 # enter the project directory
 cd vue-element-admin
