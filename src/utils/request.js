@@ -22,9 +22,9 @@ axios.interceptors.request.use((config) => {
 			// axios.defaults.headers.common['Authorization'] +=token;
 			config.data = config.data || {};
 			config.data.token = token;
-		}
-		config.data = qs.stringify(config.data);
-	}
+    }
+		//config.data = qs.stringify(config.data);
+  }
 	return config;
 }, (error) => {
 	return Promise.reject(error);

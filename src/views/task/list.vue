@@ -44,7 +44,7 @@
       </el-form>
       <el-main>
         <div class="hasten">
-          <el-button type="primary" size="mini" @click="getList">
+          <el-button type="primary" size="mini" @click="grtID">
             <i class="el-icon-refresh-right"></i> 刷新
           </el-button>
         </div>
@@ -113,17 +113,21 @@ import { GetList, GetID } from "@/api/task";
 import Pagination from "@/components/Pagination";
 
 const statusMap = {
-  head: {
+  RUN: {
     name: "运行",
     type: "success"
   },
-  compute: {
+  PEND: {
     name: "等待",
     type: "warning"
   },
-  test: {
+  DONE: {
     name: "完成",
     type: "info"
+  },
+  EXIT: {
+    name: "退出",
+    type: "danger"
   }
 };
 export default {
@@ -166,50 +170,57 @@ export default {
       },
       products: [],
       devices: [],
-      loading: false
+      loading: false,
+      ID: ''
     };
   },
   created() {
-    this.getList();
+    this.grtID();
   },
   methods: {
-    getList() {
+    grtID() {
       let _this = this;
       GetID()
         .then(function(res) {
-          /* let params = {
-            pageOption: {
-              pageNumber: _this.page.currentPage, //当前页数
-              pageSize: _this.page.pageSize //每一页显示条数
-            },
-            selectOption: {}
-          };
-          if (_this.userName !== "") {
-            params.selectOption.name = _this.userName;
-          }
-          if (_this.taskSta !== "") {
-            params.selectOption.type = _this.taskSta;
-          }
-          if (_this.queue !== "") {
-            params.selectOption.hostIp = _this.queue;
-					} */
-					let params = {
-						_id : res.id
-					};
-          GetList(params)
-            .then(res => {
-              //_this.devices = []
-
-              // _this.page.total = res.pageResultData.totalDataNumber;
-              // _this.page.pageCount = res.pageResultData.totalCount;
-            })
-            .catch(res => {
-              console.log(res);
-            });
+          _this.ID = res.result.queryID;
+          _this.getList()
         })
         .catch(res => {
           console.log(res);
         });
+    },
+    getList() {
+      let _this = this;
+          let params = {
+            match: {
+              queryID: _this.ID
+            },
+            size: _this.page.pageSize
+          };
+          GetList(params)
+            .then(body => {
+              _this.loading = true;
+              if(body.result.message == "loading") {
+                _this.getList();
+              }else if (body.result.message == "success") {
+                _this.devices = [];
+                body.result.data.hits.hits.map(function(item, index) {
+                  let obj = {};
+                  obj.ID = item._source.JOBID;
+                  obj.taskName = item._source.JOB_NAME;
+                  obj.status = item._source.STAT;
+                  obj.queue = item._source.QUEUE;
+                  obj.startTime = item._source.START_TIME;
+                  obj.runTime = item._source.CPU_USED;
+                  obj.userName = item._source.USER;
+                  _this.devices.push(obj);
+                });
+                _this.loading = false;
+              }
+            })
+            .catch(res => {
+              console.log(res);
+            });
     },
 
     //重置按钮
