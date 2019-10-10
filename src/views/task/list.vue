@@ -1,0 +1,366 @@
+<template>
+  <div class="app-container">
+    <el-container>
+      <el-form :inline="true">
+        <div class="filter">
+          <div class="filterTop">
+            <span class="left">查询条件</span>
+            <span class="right">
+              <el-button type="primary" @click="getList()">查询</el-button>
+              <el-button @click="clearAll">重置</el-button>
+            </span>
+          </div>
+
+          <div class="row">
+            <label>提交用户</label>
+            <el-autocomplete
+              class="inline-input"
+              v-model="userName"
+              :fetch-suggestions="nameSearch"
+              placeholder="请输入内容"
+              :trigger-on-focus="false"
+            ></el-autocomplete>
+            <label>作业状态</label>
+            <el-select v-model="taskSta" clearable placeholder="请选择">
+              <el-option
+                v-for="item in taskStatus"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </div>
+          <div class="row">
+            <label>队列</label>
+            <el-autocomplete
+              class="inline-input"
+              v-model="queue"
+              :fetch-suggestions="queueSearch"
+              placeholder="请输入内容"
+              :trigger-on-focus="false"
+            ></el-autocomplete>
+          </div>
+        </div>
+      </el-form>
+      <el-main>
+        <div class="hasten">
+          <el-button type="primary" size="mini" @click="getList">
+            <i class="el-icon-refresh-right"></i> 刷新
+          </el-button>
+        </div>
+        <el-table
+          v-loading="loading"
+          element-loading-text="作业同步中，请稍后..."
+          :data="devices"
+          fit
+          highlight-current-row
+          style="width: 100%"
+        >
+          <el-table-column label="ID" width="120">
+            <template v-slot="{row}">
+              <span>{{ row.ID }}</span>
+            </template>
+          </el-table-column>
+
+          <el-table-column label="作业名" show-overflow-tooltip>
+            <template v-slot="{row}">
+              <span>{{ row.taskName }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="作业状态" width="110">
+            <template v-slot="{row}">
+              <el-tag size="mini" :type="statusMap[row.status].type">{{row.status | status}}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="队列" width="140">
+            <template v-slot="{row}">
+              <span>{{ row.queue }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="开始时间" width="140">
+            <template v-slot="{row}">
+              <span>{{ row.startTime }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="运行时间" width="110">
+            <template v-slot="{row}">
+              <span>{{ row.runTime }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="提交用户" width="140">
+            <template v-slot="{row}">
+              <span>{{ row.userName }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-main>
+      <el-footer class="pagination">
+        <pagination
+          v-show="page.total>0"
+          :total="page.total"
+          :page.sync="page.currentPage"
+          :limit.sync="page.pageSize"
+          @pagination="getList"
+        />
+      </el-footer>
+    </el-container>
+  </div>
+</template>
+
+<script>
+import { GetList, GetID } from "@/api/task";
+
+import Pagination from "@/components/Pagination";
+
+const statusMap = {
+  head: {
+    name: "运行",
+    type: "success"
+  },
+  compute: {
+    name: "等待",
+    type: "warning"
+  },
+  test: {
+    name: "完成",
+    type: "info"
+  }
+};
+export default {
+  components: {
+    Pagination
+  },
+  filters: {
+    status(type) {
+      return statusMap[type].name;
+    },
+    powerSupply(powerSupply) {
+      return powerSupplyMap[powerSupply].name;
+    }
+  },
+  data() {
+    return {
+      statusMap: statusMap,
+      //查询条件
+      userName: "",
+      taskStatus: [
+        {
+          value: "head",
+          label: "head"
+        },
+        {
+          value: "compute",
+          label: "compute"
+        }
+      ],
+      taskSta: "",
+      queue: "",
+      nameRestaurants: [],
+      queueRestaurants: [],
+      // 分页数据
+      page: {
+        currentPage: 1,
+        pageCount: 1,
+        pageSize: 5,
+        total: 1
+      },
+      products: [],
+      devices: [],
+      loading: false
+    };
+  },
+  created() {
+    this.getList();
+  },
+  methods: {
+    getList() {
+      let _this = this;
+      GetID()
+        .then(function(res) {
+          /* let params = {
+            pageOption: {
+              pageNumber: _this.page.currentPage, //当前页数
+              pageSize: _this.page.pageSize //每一页显示条数
+            },
+            selectOption: {}
+          };
+          if (_this.userName !== "") {
+            params.selectOption.name = _this.userName;
+          }
+          if (_this.taskSta !== "") {
+            params.selectOption.type = _this.taskSta;
+          }
+          if (_this.queue !== "") {
+            params.selectOption.hostIp = _this.queue;
+					} */
+					let params = {
+						_id : res.id
+					};
+          GetList(params)
+            .then(res => {
+              //_this.devices = []
+
+              // _this.page.total = res.pageResultData.totalDataNumber;
+              // _this.page.pageCount = res.pageResultData.totalCount;
+            })
+            .catch(res => {
+              console.log(res);
+            });
+        })
+        .catch(res => {
+          console.log(res);
+        });
+    },
+
+    //重置按钮
+    clearAll() {
+      //
+      this.userName = "";
+      //节点类型
+      this.taskSta = "";
+      //所属组别
+      this.queue = "";
+    },
+
+    nameSearch(queryString, cb) {
+      var restaurants = this.nameRestaurants;
+      var results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    queueSearch(queryString, cb) {
+      var restaurants = this.queueRestaurants;
+      var results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    createFilter(queryString) {
+      return restaurant => {
+        return (
+          restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) ===
+          0
+        );
+      };
+    }
+  }
+};
+</script>
+
+<style scoped>
+.filter {
+  width: 98%;
+  border: 1px solid #e8e8e8;
+  margin-top: 20px;
+  margin-left: 1%;
+  height: 170px;
+}
+
+.filterTop {
+  width: 100%;
+  height: 40px;
+  background-color: #fafafa;
+  border-bottom: 1px solid #e8e8e8;
+  line-height: 40px;
+}
+
+.filterTop .left {
+  display: inline-block;
+  width: 49%;
+  text-align: left;
+  margin-left: 1%;
+  color: #747474;
+  font-size: 14px;
+}
+
+.filterTop .right {
+  display: inline-block;
+  width: 45%;
+  text-align: right;
+}
+
+.filterTop .right .el-button {
+  width: 82px;
+  height: 28px;
+  padding: 0 0;
+}
+
+.filter .row {
+  margin-top: 20px;
+}
+
+.filter .row label {
+  display: inline-block;
+  width: 15%;
+  text-align: right;
+  margin-right: 2%;
+  font-weight: 400;
+}
+
+.filter .row .el-input {
+  width: 30%;
+  height: 28px;
+}
+
+.filter .row .el-input__icon {
+  line-height: 1 !important;
+}
+
+.filter .row .el-select {
+  width: 30%;
+  height: 28px;
+}
+
+.filter .row .el-autocomplete {
+  width: 30%;
+  height: 28px;
+}
+
+.filter .row .el-input__inner {
+  height: 100%;
+}
+
+.filter .row .el-select .el-input--suffix {
+  width: 100% !important;
+}
+
+.hasten {
+  width: 100%;
+  background-color: #fafafa;
+  height: 40px;
+  border: 1px solid #e8e8e8;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  line-height: 40px;
+  padding: 5px 10px;
+}
+
+.hasten .el-button {
+  margin-left: 2%;
+  height: 28px;
+  line-height: 0;
+  float: right;
+}
+
+.pagination {
+  text-align: right;
+}
+
+.table-expand {
+  font-size: 0;
+}
+
+.table-expand label {
+  width: 90px;
+  color: #99a9bf;
+}
+
+.table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 50%;
+}
+</style>

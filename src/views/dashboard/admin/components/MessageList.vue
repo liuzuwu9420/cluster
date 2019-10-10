@@ -1,0 +1,192 @@
+<template>
+	<div class="message-list">
+		<el-row :gutter="10">
+			<el-col :xs="12" :sm="12" :lg="6">
+				<el-card shadow="hover" class="mgb20">
+					<div class="nodeNum card-panel">
+						<iframe :src="nodeSrc" width="100%" height="100%" frameborder="0"></iframe>
+					</div>
+				</el-card>
+				<el-card shadow="hover">
+					<div class="task card-panel">
+
+					</div>
+				</el-card>
+			</el-col>
+			<el-col :xs="12" :sm="12" :lg="12">
+				<el-card shadow="hover" class="mgb20">
+					<div class="nodeStatus card-panel">
+
+					</div>
+				</el-card>
+				<el-card shadow="hover">
+					<div class="taskStatus card-panel">
+
+					</div>
+				</el-card>
+			</el-col>
+			<el-col :xs="24" :sm="24" :lg="6">
+				<div class="logContainer">
+					<el-card class="box-card">
+						<div slot="header" class="clearfix">
+							<i class="el-icon-bell"></i>
+							<span>消息：</span>
+						</div>
+						<div class="logArea el-scrollbar">
+							<div class="item" v-for="(item,index) in logsData" :key="index">
+								<p class="timeArea">
+									<span>{{item.citem}}</span>
+								</p>
+								<div class="logContent">
+									<span class="title time">{{item.createTime}}</span>
+								</div>
+								<el-divider></el-divider>
+							</div>
+						</div>
+
+					</el-card>
+				</div>
+			</el-col>
+		</el-row>
+	</div>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				nodeSrc: '',
+				logsData: [{
+					citem: 'xxxxxx',
+					createTime: '2019-10-01'
+				},{
+					citem: 'xxxxxx',
+					createTime: '2019-10-01'
+				},{
+					citem: 'xxxxxx',
+					createTime: '2019-10-01'
+				},{
+					citem: 'xxxxxx',
+					createTime: '2019-10-01'
+				},{
+					citem: 'xxxxxx',
+					createTime: '2019-10-01'
+				},{
+					citem: 'xxxxxx',
+					createTime: '2019-10-01'
+				},{
+					citem: 'xxxxxx',
+					createTime: '2019-10-01'
+				},{
+					citem: 'xx1xxx',
+					createTime: '2019-10-01'
+				},{
+					citem: 'xxx3xxx',
+					createTime: '2019-10-01'
+				},{
+					citem: 'xxx23xxx',
+					createTime: '2019-10-01'
+				},{
+					citem: 'xxx22xxx',
+					createTime: '2019-10-01'
+				},{
+					citem: 'xx12xxxx',
+					createTime: '2019-10-01'
+				},{
+					citem: 'xxx23xxx',
+					createTime: '2019-10-01'
+				},{
+					citem: 'xxxxxx',
+					createTime: '2019-10-01'
+				},{
+					citem: '1xxxxxx',
+					createTime: '2019-10-01'
+				},{
+					citem: '2xxxxxx',
+					createTime: '2019-10-01'
+				},{
+					citem: '3xxxxxx',
+					createTime: '2019-10-01'
+				},{
+					citem: '4xxxxxx',
+					createTime: '2019-10-01'
+				},{
+					citem: '5xxxxxx',
+					createTime: '2019-10-01'
+				}],
+			}
+		},
+		created() {
+			this.iframeTime();
+		},
+		methods: {
+			iframeTime() {
+				let _this = this;
+				let httpUrl = "http://16.16.18.61:3000/d-solo/fafSLghZz/dashboard?orgId=1";
+				let timeInterval = "&from=now-30m&to=now";
+				let nodeId = "&panelId=10";
+				_this.nodeSrc = httpUrl+timeInterval+nodeId;
+			}
+		}
+	}
+</script>
+
+<style lang="scss" scoped>
+	.message-list {
+		/*margin-top: 18px;*/
+		.mgb20 {
+			margin-bottom: 20px;
+		}
+		.card-panel {
+			height: 300px;
+			cursor: pointer;
+			font-size: 16px;
+			position: relative;
+			overflow: hidden;
+			color: #666;
+			background: #fff;
+			box-shadow: 4px 4px 40px rgba(0, 0, 0, .05);
+			border-color: rgba(0, 0, 0, .05);
+		}
+		.logContainer {
+			padding: 10px;
+			background: #fff;
+			box-sizing: border-box;
+			height: 624px;
+			max-height: 624px;
+			overflow: hidden;
+			border-radius: 6px;
+			.box-card {
+				height: 100%;
+			}
+			.logArea {
+				overflow: auto;
+				height: 100%;
+				padding: 10px 20px;
+			}
+			.item {
+				.timeArea {
+					
+				}
+				.logContent {
+					margin-bottom: 5px;
+					text-align: right;
+				}
+				.title {
+					font-size: 13px;
+				}
+				.time {
+					color: #87DE75;
+				}
+			}
+		}
+		.clearfix:before,
+		.clearfix:after {
+			display: table;
+			content: "";
+		}
+		.clearfix:after {
+			clear: both
+		}
+	}
+</style>
