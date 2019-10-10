@@ -98,7 +98,7 @@
 
 ```bash
 # 克隆项目
-git clone -b i18n git@github.com:PanJiaChen/vue-element-admin.git
+git clone -b git@github.com:liuzuwu9420/cluster.git
 
 # 进入项目目录
 cd vue-element-admin
