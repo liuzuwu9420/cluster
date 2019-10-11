@@ -69,7 +69,7 @@
           </el-table-column>
           <el-table-column label="作业状态" width="110">
             <template v-slot="{row}">
-              <el-tag size="mini" :type="statusMap[row.status].type">{{row.status | status}}</el-tag>
+              <el-tag size="mini" :type="statusMap[row.status].type"><i :class="statusMap[row.status].icon"></i>{{row.status | status}}</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="队列" width="140">
@@ -115,19 +115,23 @@ import Pagination from "@/components/Pagination";
 const statusMap = {
   RUN: {
     name: "运行",
-    type: "success"
+    type: "success",
+    icon: "el-icon-loading"
   },
   PEND: {
     name: "等待",
-    type: "warning"
+    type: "warning",
+    icon: "el-icon-video-play"
   },
   DONE: {
     name: "完成",
-    type: "info"
+    type: "info",
+    icon: "el-icon-circle-check"
   },
   EXIT: {
     name: "退出",
-    type: "danger"
+    type: "danger",
+    icon: "el-icon-circle-close"
   }
 };
 export default {
@@ -137,9 +141,6 @@ export default {
   filters: {
     status(type) {
       return statusMap[type].name;
-    },
-    powerSupply(powerSupply) {
-      return powerSupplyMap[powerSupply].name;
     }
   },
   data() {
@@ -149,12 +150,20 @@ export default {
       userName: "",
       taskStatus: [
         {
-          value: "head",
-          label: "head"
+          value: "RUN",
+          label: "运行"
         },
         {
-          value: "compute",
-          label: "compute"
+          value: "PEND",
+          label: "等待"
+        },
+        {
+          value: "DONE",
+          label: "完成"
+        },
+        {
+          value: "EXIT",
+          label: "退出"
         }
       ],
       taskSta: "",
@@ -168,7 +177,6 @@ export default {
         pageSize: 5,
         total: 1
       },
-      products: [],
       devices: [],
       loading: false,
       ID: ''
@@ -263,10 +271,7 @@ export default {
 
 <style scoped>
 .filter {
-  width: 98%;
   border: 1px solid #e8e8e8;
-  margin-top: 20px;
-  margin-left: 1%;
   height: 170px;
 }
 

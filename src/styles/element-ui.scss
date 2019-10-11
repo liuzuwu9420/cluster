@@ -44,6 +44,10 @@
     }
 }
 
+.el-container .el-main {
+    padding: 0;
+}
+
 // to fixed https://github.com/ElemeFE/element/issues/2461
 .el-dialog {
     transform: none;

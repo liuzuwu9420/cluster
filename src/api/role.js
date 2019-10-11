@@ -1,38 +1,33 @@
-import request from '@/utils/request'
+import {fetch} from '@/utils/request'
 
-export function getRoutes() {
-  return request({
-    url: '/routes',
-    method: 'get'
-  })
+/**
+ * 获取用户信息
+ * @param {*} params 查询参数
+ */
+export function GetList(params) {
+  return fetch('/queryJobInfoASK', params)
 }
 
-export function getRoles() {
-  return request({
-    url: '/roles',
-    method: 'get'
-  })
+/**
+ * 创建用户
+ * @param {*} params 用户参数
+ */
+export function CreateUser(params) {
+  return fetch('/queryJobInfoASK', params)
 }
 
-export function addRole(data) {
-  return request({
-    url: '/role',
-    method: 'post',
-    data
-  })
+/**
+ * 删除用户
+ * @param {*} params 用户参数
+ */
+export function DeleteUser(params) {
+  return fetch('/queryJobInfoASK', params)
 }
 
-export function updateRole(id, data) {
-  return request({
-    url: `/role/${id}`,
-    method: 'put',
-    data
-  })
-}
-
-export function deleteRole(id) {
-  return request({
-    url: `/role/${id}`,
-    method: 'delete'
-  })
+/**
+ * 修改用户
+ * @param {*} params 用户参数
+ */
+export function ChangeUser(params) {
+  return fetch('/queryJobInfoASK', params)
 }

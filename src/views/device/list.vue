@@ -146,8 +146,6 @@
 	} from "@/api/device";
 
 	import Pagination from "@/components/Pagination";
-	import Tags from "@/components/Tags";
-	import Dropdown from "@/components/Dropdown";
 
 	const statusMap = {
 		head: {
@@ -183,9 +181,7 @@
 	};
 	export default {
 		components: {
-			Pagination,
-			Tags,
-			Dropdown
+			Pagination
 		},
 		filters: {
 			type(type) {
@@ -221,24 +217,6 @@
 					pageSize: 5,
 					total: 1
 				},
-				// 下拉选择数据
-				dropdown: {
-					selected: {
-						key: "name",
-						value: "主机名"
-					},
-					items: {
-						name: "主机名",
-						nickName: "组别"
-					}
-				},
-				// 查询条件
-				query: {
-					type: "",
-					productKey: "",
-					input: ""
-				},
-				products: [],
 				devices: [],
 				loading: false,
 				dialogCreating: false,
@@ -282,8 +260,6 @@
 			};
 		},
 		created() {
-			//this.fetchProductList();
-			//this.fetchData();
 			this.getList()
 		},
 		methods: {
@@ -414,36 +390,6 @@
 				});
 			},
 
-			// 获取数据
-			async fetchData() {
-				let params = {
-					pageSize: this.page.pageSize,
-					pageNo: this.page.currentPage
-				};
-				// this.loading = true;
-				findDevices(params).then(response => {
-					this.loading = false;
-					const items = response.datas;
-					this.devices = items.map(v => {
-						// 处理状态显示
-						v.flag = v.status !== "DISABLE";
-
-						// 处理 tags 将字符串 拆分成 数组
-						if(v.tags && v.tags.length > 0) {
-							v.tags = v.tags.split("|");
-						} else {
-							v.tags = [];
-						}
-						// 保存一份原始数据，便于取消编辑的时候还原数据
-						const original = _.cloneDeep(v);
-						v.original = original;
-						this.$set(v, "edit", false);
-						return v;
-					});
-					this.page.total = response.pageInfo.totalCount;
-				});
-			},
-
 			// 删除
 			async deleteItem(row) {
 				let _this = this;
@@ -517,10 +463,7 @@
 
 <style scoped>
 	.filter {
-		width: 98%;
 		border: 1px solid #E8E8E8;
-		margin-top: 20px;
-		margin-left: 1%;
 		height: 170px;
 	}
 	

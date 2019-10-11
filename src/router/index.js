@@ -130,64 +130,38 @@ export const constantRoutes = [{
  * asyncRoutes
  * the routes that need to be dynamically loaded based on user roles
  */
-export const asyncRoutes = [{
-		path: '/permission',
+export const asyncRoutes = [
+	// 用户
+	{
+		path: '/role',
 		component: Layout,
-		redirect: '/permission/page',
-		alwaysShow: true, // will always show the root menu
-		name: 'Permission',
+		redirect: '/role/user',
+		name: 'role',
 		meta: {
-			title: 'permission',
-			icon: 'lock',
-			roles: ['admin', 'editor'] // you can set roles in root nav
+			title: '用户',
+			icon: 'user'
 		},
 		children: [{
-				path: 'page',
+				path: 'user',
+				name: 'role.user',
 				component: () =>
-					import('@/views/permission/page'),
-				name: 'PagePermission',
+					import('@/views/users/user'),
 				meta: {
-					title: 'pagePermission',
-					roles: ['admin'] // or you can only set roles in sub nav
+					title: '用户',
+					icon: 'people'
 				}
 			},
 			{
-				path: 'directive',
+				path: 'billing',
+				name: 'role.billing',
 				component: () =>
-					import('@/views/permission/directive'),
-				name: 'DirectivePermission',
+					import('@/views/users/billing'),
 				meta: {
-					title: 'directivePermission'
-					// if do not set roles, means: this page does not require permission
-				}
-			},
-			{
-				path: 'role',
-				component: () =>
-					import('@/views/permission/role'),
-				name: 'RolePermission',
-				meta: {
-					title: 'rolePermission',
-					roles: ['admin']
+					title: '计费组',
+					icon: 'money'
 				}
 			}
 		]
-	},
-
-	{
-		path: '/icon',
-		component: Layout,
-		children: [{
-			path: 'index',
-			component: () =>
-				import('@/views/icons/index'),
-			name: 'Icons',
-			meta: {
-				title: 'icons',
-				icon: 'icon',
-				noCache: true
-			}
-		}]
 	},
 
 	// 设备
@@ -234,6 +208,7 @@ export const asyncRoutes = [{
 		]
 	},
 	
+	//作业
 	{
 	  path: '/task',
 	  component: Layout,
@@ -248,6 +223,50 @@ export const asyncRoutes = [{
 	},
 
 	/*{
+		path: '/permission',
+		component: Layout,
+		redirect: '/permission/page',
+		alwaysShow: true, // will always show the root menu
+		name: 'Permission',
+		meta: {
+			title: 'permission',
+			icon: 'lock',
+			roles: ['admin', 'editor'] // you can set roles in root nav
+		},
+		children: [{
+				path: 'page',
+				component: () =>
+					import('@/views/permission/page'),
+				name: 'PagePermission',
+				meta: {
+					title: 'pagePermission',
+					roles: ['admin'] // or you can only set roles in sub nav
+				}
+			},
+			{
+				path: 'directive',
+				component: () =>
+					import('@/views/permission/directive'),
+				name: 'DirectivePermission',
+				meta: {
+					title: 'directivePermission'
+					// if do not set roles, means: this page does not require permission
+				}
+			},
+			{
+				path: 'role',
+				component: () =>
+					import('@/views/permission/role'),
+				name: 'RolePermission',
+				meta: {
+					title: 'rolePermission',
+					roles: ['admin']
+				}
+			}
+		]
+	},
+
+	{
 	  path: '/example',
 	  component: Layout,
 	  redirect: '/example/list',
@@ -280,6 +299,22 @@ export const asyncRoutes = [{
 	},
 
 	{
+		path: '/icon',
+		component: Layout,
+		children: [{
+			path: 'index',
+			component: () =>
+				import('@/views/icons/index'),
+			name: 'Icons',
+			meta: {
+				title: 'icons',
+				icon: 'icon',
+				noCache: true
+			}
+		}]
+	},
+
+	{
 	  path: '/tab',
 	  component: Layout,
 	  children: [
@@ -290,7 +325,7 @@ export const asyncRoutes = [{
 	      meta: { title: 'tab', icon: 'tab' }
 	    }
 	  ]
-	},*/
+	},
 
 	{
 		path: '/error',
@@ -339,7 +374,7 @@ export const asyncRoutes = [{
 		}]
 	},
 
-	/*{
+	{
     path: '/excel',
     component: Layout,
     redirect: '/excel/export-excel',
