@@ -208,7 +208,7 @@ export const asyncRoutes = [
 		]
 	},
 	
-	//作业
+	//监控列表
 	{
 	  path: '/monitor',
 		component: Layout,
@@ -224,6 +224,12 @@ export const asyncRoutes = [
 	      component: () => import('@/views/monitor/taskList'),
 	      name: 'monitor.taskList',
 	      meta: { title: '作业信息', icon: 'skill' }
+			},
+			{
+	      path: 'alarmList',
+	      component: () => import('@/views/monitor/alarmList'),
+	      name: 'monitor.alarmList',
+	      meta: { title: '报警信息', icon: 'bug' }
 	    }
 	  ]
 	},

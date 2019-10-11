@@ -108,7 +108,7 @@
 </template>
 
 <script>
-import { GetList, GetID } from "@/api/task";
+import { GetTaskList, GetTaskID } from "@/api/monitor";
 
 import Pagination from "@/components/Pagination";
 
@@ -183,12 +183,12 @@ export default {
     };
   },
   created() {
-    this.grtID();
+    this.getID();
   },
   methods: {
-    grtID() {
+    getID() {
       let _this = this;
-      GetID()
+      GetTaskID()
         .then(function(res) {
           _this.ID = res.result.queryID;
           _this.getList()
@@ -205,7 +205,7 @@ export default {
             },
             size: _this.page.pageSize
           };
-          GetList(params)
+          GetTaskList(params)
             .then(body => {
               _this.loading = true;
               if(body.result.message == "loading") {
@@ -233,7 +233,7 @@ export default {
 
     //重置按钮
     clearAll() {
-      //
+      //节点名称
       this.userName = "";
       //节点类型
       this.taskSta = "";
