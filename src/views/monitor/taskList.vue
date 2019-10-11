@@ -44,7 +44,7 @@
       </el-form>
       <el-main>
         <div class="hasten">
-          <el-button type="primary" size="mini" @click="grtID">
+          <el-button type="primary" size="mini" @click="getID">
             <i class="el-icon-refresh-right"></i> 刷新
           </el-button>
         </div>
@@ -69,7 +69,10 @@
           </el-table-column>
           <el-table-column label="作业状态" width="110">
             <template v-slot="{row}">
-              <el-tag size="mini" :type="statusMap[row.status].type"><i :class="statusMap[row.status].icon"></i>{{row.status | status}}</el-tag>
+              <el-tag size="mini" :type="statusMap[row.status].type">
+                <i :class="statusMap[row.status].icon"></i>
+                {{row.status | status}}
+              </el-tag>
             </template>
           </el-table-column>
           <el-table-column label="队列" width="140">
@@ -175,11 +178,11 @@ export default {
         currentPage: 1,
         pageCount: 1,
         pageSize: 5,
-        total: 1
+        total: 0
       },
       devices: [],
       loading: false,
-      ID: ''
+      ID: ""
     };
   },
   created() {
@@ -191,7 +194,7 @@ export default {
       GetTaskID()
         .then(function(res) {
           _this.ID = res.result.queryID;
-          _this.getList()
+          _this.getList();
         })
         .catch(res => {
           console.log(res);
@@ -199,7 +202,29 @@ export default {
     },
     getList() {
       let _this = this;
-          let params = {
+      _this.loading = true;
+      let herfUrl = window.location.hostname;
+      let ws = new WebSocket(`ws://${herfUrl}:878`);
+      ws.onopen = function() {
+        ws.send(`{"queryID": "${_this.ID}"}`);
+      };
+      ws.onmessage = function(result) {
+        let data = JSON.parse(result.data);
+        _this.devices = [];
+        data.dataList.map(function(item, index) {
+          let obj = {};
+          obj.ID = item.JOBID;
+          obj.taskName = item.JOB_NAME;
+          obj.status = item.STAT;
+          obj.queue = item.QUEUE;
+          obj.startTime = item.START_TIME;
+          obj.runTime = item.CPU_USED;
+          obj.userName = item.USER;
+          _this.devices.push(obj);
+        });
+        _this.loading = false;
+      };
+      /* let params = {
             match: {
               queryID: _this.ID
             },
@@ -228,7 +253,7 @@ export default {
             })
             .catch(res => {
               console.log(res);
-            });
+            }); */
     },
 
     //重置按钮

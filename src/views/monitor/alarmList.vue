@@ -228,7 +228,7 @@ export default {
         currentPage: 1,
         pageCount: 1,
         pageSize: 5,
-        total: 1
+        total: 0
       },
       devices: [],
       loading: false
