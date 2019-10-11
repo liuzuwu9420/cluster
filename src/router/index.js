@@ -210,18 +210,39 @@ export const asyncRoutes = [
 	
 	//作业
 	{
-	  path: '/task',
-	  component: Layout,
+	  path: '/monitor',
+		component: Layout,
+		redirect: '/monitor/taskList',
+		name: 'monitor',
+		meta: {
+			title: '监控',
+			icon: 'example'
+		},
 	  children: [
 	    {
-	      path: 'list',
-	      component: () => import('@/views/task/list'),
-	      name: 'Task',
+	      path: 'taskList',
+	      component: () => import('@/views/monitor/taskList'),
+	      name: 'monitor.taskList',
 	      meta: { title: '作业信息', icon: 'skill' }
 	    }
 	  ]
 	},
 
+	{
+		path: '/icon',
+		component: Layout,
+		children: [{
+			path: 'index',
+			component: () =>
+				import('@/views/icons/index'),
+			name: 'Icons',
+			meta: {
+				title: 'icons',
+				icon: 'icon',
+				noCache: true
+			}
+		}]
+	},
 	/*{
 		path: '/permission',
 		component: Layout,
@@ -298,21 +319,7 @@ export const asyncRoutes = [
 	  ]
 	},
 
-	{
-		path: '/icon',
-		component: Layout,
-		children: [{
-			path: 'index',
-			component: () =>
-				import('@/views/icons/index'),
-			name: 'Icons',
-			meta: {
-				title: 'icons',
-				icon: 'icon',
-				noCache: true
-			}
-		}]
-	},
+	
 
 	{
 	  path: '/tab',
