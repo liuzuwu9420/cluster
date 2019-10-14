@@ -5,7 +5,7 @@
         <el-row>
           <el-col>
             <span>主机名:{{device.name}}</span>
-            <el-tag size="mini" :type="statusMap[device.status].type">{{device.status | status}}</el-tag>
+            <el-tag size="mini" :type="statusMap[device.type].type">{{device.type | type}}</el-tag>
           </el-col>
         </el-row>
       </el-header>
@@ -32,13 +32,13 @@
                   </tr>-->
                   <tr>
                     <th>当前状态</th>
-                    <td>{{device.status|status}}</td>
+                    <td>{{device.type|type}}</td>
                   </tr>
                 </table>
               </div>
             </el-tab-pane>
 
-            <el-tab-pane label="运行状态" name="status">
+            <el-tab-pane label="运行状态" name="type">
               <el-table
                 v-loading="loading"
                 :data="propertyStatus"
@@ -213,8 +213,8 @@
                       <template v-slot="{row}">
                         <el-tag
                           size="mini"
-                          :type="statusMap[row.status].type"
-                        >{{row.status | status}}</el-tag>
+                          :type="statusMap[row.type].type"
+                        >{{row.type | type}}</el-tag>
                         <!-- <el-switch @change="changeDevice(row)" v-model="row.flag"></el-switch> -->
                       </template>
                     </el-table-column>
@@ -445,19 +445,36 @@ import Dropdown from "@/components/Dropdown";
 import moment from "moment";
 
 const statusMap = {
-  FREE: { name: "空闲", type: "success" },
-  BUSY: { name: "繁忙", type: "danger" },
-  OCCUPY: { name: "占用", type: "warning" }
-};
-
+		head: {
+			name: "空闲",
+			type: "success"
+		},
+		compute: {
+			name: "繁忙",
+			type: "danger"
+		},
+		2: {
+			name: "繁忙",
+			type: "danger"
+		},
+		222: {
+			name: "繁忙",
+			type: "danger"
+		},
+		test: {
+			name: "占用",
+			type: "warning"
+		}
+  };
+  
 export default {
   components: { Dropdown },
   filters: {
     datetime(long) {
       return moment(Number(long)).format("YYYY-MM-DD hh:mm:ss");
     },
-    status(status) {
-      return statusMap[status].name;
+    type(type) {
+      return statusMap[type].name;
     },
     substr(str, length, sufix) {
       if (!length) {

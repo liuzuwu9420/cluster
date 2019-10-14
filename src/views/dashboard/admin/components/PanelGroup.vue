@@ -17,7 +17,7 @@
 		</el-col>
 		<el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
 			<div class="card-panel" @click="handleSetLineChartData('shoppings')">
-				<iframe :src="netSrc" width="100%" height="100%" frameborder="0"></iframe>
+				<iframe :src="nodeSrc" width="100%" height="100%" frameborder="0"></iframe>
 			</div>
 		</el-col>
 	</el-row>
@@ -30,7 +30,7 @@
 				CPUSrc: '',
 				RAMSrc: '',
 				storageSrc: '',
-				netSrc: ''
+				nodeSrc: ''
 			}
 		},
 		created() {
@@ -47,11 +47,11 @@
 				let CPUId = "&panelId=2";
 				let RAMId = "&panelId=6";
 				let storageId = "&panelId=4";
-				let netId = "&panelId=8";
+				let nodeId = "&panelId=10";
 				_this.CPUSrc = httpUrl+timeInterval+CPUId;
 				_this.RAMSrc = httpUrl+timeInterval+RAMId;
 				_this.storageSrc = httpUrl+timeInterval+storageId;
-				_this.netSrc = httpUrl+timeInterval+netId;
+				_this.nodeSrc = httpUrl+timeInterval+nodeId;
 			}
 		}
 	}

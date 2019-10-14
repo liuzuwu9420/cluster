@@ -186,11 +186,11 @@
               </el-select>
             </el-form-item>
             <el-form-item label="密码" prop="pass">
-    <el-input type="password" v-model="create.pass" autocomplete="off"></el-input>
-  </el-form-item>
-  <el-form-item label="确认密码" prop="checkPass">
-    <el-input type="password" v-model="create.checkPass" autocomplete="off"></el-input>
-  </el-form-item>
+              <el-input class="formInp" type="password" v-model="create.pass" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="确认密码" prop="checkPass">
+              <el-input class="formInp" type="password" v-model="create.checkPass" autocomplete="off"></el-input>
+            </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="submitForm('create')">立即创建</el-button>
               <el-button @click="resetForm('create')">重置</el-button>
@@ -212,12 +212,7 @@
 </template>
 
 <script>
-import {
-  GetList,
-  CreateUser,
-  DeleteUser,
-  ChangeUser
-} from "@/api/role";
+import { GetUserList, CreateUser, DeleteUser, ChangeUser } from "@/api/role";
 
 import Pagination from "@/components/Pagination";
 
@@ -227,24 +222,24 @@ export default {
   },
   data() {
     var validatePass = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error('请输入密码'));
-        } else {
-          if (this.ruleForm.checkPass !== '') {
-            this.$refs.ruleForm.validateField('checkPass');
-          }
-          callback();
+      if (value === "") {
+        callback(new Error("请输入密码"));
+      } else {
+        if (this.ruleForm.checkPass !== "") {
+          this.$refs.ruleForm.validateField("checkPass");
         }
-      };
-      var validatePass2 = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error('请再次输入密码'));
-        } else if (value !== this.ruleForm.pass) {
-          callback(new Error('两次输入密码不一致!'));
-        } else {
-          callback();
-        }
-      };
+        callback();
+      }
+    };
+    var validatePass2 = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请再次输入密码"));
+      } else if (value !== this.ruleForm.pass) {
+        callback(new Error("两次输入密码不一致!"));
+      } else {
+        callback();
+      }
+    };
     return {
       //查询条件
       name: "",
@@ -339,12 +334,8 @@ export default {
             trigger: "change"
           }
         ],
-        pass: [
-            { validator: validatePass, trigger: 'blur' }
-          ],
-          checkPass: [
-            { validator: validatePass2, trigger: 'blur' }
-          ],
+        pass: [{ validator: validatePass, trigger: "blur" }],
+        checkPass: [{ validator: validatePass2, trigger: "blur" }]
       }
     };
   },
@@ -367,7 +358,7 @@ export default {
       if (_this.statustype !== "") {
         params.selectOption.type = _this.statustype;
       }
-      GetList(params)
+      GetUserList(params)
         .then(res => {
           //_this.devices = []
           _this.devices = res.result.nodeData.map(function(item, index) {

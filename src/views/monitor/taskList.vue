@@ -113,6 +113,10 @@
 <script>
 import { GetTaskList, GetTaskID } from "@/api/monitor";
 
+/* import SockJS from "sockjs-client";
+import Stomp from "stompjs";
+import { initFirst, connection, disconnect } from "@/utils/sockJS"; */
+
 import Pagination from "@/components/Pagination";
 
 const statusMap = {
@@ -182,11 +186,16 @@ export default {
       },
       devices: [],
       loading: false,
-      ID: ""
+      ID: "",
+      stompClient: ""
     };
   },
   created() {
     this.getID();
+    console.log(this.$route)
+    if(this.$route.params.status) {
+      this.taskSta = this.$route.params.status;
+    }
   },
   methods: {
     getID() {
@@ -194,6 +203,22 @@ export default {
       GetTaskID()
         .then(function(res) {
           _this.ID = res.result.queryID;
+          /* let herfUrl = window.location.hostname;
+          //let sock = new SockJS(`http://${herfUrl}:878`);
+          let sock = new SockJS(`http://192.168.3.87:878`);
+          sock.onopen = function() {
+            console.log("open");
+            sock.send(`{"queryID": "${_this.ID}"}`);
+          };
+
+          sock.onmessage = function(e) {
+            console.log("message", e.data);
+            sock.close();
+          };
+
+          sock.onclose = function() {
+            console.log("close");
+          }; */
           _this.getList();
         })
         .catch(res => {
@@ -204,25 +229,32 @@ export default {
       let _this = this;
       _this.loading = true;
       let herfUrl = window.location.hostname;
-      let ws = new WebSocket(`ws://${herfUrl}:878`);
+      //let ws = new WebSocket(`ws://${herfUrl}:878`);
+      let ws = new WebSocket(`ws://192.168.3.87:878`);
       ws.onopen = function() {
         ws.send(`{"queryID": "${_this.ID}"}`);
       };
       ws.onmessage = function(result) {
         let data = JSON.parse(result.data);
+        console.log(data);
         _this.devices = [];
-        data.dataList.map(function(item, index) {
-          let obj = {};
-          obj.ID = item.JOBID;
-          obj.taskName = item.JOB_NAME;
-          obj.status = item.STAT;
-          obj.queue = item.QUEUE;
-          obj.startTime = item.START_TIME;
-          obj.runTime = item.CPU_USED;
-          obj.userName = item.USER;
-          _this.devices.push(obj);
-        });
-        _this.loading = false;
+        if (data.message == "noData") {
+          _this.devices = [];
+          _this.loading = false;
+        } else {
+          data.dataList.map(function(item, index) {
+            let obj = {};
+            obj.ID = item.JOBID;
+            obj.taskName = item.JOB_NAME;
+            obj.status = item.STAT;
+            obj.queue = item.QUEUE;
+            obj.startTime = item.START_TIME;
+            obj.runTime = item.CPU_USED;
+            obj.userName = item.USER;
+            _this.devices.push(obj);
+          });
+          _this.loading = false;
+        }
       };
       /* let params = {
             match: {
@@ -289,6 +321,11 @@ export default {
           0
         );
       };
+    }
+  },
+  beforeDestroy() {
+    if (this.stompClient) {
+      this.disconnect();
     }
   }
 };

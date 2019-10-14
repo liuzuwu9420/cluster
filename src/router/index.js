@@ -142,6 +142,16 @@ export const asyncRoutes = [
 			icon: 'user'
 		},
 		children: [{
+			path: 'userGroup',
+			name: 'role.userGroup',
+			component: () =>
+				import('@/views/users/userGroup'),
+			meta: {
+				title: '用户组',
+				icon: 'peoples'
+			}
+		},
+		{
 				path: 'user',
 				name: 'role.user',
 				component: () =>

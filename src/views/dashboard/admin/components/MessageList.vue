@@ -4,24 +4,14 @@
 			<el-col :xs="12" :sm="12" :lg="6">
 				<el-card shadow="hover" class="mgb20">
 					<div class="nodeNum card-panel">
-						<iframe :src="nodeSrc" width="100%" height="100%" frameborder="0"></iframe>
-					</div>
-				</el-card>
-				<el-card shadow="hover">
-					<div class="task card-panel">
-
+						
 					</div>
 				</el-card>
 			</el-col>
 			<el-col :xs="12" :sm="12" :lg="12">
 				<el-card shadow="hover" class="mgb20">
-					<div class="nodeStatus card-panel">
-
-					</div>
-				</el-card>
-				<el-card shadow="hover">
-					<div class="taskStatus card-panel">
-
+					<div class="netStatus card-panel">
+						<iframe :src="netSrc" width="100%" height="100%" frameborder="0"></iframe>
 					</div>
 				</el-card>
 			</el-col>
@@ -124,8 +114,8 @@
 				let _this = this;
 				let httpUrl = "http://16.16.18.61:3000/d-solo/fafSLghZz/dashboard?orgId=1";
 				let timeInterval = "&from=now-30m&to=now";
-				let nodeId = "&panelId=10";
-				_this.nodeSrc = httpUrl+timeInterval+nodeId;
+				let netId = "&panelId=8";
+				_this.netSrc = httpUrl+timeInterval+netId;
 			}
 		}
 	}
@@ -135,10 +125,10 @@
 	.message-list {
 		/*margin-top: 18px;*/
 		.mgb20 {
-			margin-bottom: 20px;
+			margin-bottom: 10px;
 		}
 		.card-panel {
-			height: 300px;
+			height: 395px;
 			cursor: pointer;
 			font-size: 16px;
 			position: relative;
@@ -152,8 +142,8 @@
 			padding: 10px;
 			background: #fff;
 			box-sizing: border-box;
-			height: 624px;
-			max-height: 624px;
+			height: 395px;
+			max-height: 395px;
 			overflow: hidden;
 			border-radius: 6px;
 			.box-card {
@@ -166,7 +156,7 @@
 			}
 			.item {
 				.timeArea {
-					
+					margin: 2px;
 				}
 				.logContent {
 					margin-bottom: 5px;

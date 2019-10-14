@@ -1,7 +1,7 @@
 <template>
 	<div class="dashboard-editor-container">
 		<!--<github-corner class="github-corner" />-->
-
+		<panel-card @handleSetLineChartData="handleSetLineChartData" />
 		<panel-group @handleSetLineChartData="handleSetLineChartData" />
 		<message-list @handleSetLineChartData="handleSetLineChartData" />
 		<!--<el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
@@ -42,6 +42,7 @@
 
 <script>
 	//import GithubCorner from '@/components/GithubCorner'
+	import PanelCard from './components/PanelCard'
 	import PanelGroup from './components/PanelGroup'
 	import MessageList from './components/MessageList'
 	//import LineChart from './components/LineChart'
@@ -56,6 +57,7 @@
 		name: 'DashboardAdmin',
 		components: {
 			//GithubCorner,
+			PanelCard,
 			PanelGroup,
 			MessageList
 			//LineChart,

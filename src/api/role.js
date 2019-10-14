@@ -4,7 +4,7 @@ import {fetch} from '@/utils/request'
  * 获取用户信息
  * @param {*} params 查询参数
  */
-export function GetList(params) {
+export function GetLUserist(params) {
   return fetch('/queryJobInfoASK', params)
 }
 
@@ -29,5 +29,69 @@ export function DeleteUser(params) {
  * @param {*} params 用户参数
  */
 export function ChangeUser(params) {
+  return fetch('/queryJobInfoASK', params)
+}
+
+/**
+ * 获取计费信息
+ * @param {*} params 查询参数
+ */
+export function GetBillList(params) {
+  return fetch('/queryJobInfoASK', params)
+}
+
+/**
+ * 创建计费组
+ * @param {*} params 计费组参数
+ */
+export function CreateBill(params) {
+  return fetch('/queryJobInfoASK', params)
+}
+
+/**
+ * 删除计费组
+ * @param {*} params 计费组参数
+ */
+export function DeleteBill(params) {
+  return fetch('/queryJobInfoASK', params)
+}
+
+/**
+ * 修改计费组
+ * @param {*} params 计费组参数
+ */
+export function ChangeBill(params) {
+  return fetch('/queryJobInfoASK', params)
+}
+
+/**
+ * 获取用户组信息
+ * @param {*} params 查询参数
+ */
+export function GetUserGroupList(params) {
+  return fetch('/queryJobInfoASK', params)
+}
+
+/**
+ * 创建用户组
+ * @param {*} params 用户组参数
+ */
+export function CreateUserGroup(params) {
+  return fetch('/queryJobInfoASK', params)
+}
+
+/**
+ * 删除用户组
+ * @param {*} params 用户组参数
+ */
+export function DeleteUserGroup(params) {
+  return fetch('/queryJobInfoASK', params)
+}
+
+/**
+ * 修改用户组
+ * @param {*} params 用户组参数
+ */
+export function ChangeUserGroup(params) {
   return fetch('/queryJobInfoASK', params)
 }

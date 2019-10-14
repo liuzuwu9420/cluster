@@ -29,7 +29,7 @@
             </template>
           </el-table-column>
 
-          <el-table-column label="名称" width="110">
+          <el-table-column label="名称" width="150">
             <template v-slot="{row}">
               <template v-if="row.edit">
                 <el-input v-model="row.name" class="edit-input" size="small" />
@@ -37,23 +37,7 @@
               <span v-else>{{ row.name }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="收费比率" width="140">
-            <template v-slot="{row}">
-              <template v-if="row.edit">
-                <el-input v-model="row.ratio" class="edit-input" size="small" />
-              </template>
-              <span v-else>{{ row.ratio }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="已使用金额" width="140">
-            <template v-slot="{row}">
-              <template v-if="row.edit">
-                <el-input v-model="row.useMoney" class="edit-input" size="small" />
-              </template>
-              <span v-else>{{ row.useMoney }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="描述" width="140">
+          <el-table-column label="描述">
             <template v-slot="{row}">
               <template v-if="row.edit">
                 <el-input v-model="row.description" class="edit-input" size="small" />
@@ -124,12 +108,6 @@
             <el-form-item label="名称" prop="name">
               <el-input class="formInp" v-model="create.name"></el-input>
             </el-form-item>
-            <el-form-item label="收费比率" prop="ratio">
-              <el-input class="formInp" v-model="create.ratio"><template slot="append">元每CPU&times;小时</template></el-input>
-            </el-form-item>
-            <el-form-item label="初始金额" prop="money">
-              <el-input class="formInp" v-model="create.money"><template slot="append">￥</template></el-input>
-            </el-form-item>
             <el-form-item class="formInp" label="描述" prop="description">
               <el-input
   type="textarea"
@@ -159,10 +137,10 @@
 
 <script>
 import {
-  GetBillList,
-  CreateBill,
-  ChangeBill,
-  DeleteBill
+  GetUserGroupList,
+  CreateUserGroup,
+  ChangeUserGroup,
+  DeleteUserGroup
 } from "@/api/role";
 
 import Pagination from "@/components/Pagination";
@@ -189,8 +167,6 @@ export default {
       // 节点添加信息
       create: {
         name: "",
-        ratio: "",
-        money: "",
         description: ""
       },
       rules: {
@@ -198,20 +174,6 @@ export default {
           {
             required: true,
             message: "请输入名称",
-            trigger: "blur"
-          }
-        ],
-        ratio: [
-          {
-            required: true,
-            message: "请输入收费比率",
-            trigger: "blur"
-          }
-        ],
-        money: [
-          {
-            required: true,
-            message: "请输入初始金额",
             trigger: "blur"
           }
         ]
@@ -234,7 +196,7 @@ export default {
       if (_this.searchValue !== "") {
         params.selectOption.name = _this.searchValue;
       }
-      GetList(params)
+      GetUserGroupList(params)
         .then(res => {
           //_this.devices = []
           _this.devices = res.result.nodeData.map(function(item, index) {
@@ -254,7 +216,7 @@ export default {
 
     saveEntity() {
       this.dialogCreating = true;
-      this.titleHead = "新建计费组";
+      this.titleHead = "新建用户组";
     },
     //添加节点
     submitForm(formName) {
@@ -263,11 +225,9 @@ export default {
           let _this = this;
           let params = {
             name: _this.create.name,
-            ratio: _this.create.ratio,
-            money: _this.create.money,
             description: _this.create.description
           };
-          CreateBill(params)
+          CreateUserGroup(params)
             .then(res => {
               _this.getList();
               _this.dialogCreating = false;
@@ -306,7 +266,7 @@ export default {
     async deleteItem(row) {
       let _this = this;
       _this
-        .$confirm("此操作将删除该节点, 是否继续?", "提示", {
+        .$confirm("此操作将删除该用户组, 是否继续?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
@@ -315,7 +275,7 @@ export default {
           let params = {
             _id: row._id
           };
-          DeleteBill(params)
+          DeleteUserGroup(params)
             .then(res => {
               _this.getList();
               _this.$message({
@@ -343,8 +303,6 @@ export default {
       row.edit = false;
       // 还原数据
       row.name = row.original.name;
-      row.ratio = row.original.ratio;
-      row.usemoney = row.original.usemoney;
       row.description = row.original.description;
     },
 
@@ -359,20 +317,12 @@ export default {
       if (row.name !== "") {
         params.newOption.name = row.name;
       }
-      if (row.ratio !== "") {
-        params.newOption.ratio = row.ratio;
-      }
-      if (row.usemoney !== "") {
-        params.newOption.usemoney = row.usemoney;
-      }
       if (row.description !== "") {
         params.newOption.description = row.description;
       }
 
-      await ChangeBill(params);
+      await ChangeUserGroup(params);
       row.original.name = row.name;
-      row.original.ratio = row.ratio;
-      row.original.usemoney = row.usemoney;
       row.original.description = row.description;
       row.edit = false;
     }

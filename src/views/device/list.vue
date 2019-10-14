@@ -298,8 +298,8 @@
 						_this.$set(item, "edit", false);
 						return item;
 					});
-					_this.page.total = res.pageResultData.totalDataNumber;
-					_this.page.pageCount = res.pageResultData.totalCount;
+					_this.page.total = res.result.pageResultData.totalDataNumber;
+					_this.page.pageCount = res.result.pageResultData.totalCount;
 				}).catch(res => {
 					console.log(res)
 				})
