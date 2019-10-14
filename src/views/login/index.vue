@@ -78,8 +78,8 @@ export default {
   components: { LangSelect },
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
+      if (value === '') {
+        callback(new Error('请输入用户名'))
       } else {
         callback()
       }
@@ -93,8 +93,8 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        username: 'root',
+        password: 'password'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -160,9 +160,14 @@ export default {
         if (valid) {
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm)
-            .then(() => {
+            .then((res) => {
+              if(res) {
               this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
               this.loading = false
+              }else {
+                this.$message.error('用户名或密码输入错误！！！');
+                this.loading = false
+              }
             })
             .catch(() => {
               this.loading = false

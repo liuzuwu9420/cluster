@@ -229,8 +229,8 @@ export default {
       let _this = this;
       _this.loading = true;
       let herfUrl = window.location.hostname;
-      //let ws = new WebSocket(`ws://${herfUrl}:878`);
-      let ws = new WebSocket(`ws://192.168.3.87:878`);
+      let ws = new WebSocket(`ws://${herfUrl}:878`);
+      //let ws = new WebSocket(`ws://192.168.3.87:878`);
       ws.onopen = function() {
         ws.send(`{"queryID": "${_this.ID}"}`);
       };

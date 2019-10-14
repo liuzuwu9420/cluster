@@ -51,16 +51,16 @@
         >
           <el-table-column label="ID" width="120">
             <template v-slot="{row}">
-              <span>{{ row.ID }}</span>
+              <span>{{ row.uid }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column label="用户" width="110">
+          <el-table-column label="用户">
             <template v-slot="{row}">
               <template v-if="row.edit">
-                <el-input v-model="row.name" class="edit-input" size="small" />
+                <el-input v-model="row.username" class="edit-input" size="small" />
               </template>
-              <span v-else>{{ row.name }}</span>
+              <span v-else>{{ row.username }}</span>
             </template>
           </el-table-column>
           <el-table-column label="角色" width="110">
@@ -71,7 +71,15 @@
               <span v-else>{{ row.role }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="登录时间" width="110">
+          <!-- <el-table-column label="用户组">
+            <template v-slot="{row}">
+              <template v-if="row.edit">
+                <el-input v-model="row.group" class="edit-input" size="small" />
+              </template>
+              <span v-else>{{ row.group }}</span>
+            </template>
+          </el-table-column> -->
+          <!-- <el-table-column label="登录时间" width="110">
             <template v-slot="{row}">
               <template v-if="row.edit">
                 <el-input v-model="row.logTime" class="edit-input" size="small" />
@@ -91,7 +99,7 @@
             <template v-slot="{row}">
               <el-switch v-model="row.type" active-color="#13ce66"></el-switch>
             </template>
-          </el-table-column>
+          </el-table-column> -->
           <el-table-column fixed="right" label="操作" width="200">
             <template v-slot="{row}">
               <el-button-group>
@@ -340,7 +348,7 @@ export default {
     };
   },
   created() {
-    //this.getList();
+    this.getList();
   },
   methods: {
     getList() {
@@ -358,18 +366,20 @@ export default {
       if (_this.statustype !== "") {
         params.selectOption.type = _this.statustype;
       }
-      GetUserList(params)
+      GetUserList()
         .then(res => {
+          console.log(res)
           //_this.devices = []
-          _this.devices = res.result.nodeData.map(function(item, index) {
+          _this.devices = res.result.dataList.map(function(item, index) {
             // 保存一份原始数据，便于取消编辑的时候还原数据
             const original = _.cloneDeep(item);
             item.original = original;
+            _this.$set(item, "role", "用户");
             _this.$set(item, "edit", false);
             return item;
           });
-          _this.page.total = res.pageResultData.totalDataNumber;
-          _this.page.pageCount = res.pageResultData.totalCount;
+          /* _this.page.total = res.pageResultData.totalDataNumber;
+          _this.page.pageCount = res.pageResultData.totalCount; */
         })
         .catch(res => {
           console.log(res);

@@ -25,16 +25,24 @@
         >
           <el-table-column label="ID" width="120">
             <template v-slot="{row}">
-              <span >{{ row.ID }}</span>
+              <span >{{ row.groupID }}</span>
             </template>
           </el-table-column>
 
           <el-table-column label="名称" width="150">
             <template v-slot="{row}">
               <template v-if="row.edit">
-                <el-input v-model="row.name" class="edit-input" size="small" />
+                <el-input v-model="row.groupName" class="edit-input" size="small" />
               </template>
-              <span v-else>{{ row.name }}</span>
+              <span v-else>{{ row.groupName }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="用户">
+            <template v-slot="{row}">
+              <template v-if="row.edit">
+                <el-input v-model="row.users" class="edit-input" size="small" />
+              </template>
+              <span v-else>{{ row.users }}</span>
             </template>
           </el-table-column>
           <el-table-column label="描述">
@@ -181,7 +189,7 @@ export default {
     };
   },
   created() {
-    //this.getList();
+    this.getList();
   },
   methods: {
     getList() {
@@ -196,18 +204,19 @@ export default {
       if (_this.searchValue !== "") {
         params.selectOption.name = _this.searchValue;
       }
-      GetUserGroupList(params)
+      GetUserGroupList()
         .then(res => {
           //_this.devices = []
-          _this.devices = res.result.nodeData.map(function(item, index) {
+          _this.devices = res.result.dataList.map(function(item, index) {
+            item.users = item.users.toString();
             // 保存一份原始数据，便于取消编辑的时候还原数据
             const original = _.cloneDeep(item);
             item.original = original;
             _this.$set(item, "edit", false);
             return item;
           });
-          _this.page.total = res.pageResultData.totalDataNumber;
-          _this.page.pageCount = res.pageResultData.totalCount;
+          /* _this.page.total = res.pageResultData.totalDataNumber;
+          _this.page.pageCount = res.pageResultData.totalCount; */
         })
         .catch(res => {
           console.log(res);
@@ -302,7 +311,8 @@ export default {
     cancelEdit(row) {
       row.edit = false;
       // 还原数据
-      row.name = row.original.name;
+      row.groupName = row.original.groupName;
+      row.users = row.original.users;
       row.description = row.original.description;
     },
 
@@ -314,15 +324,16 @@ export default {
         },
         newOption: {}
       };
-      if (row.name !== "") {
-        params.newOption.name = row.name;
+      if (row.groupName !== "") {
+        params.newOption.groupName = row.groupName;
       }
       if (row.description !== "") {
         params.newOption.description = row.description;
       }
 
       await ChangeUserGroup(params);
-      row.original.name = row.name;
+      row.original.groupName = row.groupName;
+      row.original.users = row.users;
       row.original.description = row.description;
       row.edit = false;
     }

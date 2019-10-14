@@ -217,7 +217,7 @@ export default {
       }
     }
     .card-panel-task-description {
-      width: 56%;
+      width: 54%;
       text-align: center;
       margin-top: 50px;
       float: right;

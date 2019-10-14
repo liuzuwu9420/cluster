@@ -4,8 +4,8 @@ import {fetch} from '@/utils/request'
  * 获取用户信息
  * @param {*} params 查询参数
  */
-export function GetLUserist(params) {
-  return fetch('/queryJobInfoASK', params)
+export function GetUserList(params) {
+  return fetch('/queryUserData', params)
 }
 
 /**
@@ -69,7 +69,7 @@ export function ChangeBill(params) {
  * @param {*} params 查询参数
  */
 export function GetUserGroupList(params) {
-  return fetch('/queryJobInfoASK', params)
+  return fetch('/queryGroupData', params)
 }
 
 /**
