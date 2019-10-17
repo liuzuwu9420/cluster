@@ -1,11 +1,12 @@
-import {fetch} from '@/utils/request'
+import request from '@/utils/request'
+//import {fetch} from '@/utils/request'
 
 /**
  * 获取作业ID
  * @param {*} params 查询参数
  */
 export function GetTaskID(params) {
-  return fetch('/queryJobInfo', params)
+  //return fetch('/queryJobInfo', params)
 }
 
 /**
@@ -13,7 +14,12 @@ export function GetTaskID(params) {
  * @param {*} params 查询ID
  */
 export function GetTaskList(params) {
-  return fetch('/queryJobInfoASK', params)
+  return request({
+    url: '/getJobRedisData',
+    method: 'get',
+    params
+  })
+  //return fetch('/queryJobInfoASK', params)
 }
 
 /**
@@ -21,7 +27,7 @@ export function GetTaskList(params) {
  * @param {*} params 查询参数
  */
 export function GetAlarmList(params) {
-  return fetch('/queryJobInfoASK', params)
+  //return fetch('/queryJobInfoASK', params)
 }
 
 /**
@@ -29,7 +35,7 @@ export function GetAlarmList(params) {
  * @param {*} params 报警参数
  */
 export function DeleteAlarm(params) {
-  return fetch('/queryJobInfoASK', params)
+  //return fetch('/queryJobInfoASK', params)
 }
 
 /**
@@ -37,5 +43,5 @@ export function DeleteAlarm(params) {
  * @param {*} params 报警参数
  */
 export function ChangeAlarm(params) {
-  return fetch('/queryJobInfoASK', params)
+  //return fetch('/queryJobInfoASK', params)
 }

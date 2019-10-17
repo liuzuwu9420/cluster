@@ -68,7 +68,7 @@
           <i class="el-icon-loading card-panel-icon card-task-icon" />
         </div>
         <div class="card-panel-task-description">
-          <count-to :start-val="0" :end-val="9280" :duration="1200" class="card-panel-runnum" />
+          <count-to :start-val="0" :end-val="runTask" :duration="1200" class="card-panel-runnum" />
         </div>
       </div>
     </el-col>
@@ -79,7 +79,7 @@
           <i class="el-icon-time card-panel-icon card-task-icon" />
         </div>
         <div class="card-panel-task-description">
-          <count-to :start-val="0" :end-val="13600" :duration="1400" class="card-panel-waitnum" />
+          <count-to :start-val="0" :end-val="pendTask" :duration="1400" class="card-panel-waitnum" />
         </div>
       </div>
     </el-col>
@@ -88,6 +88,7 @@
 
 <script>
 import CountTo from "vue-count-to";
+import { GetTaskList } from "@/api/monitor";
 export default {
   components: {
     CountTo
@@ -97,13 +98,49 @@ export default {
       CPUAllSrc: "",
       CPUUseSrc: "",
       RAMAllSrc: "",
-      RAMUseSrc: ""
+      RAMUseSrc: "",
+      runTask: 0,
+      pendTask: 0
     };
   },
   created() {
     this.iframeTime();
+    this.getList();
   },
   methods: {
+    getList() {
+      let _this = this;
+      let params = {
+        UserName: "root"
+      };
+      GetTaskList(params)
+        .then(body => {
+          let devices = [];
+          body.data.result.map(function(item, index) {
+            let obj = {};
+            obj.ID = item.JID;
+            obj.taskName = item.Name;
+            obj.status = item.Status;
+            obj.queue = item.QueueName;
+            obj.startTime = "2019-10-10";
+            obj.runTime = "2019-10-10";
+            obj.userName = item.UserName;
+            devices.push(obj);
+          });
+          let runTaskList = devices.filter(item => item.status == "RUN")
+          _this.runTask = runTaskList.length;
+          /* 
+          //loadsh的filter方法
+          let pendTaskList = _.filter(devices, function(o) {
+            return o.status == "PEND";
+          }); */
+          let pendTaskList = devices.filter(item => item.status == "PEND")
+          _this.pendTask = pendTaskList.length;
+        })
+        .catch(res => {
+          console.log(res);
+        });
+    },
     handleSetLineChartData(type) {
       this.$router.push({
         name: "monitor.taskList",
@@ -217,7 +254,7 @@ export default {
       }
     }
     .card-panel-task-description {
-      width: 54%;
+      width: 53.46%;
       text-align: center;
       margin-top: 50px;
       float: right;

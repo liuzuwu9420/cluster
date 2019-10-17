@@ -1,147 +1,165 @@
 // cover some element-ui styles
 .el-breadcrumb__inner,
 .el-breadcrumb__inner a {
-    font-weight: 400 !important;
+  font-weight: 400 !important;
 }
 
 .el-upload {
-    input[type="file"] {
-        display: none !important;
-    }
+  input[type="file"] {
+    display: none !important;
+  }
 }
 
 .el-upload__input {
-    display: none;
+  display: none;
 }
 
 .cell {
-    .el-tag {
-        margin-right: 0px;
-    }
+  .el-tag {
+    margin-right: 0px;
+  }
 }
 
 .small-padding {
-    .cell {
-        padding-left: 5px;
-        padding-right: 5px;
-    }
+  .cell {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
 }
 
 .fixed-width {
-    .el-button--mini {
-        padding: 7px 10px;
-        width: 60px;
-    }
+  .el-button--mini {
+    padding: 7px 10px;
+    width: 60px;
+  }
 }
 
 .status-col {
-    .cell {
-        padding: 0 10px;
-        text-align: center;
-        .el-tag {
-            margin-right: 0px;
-        }
+  .cell {
+    padding: 0 10px;
+    text-align: center;
+
+    .el-tag {
+      margin-right: 0px;
     }
+  }
 }
 
 .el-container .el-main {
-    padding: 0;
+  padding: 0;
 }
 
 // to fixed https://github.com/ElemeFE/element/issues/2461
 .el-dialog {
-    transform: none;
-    left: 0;
-    position: relative;
-    margin: 0 auto;
+  transform: none;
+  left: 0;
+  position: relative;
+  margin: 0 auto;
 }
 
 // refine element ui upload
 .upload-container {
-    .el-upload {
-        width: 100%;
-        .el-upload-dragger {
-            width: 100%;
-            height: 200px;
-        }
+  .el-upload {
+    width: 100%;
+
+    .el-upload-dragger {
+      width: 100%;
+      height: 200px;
     }
+  }
 }
 
 // dropdown
 .el-dropdown-menu {
-    a {
-        display: block
-    }
+  a {
+    display: block
+  }
+}
+
+//Search
+.el-input-group__prepend {
+  width: 87px;
+  color: #333333;
+  background-color: #FFF;
+}
+
+//icon 时间选择器
+.el-date-editor {
+  .el-input__icon {
+    font-size: 26px;
+    color: #1890ff;
+    width: 40px;
+  }
 }
 
 // fix date-picker ui bug in filter-item
 .el-range-editor.el-input__inner {
-    display: inline-flex !important;
+  display: inline-flex !important;
 }
 
 //el-dialog
 .el-container .el-dialog {
-    margin: 40px auto!important;
-    border-radius: 10px;
+  margin: 40px auto !important;
+  border-radius: 10px;
 }
 
 .el-container .el-dialog__header {
-    text-align: left;
-    font-weight: 600;
-    padding: 15px 5% 10px 10px;
-    border-radius: 10px 10px 0 0;
-    background: red;
+  text-align: left;
+  font-weight: 600;
+  padding: 15px 5% 10px 10px;
+  border-radius: 10px 10px 0 0;
+  background: red;
 }
 
 .el-container .el-dialog__body {
-    padding: 10px 0 15px;
-    font-size: 16px;
-    color: #000000;
+  padding: 10px 0 15px;
+  font-size: 16px;
+  color: #000000;
 }
 
 .el-container .el-main .el-dialog .el-row {
-    margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 
 .el-container .el-main .el-dialog .el-row .el-col:nth-child(1) {
-    line-height: 40px;
-    padding-left: 12px;
+  line-height: 40px;
+  padding-left: 12px;
 }
 
 .el-container .el-main .el-dialog .el-row .el-col .cont,
 .el-container .el-main .el-dialog .el-row .el-col .radio {
-    line-height: 40px;
+  line-height: 40px;
 }
 
 .el-container .el-main .el-dialog .el-row .el-col .input {
-    margin-right: 5px;
+  margin-right: 5px;
 }
 
 .el-container .el-dialog__title {
-    text-align: left;
-    color: #FFF;
+  text-align: left;
+  color: #FFF;
 }
 
 .el-container .el-dialog__headerbtn .el-dialog__close {
-    color: #FFF;
+  color: #FFF;
 }
 
 .el-container .el-dialog__footer {
-    text-align: center;
-    padding: 0 5% 15px;
+  text-align: center;
+  padding: 0 5% 15px;
 }
 
 //el-card
 .el-card {
-    .el-card__body {
-        padding: 0;
-        height: 90%;
-    }
+  .el-card__body {
+    padding: 0;
+    height: 90%;
+  }
 }
 
 //.el-divider
 .el-divider--horizontal {
-    margin: 0;
+  margin: 0;
 }
 
 //el-scrollbar
@@ -149,31 +167,34 @@
 .is-scroll-right::-webkit-scrollbar,
 .is-scroll-left::-webkit-scrollbar,
 .el-scrollbar::-webkit-scrollbar {
-    width: 4px;
-    height: 8px !important;
+  width: 4px;
+  height: 8px !important;
 }
+
 /*滚动条的背景区域的内阴影*/
 .el-scrollbar::-webkit-scrollbar-track {
-    //  box-shadow:0px 1px 3px rgba(0,0,0,0.3) inset;
-     /*滚动条的背景区域的圆角*/
-     border-radius: 10px;  
-     /*滚动条的背景颜色*/
-     background-color: #ddd;
+  //  box-shadow:0px 1px 3px rgba(0,0,0,0.3) inset;
+  /*滚动条的背景区域的圆角*/
+  border-radius: 10px;
+  /*滚动条的背景颜色*/
+  background-color: #ddd;
 }
+
 /*滑块 滚动条的内阴影*/
 .is-scroll-right::-webkit-scrollbar-thumb,
 .is-scroll-left::-webkit-scrollbar-thumb,
 .el-scrollbar::-webkit-scrollbar-thumb {
-    box-shadow:0px 1px 3px rgba(0,0,0,0.3) inset;
-    background-color:#FF6C60;
-    border-radius: 4px;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3) inset;
+  background-color: #FF6C60;
+  border-radius: 4px;
 }
 
 // 横向滚动条
 ::-webkit-scrollbar:horizontal {
-    width:0;
-    height:10px !important;
+  width: 0;
+  height: 10px !important;
 }
+
 ::-webkit-scrollbar-track:horizontal {
-    background-color:#fff;
+  background-color: #fff;
 }

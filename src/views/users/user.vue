@@ -1,42 +1,23 @@
 <template>
   <div class="app-container">
     <el-container>
-      <el-form :inline="true">
-        <div class="filter">
-          <div class="filterTop2">
-            <span class="left">查询条件</span>
-            <span class="right">
-              <el-button type="primary" @click="getList()">查询</el-button>
-              <el-button @click="clearAll">重置</el-button>
-            </span>
-          </div>
-
-          <div class="row">
-            <label>用户</label>
-            <el-autocomplete
-              class="inline-input"
-              v-model="name"
-              :fetch-suggestions="nameSearch"
-              placeholder="请输入内容"
-              :trigger-on-focus="false"
-            ></el-autocomplete>
-            <label>状态</label>
-            <el-select v-model="statustype" clearable placeholder="请选择">
-              <el-option
-                v-for="item in statustypes"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-          </div>
-        </div>
-      </el-form>
       <el-main>
         <div class="hasten">
-          <el-button type="primary" size="mini" @click="saveEntity">
-            <i class="el-icon-plus"></i> 添加用户
+          <el-button class="headBut" type="primary" size="mini" @click="saveEntity">
+            <i class="el-icon-plus"></i> 新建
           </el-button>
+          <template>
+            <div class="headBut" v-if="!selected.showSearch">
+              <el-button type="primary" icon="el-icon-search" @click="selected.showSearch = true"></el-button>
+            </div>
+            <div class="headBut" v-else>
+              <search
+                :items="selected.items"
+                :showSearch="selected.showSearch"
+                @change="searchChanged"
+              />
+            </div>
+          </template>
           <el-button type="primary" size="mini" @click="getList">
             <i class="el-icon-refresh-right"></i> 刷新
           </el-button>
@@ -223,10 +204,12 @@
 import { GetUserList, CreateUser, DeleteUser, ChangeUser } from "@/api/role";
 
 import Pagination from "@/components/Pagination";
+import Search from "@/components/Search";
 
 export default {
   components: {
-    Pagination
+    Pagination,
+    Search
   },
   data() {
     var validatePass = (rule, value, callback) => {
@@ -249,20 +232,20 @@ export default {
       }
     };
     return {
-      //查询条件
-      name: "",
-      statustype: "",
-      statustypes: [
-        {
-          value: "ON",
-          label: "解冻"
-        },
-        {
-          value: "OFF",
-          label: "冻结"
-        }
-      ],
-      nameRestaurants: [],
+      // 查询数据
+      selected: {
+        items: [
+          {
+            value: "名称",
+            label: "名称"
+          },
+          {
+            value: "UUID",
+            label: "UUID"
+          }
+        ],
+        showSearch: false
+      },
       // 分页数据
       page: {
         currentPage: 1,
@@ -386,29 +369,10 @@ export default {
         });
     },
 
-    //重置按钮
-    clearAll() {
-      //用户名
-      this.name = "";
-      //冻结状态
-      this.statustype = "";
-    },
-
-    nameSearch(queryString, cb) {
-      var restaurants = this.nameRestaurants;
-      var results = queryString
-        ? restaurants.filter(this.createFilter(queryString))
-        : restaurants;
-      // 调用 callback 返回建议列表的数据
-      cb(results);
-    },
-    createFilter(queryString) {
-      return restaurant => {
-        return (
-          restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) ===
-          0
-        );
-      };
+     //搜索
+    searchChanged(data) {
+      this.selected.showSearch = data.showSearch;
+      console.log(data);
     },
 
     saveEntity() {
@@ -546,85 +510,9 @@ export default {
 </script>
 
 <style scoped>
-.filter {
-  border: 1px solid #e8e8e8;
-  height: 110px;
-}
-
-.filterTop2 {
-  width: 100%;
-  height: 40px;
-  background-color: #fafafa;
-  border-bottom: 1px solid #e8e8e8;
-  line-height: 40px;
-}
-
-.filterTop2 .left {
-  display: inline-block;
-  width: 49%;
-  text-align: left;
-  margin-left: 1%;
-  color: #747474;
-  font-size: 14px;
-}
-
-.filterTop2 .right {
-  display: inline-block;
-  width: 45%;
-  text-align: right;
-}
-
-.filterTop2 .right .el-button {
-  width: 82px;
-  height: 28px;
-  padding: 0 0;
-}
-
-.filter .row {
-  margin-top: 20px;
-}
-
-.filter .row label {
-  display: inline-block;
-  width: 15%;
-  text-align: right;
-  margin-right: 2%;
-  font-weight: 400;
-}
-
-.filter .row .el-input {
-  width: 30%;
-  height: 28px;
-}
-
-.filter .row .el-input__icon {
-  line-height: 1 !important;
-}
-
-.filter .row .el-select {
-  width: 30%;
-  height: 28px;
-}
-
-.filter .row .el-autocomplete {
-  width: 30%;
-  height: 28px;
-}
-
-.filter .row .el-input__inner {
-  height: 100%;
-}
-
-.filter .row .el-select .el-input--suffix {
-  width: 100% !important;
-}
-
 .hasten {
   width: 100%;
-  background-color: #fafafa;
   height: 40px;
-  border: 1px solid #e8e8e8;
-  margin-top: 20px;
   margin-bottom: 10px;
   line-height: 40px;
   padding: 5px 10px;
@@ -634,10 +522,14 @@ export default {
 	}*/
 
 .hasten .el-button {
-  margin-left: 2%;
-  height: 28px;
+  height: 36px;
   line-height: 0;
   float: right;
+}
+
+.hasten .headBut {
+  margin-right: 10px;
+  float: left;
 }
 
 .pagination {

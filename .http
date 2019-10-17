@@ -1,0 +1,28 @@
+@url=http://192.168.3.87:80/
+@json=Content-Type: application/json
+
+###
+POST {{url}}selectNodeEntityPage
+{{json}}
+
+{
+	"pageOption": {
+		"pageNumber": 1, 
+		"pageSize": 5
+	},
+	"selectOption": {}
+}
+
+
+###
+GET {{url}}getNodeInfo/node1
+
+###
+POST {{url}}userLogin
+{{json}}
+
+{
+  "username": "root",
+  "password": "password"
+}
+

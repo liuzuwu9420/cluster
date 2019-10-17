@@ -1,11 +1,27 @@
-import {fetch} from '@/utils/request'
-
+import request from '@/utils/request'
+//import {fetch} from '@/utils/request'
 /**
- * 获取节点信息
+ * 获取所有节点简单信息
  * @param {*} params 查询参数
  */
-export function GetList(params) {
-  return fetch('/selectNodeEntityPage', params)
+export function GetList(data) {
+  return request({
+    url: '/selectNodeEntityPage',
+    method: 'post',
+    data
+  })
+  //return fetch('/selectNodeEntityPage', params)
+}
+/**
+ * 获取单个节点所有信息
+ * @param {*} id 节点ID
+ */
+export function GetNodeList(id) {
+  return request({
+    url: `/getNodeInfo/${id}`,
+    method: 'get'
+  })
+  //return fetch('/queryNodeInfo', params)
 }
 
 /**
@@ -13,7 +29,12 @@ export function GetList(params) {
  * @param {*} params 节点参数
  */
 export function SaveNodeEntity(params) {
-  return fetch('/saveNodeEntity', params)
+  return request({
+    url: '/saveNodeEntity',
+    method: 'post',
+    params
+  })
+  //return fetch('/saveNodeEntity', params)
 }
 
 
@@ -22,7 +43,12 @@ export function SaveNodeEntity(params) {
  * @param {*} params 节点ID
  */
 export function DeleteEntityOne(params) {
-  return fetch('/deleteNodeEntityOne', params)
+  return request({
+    url: '/deleteNodeEntityOne',
+    method: 'post',
+    params
+  })
+  //return fetch('/deleteNodeEntityOne', params)
 }
 
 /**
@@ -30,7 +56,12 @@ export function DeleteEntityOne(params) {
  * @param {*} params 节点参数
  */
 export function UpdateEntityOne(params) {
-  return fetch('/updateNodeEntityOne', params)
+  return request({
+    url: '/updateNodeEntityOne',
+    method: 'post',
+    params
+  })
+  //return fetch('/updateNodeEntityOne', params)
 }
 
 

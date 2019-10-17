@@ -3,17 +3,29 @@
     <el-container>
       <el-main>
         <div class="hasten">
-          <el-button class="addbill" type="primary" size="mini" @click="saveEntity">
+          <el-button class="headBut" type="primary" size="mini" @click="saveEntity">
             <i class="el-icon-plus"></i> 新建
           </el-button>
+          <template>
+            <div class="headBut" v-if="!selected.showSearch">
+              <el-button type="primary" icon="el-icon-search" @click="selected.showSearch = true"></el-button>
+            </div>
+            <div class="headBut" v-else>
+              <search
+                :items="selected.items"
+                :showSearch="selected.showSearch"
+                @change="searchChanged"
+              />
+            </div>
+          </template>
           <el-button type="primary" size="mini" @click="getList">
             <i class="el-icon-refresh-right"></i> 刷新
           </el-button>
-          <el-input
+          <!-- <el-input
             placeholder="搜索"
             v-model="searchValue"
             @keyup.enter="getList()"
-          ><el-button slot="append" icon="el-icon-search" @click="getList"></el-button></el-input>
+          ><el-button slot="append" icon="el-icon-search" @click="getList"></el-button></el-input>-->
         </div>
         <el-table
           v-loading="loading"
@@ -25,7 +37,7 @@
         >
           <el-table-column label="ID" width="120">
             <template v-slot="{row}">
-              <span >{{ row.groupID }}</span>
+              <span>{{ row.groupID }}</span>
             </template>
           </el-table-column>
 
@@ -118,10 +130,10 @@
             </el-form-item>
             <el-form-item class="formInp" label="描述" prop="description">
               <el-input
-  type="textarea"
-  :autosize="{ minRows: 2, maxRows: 4}"
-  v-model="create.description">
-</el-input>
+                type="textarea"
+                :autosize="{ minRows: 2, maxRows: 4}"
+                v-model="create.description"
+              ></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="submitForm('create')">立即创建</el-button>
@@ -152,15 +164,29 @@ import {
 } from "@/api/role";
 
 import Pagination from "@/components/Pagination";
+import Search from "@/components/Search";
 
 export default {
   components: {
-    Pagination
+    Pagination,
+    Search
   },
   data() {
     return {
-      //查询条件
-      searchValue: "",
+      // 查询数据
+      selected: {
+        items: [
+          {
+            value: "名称",
+            label: "名称"
+          },
+          {
+            value: "UUID",
+            label: "UUID"
+          }
+        ],
+        showSearch: false
+      },
       // 分页数据
       page: {
         currentPage: 1,
@@ -261,7 +287,13 @@ export default {
       this.$refs[formName].resetFields();
     },
 
-    // 查看计费详情
+    //搜索
+    searchChanged(data) {
+      this.selected.showSearch = data.showSearch;
+      console.log(data);
+    },
+
+    // 查看详情
     info(device) {
       /* this.$router.push({
         name: "device.info",
@@ -357,12 +389,11 @@ export default {
 }
 
 .hasten .el-input-group {
-    float: right;
-    width: 30%;
+  float: right;
 }
 
-.hasten .addbill {
-  margin-left: 0;
+.hasten .headBut {
+  margin-right: 10px;
   float: left;
 }
 .pagination {

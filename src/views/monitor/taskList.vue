@@ -1,50 +1,21 @@
 <template>
   <div class="app-container">
     <el-container>
-      <el-form :inline="true">
-        <div class="filter">
-          <div class="filterTop">
-            <span class="left">查询条件</span>
-            <span class="right">
-              <el-button type="primary" @click="getList()">查询</el-button>
-              <el-button @click="clearAll">重置</el-button>
-            </span>
-          </div>
-
-          <div class="row">
-            <label>提交用户</label>
-            <el-autocomplete
-              class="inline-input"
-              v-model="userName"
-              :fetch-suggestions="nameSearch"
-              placeholder="请输入内容"
-              :trigger-on-focus="false"
-            ></el-autocomplete>
-            <label>作业状态</label>
-            <el-select v-model="taskSta" clearable placeholder="请选择">
-              <el-option
-                v-for="item in taskStatus"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-          </div>
-          <div class="row">
-            <label>队列</label>
-            <el-autocomplete
-              class="inline-input"
-              v-model="queue"
-              :fetch-suggestions="queueSearch"
-              placeholder="请输入内容"
-              :trigger-on-focus="false"
-            ></el-autocomplete>
-          </div>
-        </div>
-      </el-form>
       <el-main>
         <div class="hasten">
-          <el-button type="primary" size="mini" @click="getID">
+          <template>
+            <div class="headBut" v-if="!selected.showSearch">
+              <el-button type="primary" icon="el-icon-search" @click="selected.showSearch = true"></el-button>
+            </div>
+            <div class="headBut" v-else>
+              <search
+                :items="selected.items"
+                :showSearch="selected.showSearch"
+                @change="searchChanged"
+              />
+            </div>
+          </template>
+          <el-button type="primary" size="mini" @click="getList">
             <i class="el-icon-refresh-right"></i> 刷新
           </el-button>
         </div>
@@ -118,6 +89,7 @@ import Stomp from "stompjs";
 import { initFirst, connection, disconnect } from "@/utils/sockJS"; */
 
 import Pagination from "@/components/Pagination";
+import Search from "@/components/Search";
 
 const statusMap = {
   RUN: {
@@ -135,6 +107,16 @@ const statusMap = {
     type: "info",
     icon: "el-icon-circle-check"
   },
+  "DONE+PDONE": {
+    name: "完成",
+    type: "info",
+    icon: "el-icon-circle-check"
+  },
+  "DONE+PERR": {
+    name: "完成",
+    type: "info",
+    icon: "el-icon-circle-check"
+  },
   EXIT: {
     name: "退出",
     type: "danger",
@@ -143,7 +125,8 @@ const statusMap = {
 };
 export default {
   components: {
-    Pagination
+    Pagination,
+    Search
   },
   filters: {
     status(type) {
@@ -153,30 +136,20 @@ export default {
   data() {
     return {
       statusMap: statusMap,
-      //查询条件
-      userName: "",
-      taskStatus: [
-        {
-          value: "RUN",
-          label: "运行"
-        },
-        {
-          value: "PEND",
-          label: "等待"
-        },
-        {
-          value: "DONE",
-          label: "完成"
-        },
-        {
-          value: "EXIT",
-          label: "退出"
-        }
-      ],
-      taskSta: "",
-      queue: "",
-      nameRestaurants: [],
-      queueRestaurants: [],
+       // 查询数据
+      selected: {
+        items: [
+          {
+            value: "名称",
+            label: "名称"
+          },
+          {
+            value: "UUID",
+            label: "UUID"
+          }
+        ],
+        showSearch: false
+      },
       // 分页数据
       page: {
         currentPage: 1,
@@ -191,9 +164,8 @@ export default {
     };
   },
   created() {
-    this.getID();
-    console.log(this.$route)
-    if(this.$route.params.status) {
+    this.getList();
+    if (this.$route.params.status) {
       this.taskSta = this.$route.params.status;
     }
   },
@@ -228,9 +200,32 @@ export default {
     getList() {
       let _this = this;
       _this.loading = true;
-      let herfUrl = window.location.hostname;
-      let ws = new WebSocket(`ws://${herfUrl}:878`);
-      //let ws = new WebSocket(`ws://192.168.3.87:878`);
+      let params = {
+        UserName: "root"
+      };
+      GetTaskList(params)
+        .then(body => {
+          _this.loading = true;
+          _this.devices = [];
+          body.data.result.map(function(item, index) {
+            let obj = {};
+            obj.ID = item.JID;
+            obj.taskName = item.Name;
+            obj.status = item.Status;
+            obj.queue = item.QueueName;
+            obj.startTime = "2019-10-10";
+            obj.runTime = "2019-10-10";
+            obj.userName = item.UserName;
+            _this.devices.push(obj);
+          });
+          _this.loading = false;
+        })
+        .catch(res => {
+          console.log(res);
+        });
+      /* let herfUrl = window.location.hostname;
+      //let ws = new WebSocket(`ws://${herfUrl}:878`);
+      let ws = new WebSocket(`ws://192.168.3.87:878`);
       ws.onopen = function() {
         ws.send(`{"queryID": "${_this.ID}"}`);
       };
@@ -255,72 +250,13 @@ export default {
           });
           _this.loading = false;
         }
-      };
-      /* let params = {
-            match: {
-              queryID: _this.ID
-            },
-            size: _this.page.pageSize
-          };
-          GetTaskList(params)
-            .then(body => {
-              _this.loading = true;
-              if(body.result.message == "loading") {
-                _this.getList();
-              }else if (body.result.message == "success") {
-                _this.devices = [];
-                body.result.data.hits.hits.map(function(item, index) {
-                  let obj = {};
-                  obj.ID = item._source.JOBID;
-                  obj.taskName = item._source.JOB_NAME;
-                  obj.status = item._source.STAT;
-                  obj.queue = item._source.QUEUE;
-                  obj.startTime = item._source.START_TIME;
-                  obj.runTime = item._source.CPU_USED;
-                  obj.userName = item._source.USER;
-                  _this.devices.push(obj);
-                });
-                _this.loading = false;
-              }
-            })
-            .catch(res => {
-              console.log(res);
-            }); */
+      }; */
     },
 
-    //重置按钮
-    clearAll() {
-      //节点名称
-      this.userName = "";
-      //节点类型
-      this.taskSta = "";
-      //所属组别
-      this.queue = "";
-    },
-
-    nameSearch(queryString, cb) {
-      var restaurants = this.nameRestaurants;
-      var results = queryString
-        ? restaurants.filter(this.createFilter(queryString))
-        : restaurants;
-      // 调用 callback 返回建议列表的数据
-      cb(results);
-    },
-    queueSearch(queryString, cb) {
-      var restaurants = this.queueRestaurants;
-      var results = queryString
-        ? restaurants.filter(this.createFilter(queryString))
-        : restaurants;
-      // 调用 callback 返回建议列表的数据
-      cb(results);
-    },
-    createFilter(queryString) {
-      return restaurant => {
-        return (
-          restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) ===
-          0
-        );
-      };
+    //搜索
+    searchChanged(data) {
+      this.selected.showSearch = data.showSearch;
+      console.log(data);
     }
   },
   beforeDestroy() {
@@ -332,95 +268,27 @@ export default {
 </script>
 
 <style scoped>
-.filter {
-  border: 1px solid #e8e8e8;
-  height: 170px;
-}
-
-.filterTop {
-  width: 100%;
-  height: 40px;
-  background-color: #fafafa;
-  border-bottom: 1px solid #e8e8e8;
-  line-height: 40px;
-}
-
-.filterTop .left {
-  display: inline-block;
-  width: 49%;
-  text-align: left;
-  margin-left: 1%;
-  color: #747474;
-  font-size: 14px;
-}
-
-.filterTop .right {
-  display: inline-block;
-  width: 45%;
-  text-align: right;
-}
-
-.filterTop .right .el-button {
-  width: 82px;
-  height: 28px;
-  padding: 0 0;
-}
-
-.filter .row {
-  margin-top: 20px;
-}
-
-.filter .row label {
-  display: inline-block;
-  width: 15%;
-  text-align: right;
-  margin-right: 2%;
-  font-weight: 400;
-}
-
-.filter .row .el-input {
-  width: 30%;
-  height: 28px;
-}
-
-.filter .row .el-input__icon {
-  line-height: 1 !important;
-}
-
-.filter .row .el-select {
-  width: 30%;
-  height: 28px;
-}
-
-.filter .row .el-autocomplete {
-  width: 30%;
-  height: 28px;
-}
-
-.filter .row .el-input__inner {
-  height: 100%;
-}
-
-.filter .row .el-select .el-input--suffix {
-  width: 100% !important;
-}
-
 .hasten {
   width: 100%;
-  background-color: #fafafa;
   height: 40px;
-  border: 1px solid #e8e8e8;
-  margin-top: 20px;
   margin-bottom: 10px;
   line-height: 40px;
   padding: 5px 10px;
 }
 
 .hasten .el-button {
-  margin-left: 2%;
-  height: 28px;
+  height: 36px;
   line-height: 0;
   float: right;
+}
+
+.hasten .el-input-group {
+  float: right;
+}
+
+.hasten .headBut {
+  margin-right: 10px;
+  float: left;
 }
 
 .pagination {

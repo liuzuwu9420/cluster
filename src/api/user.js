@@ -1,9 +1,15 @@
-import {fetch} from '@/utils/request'
+import request from '@/utils/request'
+//import {fetch} from '@/utils/request'
 
 /**
  * 登录
- * @param {*} params 登录参数
+ * @param {*} data 登录参数
  */
-export function login(params) {
-  return fetch('/userLogin', params)
+export function login(data) {
+  return request({
+    url: '/userLogin',
+    method: 'post',
+    data
+  })
+  //return fetch('/userLogin', params)
 }

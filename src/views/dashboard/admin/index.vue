@@ -3,7 +3,6 @@
 		<!--<github-corner class="github-corner" />-->
 		<panel-card @handleSetLineChartData="handleSetLineChartData" />
 		<panel-group @handleSetLineChartData="handleSetLineChartData" />
-		<message-list @handleSetLineChartData="handleSetLineChartData" />
 		<!--<el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
 			<line-chart :chart-data="lineChartData" />
 		</el-row>-->
@@ -44,7 +43,6 @@
 	//import GithubCorner from '@/components/GithubCorner'
 	import PanelCard from './components/PanelCard'
 	import PanelGroup from './components/PanelGroup'
-	import MessageList from './components/MessageList'
 	//import LineChart from './components/LineChart'
 	//import RaddarChart from './components/RaddarChart'
 	//import PieChart from './components/PieChart'
@@ -58,8 +56,7 @@
 		components: {
 			//GithubCorner,
 			PanelCard,
-			PanelGroup,
-			MessageList
+			PanelGroup
 			//LineChart,
 			//RaddarChart,
 			//PieChart,

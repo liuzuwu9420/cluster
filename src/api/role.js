@@ -1,11 +1,17 @@
-import {fetch} from '@/utils/request'
+import request from '@/utils/request'
+//import {fetch} from '@/utils/request'
 
 /**
  * 获取用户信息
- * @param {*} params 查询参数
+ * @param {*} data 查询参数
  */
-export function GetUserList(params) {
-  return fetch('/queryUserData', params)
+export function GetUserList(data) {
+  return request({
+    url: '/queryUserData',
+    method: 'post',
+    data
+  })
+  //return fetch('/queryUserData', params)
 }
 
 /**
@@ -13,7 +19,7 @@ export function GetUserList(params) {
  * @param {*} params 用户参数
  */
 export function CreateUser(params) {
-  return fetch('/queryJobInfoASK', params)
+  //return fetch('/queryJobInfoASK', params)
 }
 
 /**
@@ -21,7 +27,7 @@ export function CreateUser(params) {
  * @param {*} params 用户参数
  */
 export function DeleteUser(params) {
-  return fetch('/queryJobInfoASK', params)
+  //return fetch('/queryJobInfoASK', params)
 }
 
 /**
@@ -29,7 +35,7 @@ export function DeleteUser(params) {
  * @param {*} params 用户参数
  */
 export function ChangeUser(params) {
-  return fetch('/queryJobInfoASK', params)
+  //return fetch('/queryJobInfoASK', params)
 }
 
 /**
@@ -37,7 +43,7 @@ export function ChangeUser(params) {
  * @param {*} params 查询参数
  */
 export function GetBillList(params) {
-  return fetch('/queryJobInfoASK', params)
+  //return fetch('/queryJobInfoASK', params)
 }
 
 /**
@@ -45,7 +51,7 @@ export function GetBillList(params) {
  * @param {*} params 计费组参数
  */
 export function CreateBill(params) {
-  return fetch('/queryJobInfoASK', params)
+  //return fetch('/queryJobInfoASK', params)
 }
 
 /**
@@ -53,7 +59,7 @@ export function CreateBill(params) {
  * @param {*} params 计费组参数
  */
 export function DeleteBill(params) {
-  return fetch('/queryJobInfoASK', params)
+  //return fetch('/queryJobInfoASK', params)
 }
 
 /**
@@ -61,15 +67,20 @@ export function DeleteBill(params) {
  * @param {*} params 计费组参数
  */
 export function ChangeBill(params) {
-  return fetch('/queryJobInfoASK', params)
+  //return fetch('/queryJobInfoASK', params)
 }
 
 /**
  * 获取用户组信息
- * @param {*} params 查询参数
+ * @param {*} data 查询参数
  */
-export function GetUserGroupList(params) {
-  return fetch('/queryGroupData', params)
+export function GetUserGroupList(data) {
+  return request({
+    url: '/queryGroupData',
+    method: 'post',
+    data
+  })
+  //return fetch('/queryGroupData', params)
 }
 
 /**
@@ -77,7 +88,7 @@ export function GetUserGroupList(params) {
  * @param {*} params 用户组参数
  */
 export function CreateUserGroup(params) {
-  return fetch('/queryJobInfoASK', params)
+  //return fetch('/queryJobInfoASK', params)
 }
 
 /**
@@ -85,7 +96,7 @@ export function CreateUserGroup(params) {
  * @param {*} params 用户组参数
  */
 export function DeleteUserGroup(params) {
-  return fetch('/queryJobInfoASK', params)
+  //return fetch('/queryJobInfoASK', params)
 }
 
 /**
@@ -93,5 +104,5 @@ export function DeleteUserGroup(params) {
  * @param {*} params 用户组参数
  */
 export function ChangeUserGroup(params) {
-  return fetch('/queryJobInfoASK', params)
+  //return fetch('/queryJobInfoASK', params)
 }
