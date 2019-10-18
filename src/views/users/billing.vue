@@ -4,20 +4,9 @@
       <el-main>
         <div class="hasten">
           <el-button class="headBut" type="primary" size="mini" @click="saveEntity">
-            <i class="el-icon-plus"></i> 新建
+            <i class="el-icon-plus"></i> 创建计费组
           </el-button>
-          <template>
-            <div class="headBut" v-if="!selected.showSearch">
-              <el-button type="primary" icon="el-icon-search" @click="selected.showSearch = true"></el-button>
-            </div>
-            <div class="headBut" v-else>
-              <search
-                :items="selected.items"
-                :showSearch="selected.showSearch"
-                @change="searchChanged"
-              />
-            </div>
-          </template>
+          <search :items="selected.items" @change="searchChanged" />
           <el-button type="primary" size="mini" @click="getList">
             <i class="el-icon-refresh-right"></i> 刷新
           </el-button>
@@ -32,7 +21,7 @@
         >
           <el-table-column label="ID" width="120">
             <template v-slot="{row}">
-              <span >{{ row.ID }}</span>
+              <span>{{ row.ID }}</span>
             </template>
           </el-table-column>
 
@@ -132,17 +121,21 @@
               <el-input class="formInp" v-model="create.name"></el-input>
             </el-form-item>
             <el-form-item label="收费比率" prop="ratio">
-              <el-input class="formInp" v-model="create.ratio"><template slot="append">元每CPU&times;小时</template></el-input>
+              <el-input class="formInp" v-model="create.ratio">
+                <template slot="append">元每CPU&times;小时</template>
+              </el-input>
             </el-form-item>
             <el-form-item label="初始金额" prop="money">
-              <el-input class="formInp" v-model="create.money"><template slot="append">￥</template></el-input>
+              <el-input class="formInp" v-model="create.money">
+                <template slot="append">￥</template>
+              </el-input>
             </el-form-item>
             <el-form-item class="formInp" label="描述" prop="description">
               <el-input
-  type="textarea"
-  :autosize="{ minRows: 2, maxRows: 4}"
-  v-model="create.description">
-</el-input>
+                type="textarea"
+                :autosize="{ minRows: 2, maxRows: 4}"
+                v-model="create.description"
+              ></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="submitForm('create')">立即创建</el-button>
@@ -165,12 +158,7 @@
 </template>
 
 <script>
-import {
-  GetBillList,
-  CreateBill,
-  ChangeBill,
-  DeleteBill
-} from "@/api/role";
+import { GetBillList, CreateBill, ChangeBill, DeleteBill } from "@/api/role";
 
 import Pagination from "@/components/Pagination";
 import Search from "@/components/Search";
@@ -193,8 +181,7 @@ export default {
             value: "UUID",
             label: "UUID"
           }
-        ],
-        showSearch: false
+        ]
       },
       // 分页数据
       page: {
@@ -258,15 +245,15 @@ export default {
       GetList(params)
         .then(res => {
           //_this.devices = []
-          _this.devices = res.result.nodeData.map(function(item, index) {
+          _this.devices = res.data.result.nodeData.map(function(item, index) {
             // 保存一份原始数据，便于取消编辑的时候还原数据
             const original = _.cloneDeep(item);
             item.original = original;
             _this.$set(item, "edit", false);
             return item;
           });
-          _this.page.total = res.pageResultData.totalDataNumber;
-          _this.page.pageCount = res.pageResultData.totalCount;
+          _this.page.total = res.data.pageResultData.totalDataNumber;
+          _this.page.pageCount = res.data.pageResultData.totalCount;
         })
         .catch(res => {
           console.log(res);
@@ -315,7 +302,6 @@ export default {
 
     //搜索
     searchChanged(data) {
-      this.selected.showSearch = data.showSearch;
       console.log(data);
     },
 
@@ -412,7 +398,6 @@ export default {
   width: 100%;
   height: 40px;
   margin-bottom: 10px;
-  line-height: 40px;
   padding: 5px 10px;
 }
 
@@ -423,7 +408,7 @@ export default {
 }
 
 .hasten .el-input-group {
-    float: right;
+  float: right;
 }
 
 .hasten .headBut {

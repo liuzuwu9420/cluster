@@ -127,14 +127,14 @@ export default {
             obj.userName = item.UserName;
             devices.push(obj);
           });
-          let runTaskList = devices.filter(item => item.status == "RUN")
+          let runTaskList = devices.filter(item => item.status == "RUN");
           _this.runTask = runTaskList.length;
           /* 
-          //loadsh的filter方法
-          let pendTaskList = _.filter(devices, function(o) {
-            return o.status == "PEND";
-          }); */
-          let pendTaskList = devices.filter(item => item.status == "PEND")
+            //loadsh的filter方法
+            let pendTaskList = _.filter(devices, function(o) {
+              return o.status == "PEND";
+            }); */
+          let pendTaskList = devices.filter(item => item.status == "PEND");
           _this.pendTask = pendTaskList.length;
         })
         .catch(res => {
@@ -170,9 +170,11 @@ export default {
 <style lang="scss" scoped>
 .panel-group {
   margin-top: 18px;
+
   .card-panel-col {
     margin-bottom: 16px;
   }
+
   .card-panel {
     height: 108px;
     cursor: pointer;
@@ -183,35 +185,45 @@ export default {
     background: #fff;
     box-shadow: 4px 4px 40px rgba(0, 0, 0, 0.05);
     border-color: rgba(0, 0, 0, 0.05);
+
     &:hover {
       .card-panel-icon-wrapper {
         color: #fff;
       }
+
       .icon-cpu {
         background: #40c9c6;
       }
+
       .icon-coin {
         background: #36a3f7;
       }
+
       .icon-loading {
         background: #f4516c;
       }
+
       .icon-time {
         background: #34bfa3;
       }
     }
+
     .icon-cpu {
       color: #40c9c6;
     }
+
     .icon-coin {
       color: #36a3f7;
     }
+
     .icon-loading {
       color: #f4516c;
     }
+
     .icon-time {
       color: #34bfa3;
     }
+
     .card-panel-icon-wrapper {
       float: left;
       margin-top: 10px;
@@ -219,50 +231,60 @@ export default {
       padding: 10px;
       transition: all 0.38s ease-out;
       border-radius: 6px;
+
       .card-panel-text {
         text-align: center;
         line-height: 18px;
         font-size: 18px;
       }
     }
+
     .card-panel-icon {
       float: left;
       font-size: 48px;
       margin-top: 4px;
     }
+
     .card-task-icon {
       margin-left: 10px;
     }
+
     .card-panel-description {
       float: right;
       font-weight: bold;
       margin-left: 0px;
+
       .segmentationCPU {
         font-size: 35px;
         color: #40c9c6;
         margin-top: 55px;
       }
+
       .segmentationRAM {
         font-size: 40px;
         color: #36a3f7;
         margin-top: 50px;
       }
+
       .nuclear {
         margin-top: 68px;
         font-size: 16px;
         color: #40c9c6;
       }
     }
+
     .card-panel-task-description {
       width: 53.46%;
       text-align: center;
       margin-top: 50px;
       float: right;
       font-weight: bold;
+
       .card-panel-runnum {
         font-size: 36px;
         color: #f4516c;
       }
+
       .card-panel-waitnum {
         font-size: 36px;
         color: #34bfa3;
@@ -270,15 +292,18 @@ export default {
     }
   }
 }
+
 @media (max-width: 550px) {
   .card-panel-description {
     display: none;
   }
+
   .card-panel-icon-wrapper {
     float: none !important;
     width: 100%;
     height: 100%;
     margin: 0 !important;
+
     .svg-icon {
       display: block;
       margin: 14px auto !important;

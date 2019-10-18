@@ -4,20 +4,9 @@
       <el-main>
         <div class="hasten">
           <el-button class="headBut" type="primary" size="mini" @click="saveEntity">
-            <i class="el-icon-plus"></i> 新建
+            <i class="el-icon-plus"></i> 创建用户
           </el-button>
-          <template>
-            <div class="headBut" v-if="!selected.showSearch">
-              <el-button type="primary" icon="el-icon-search" @click="selected.showSearch = true"></el-button>
-            </div>
-            <div class="headBut" v-else>
-              <search
-                :items="selected.items"
-                :showSearch="selected.showSearch"
-                @change="searchChanged"
-              />
-            </div>
-          </template>
+          <search :items="selected.items" @change="searchChanged" />
           <el-button type="primary" size="mini" @click="getList">
             <i class="el-icon-refresh-right"></i> 刷新
           </el-button>
@@ -59,7 +48,7 @@
               </template>
               <span v-else>{{ row.group }}</span>
             </template>
-          </el-table-column> -->
+          </el-table-column>-->
           <!-- <el-table-column label="登录时间" width="110">
             <template v-slot="{row}">
               <template v-if="row.edit">
@@ -80,7 +69,7 @@
             <template v-slot="{row}">
               <el-switch v-model="row.type" active-color="#13ce66"></el-switch>
             </template>
-          </el-table-column> -->
+          </el-table-column>-->
           <el-table-column fixed="right" label="操作" width="200">
             <template v-slot="{row}">
               <el-button-group>
@@ -178,7 +167,12 @@
               <el-input class="formInp" type="password" v-model="create.pass" autocomplete="off"></el-input>
             </el-form-item>
             <el-form-item label="确认密码" prop="checkPass">
-              <el-input class="formInp" type="password" v-model="create.checkPass" autocomplete="off"></el-input>
+              <el-input
+                class="formInp"
+                type="password"
+                v-model="create.checkPass"
+                autocomplete="off"
+              ></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="submitForm('create')">立即创建</el-button>
@@ -243,8 +237,7 @@ export default {
             value: "UUID",
             label: "UUID"
           }
-        ],
-        showSearch: false
+        ]
       },
       // 分页数据
       page: {
@@ -336,6 +329,7 @@ export default {
   methods: {
     getList() {
       let _this = this;
+      _this.loading = true;
       let params = {
         pageOption: {
           pageNumber: _this.page.currentPage, //当前页数
@@ -351,9 +345,8 @@ export default {
       }
       GetUserList()
         .then(res => {
-          console.log(res)
           //_this.devices = []
-          _this.devices = res.result.dataList.map(function(item, index) {
+          _this.devices = res.data.result.dataList.map(function(item, index) {
             // 保存一份原始数据，便于取消编辑的时候还原数据
             const original = _.cloneDeep(item);
             item.original = original;
@@ -361,17 +354,17 @@ export default {
             _this.$set(item, "edit", false);
             return item;
           });
-          /* _this.page.total = res.pageResultData.totalDataNumber;
-          _this.page.pageCount = res.pageResultData.totalCount; */
+          /* _this.page.total = res.data.pageResultData.totalDataNumber;
+          _this.page.pageCount = res.data.pageResultData.totalCount; */
+          _this.loading = false;
         })
         .catch(res => {
           console.log(res);
         });
     },
 
-     //搜索
+    //搜索
     searchChanged(data) {
-      this.selected.showSearch = data.showSearch;
       console.log(data);
     },
 
@@ -514,7 +507,6 @@ export default {
   width: 100%;
   height: 40px;
   margin-bottom: 10px;
-  line-height: 40px;
   padding: 5px 10px;
 }
 /*.hasten .el-form-item__content {

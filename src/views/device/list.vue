@@ -6,18 +6,7 @@
           <el-button class="headBut" type="primary" size="mini" @click="saveEntity">
             <i class="el-icon-plus"></i> 添加主机
           </el-button>
-          <template>
-            <div class="headBut" v-if="!selected.showSearch">
-              <el-button type="primary" icon="el-icon-search" @click="selected.showSearch = true"></el-button>
-            </div>
-            <div class="headBut" v-else>
-              <search
-                :items="selected.items"
-                :showSearch="selected.showSearch"
-                @change="searchChanged"
-              />
-            </div>
-          </template>
+          <search :items="selected.items" @change="searchChanged" />
           <el-button type="primary" size="mini" @click="getList">
             <i class="el-icon-refresh-right"></i> 刷新
           </el-button>
@@ -245,8 +234,7 @@ export default {
             value: "UUID",
             label: "UUID"
           }
-        ],
-        showSearch: false
+        ]
       },
       // 分页数据
       page: {
@@ -314,6 +302,7 @@ export default {
   methods: {
     getList() {
       let _this = this;
+      _this.loading = true;
       let params = {
         pageOption: {
           pageNumber: _this.page.currentPage, //当前页数
@@ -351,6 +340,7 @@ export default {
           });
           _this.page.total = res.data.result.pageResultData.totalDataNumber;
           _this.page.pageCount = res.data.result.pageResultData.totalCount;
+          _this.loading = false;
         })
         .catch(res => {
           console.log(res);
@@ -359,7 +349,6 @@ export default {
 
     //搜索
     searchChanged(data) {
-      this.selected.showSearch = data.showSearch;
       console.log(data);
     },
 
@@ -494,7 +483,6 @@ export default {
   width: 100%;
   height: 40px;
   margin-bottom: 10px;
-  line-height: 40px;
   padding: 5px 10px;
 }
 /*.hasten .el-form-item__content {

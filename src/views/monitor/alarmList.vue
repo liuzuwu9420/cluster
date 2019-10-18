@@ -14,18 +14,7 @@
               value-format="yyyy-MM-dd,HH-mm-ss"
             ></el-date-picker>
           </div>
-          <template>
-            <div class="headBut" v-if="!selected.showSearch">
-              <el-button type="primary" icon="el-icon-search" @click="selected.showSearch = true"></el-button>
-            </div>
-            <div class="headBut" v-else>
-              <search
-                :items="selected.items"
-                :showSearch="selected.showSearch"
-                @change="searchChanged"
-              />
-            </div>
-          </template>
+          <search :items="selected.items" @change="searchChanged" />
           <el-button type="primary" size="mini" @click="getList">
             <i class="el-icon-refresh-right"></i> 刷新
           </el-button>
@@ -187,8 +176,7 @@ export default {
             value: "UUID",
             label: "UUID"
           }
-        ],
-        showSearch: false
+        ]
       },
       dateTime: "",
       pickerOptions: {
@@ -252,7 +240,6 @@ export default {
 
     //搜索
     searchChanged(data) {
-      this.selected.showSearch = data.showSearch;
       console.log(data);
     },
 
@@ -334,7 +321,6 @@ export default {
   width: 100%;
   height: 40px;
   margin-bottom: 10px;
-  line-height: 40px;
   padding: 5px 10px;
 }
 

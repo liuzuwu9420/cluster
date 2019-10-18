@@ -3,18 +3,7 @@
     <el-container>
       <el-main>
         <div class="hasten">
-          <template>
-            <div class="headBut" v-if="!selected.showSearch">
-              <el-button type="primary" icon="el-icon-search" @click="selected.showSearch = true"></el-button>
-            </div>
-            <div class="headBut" v-else>
-              <search
-                :items="selected.items"
-                :showSearch="selected.showSearch"
-                @change="searchChanged"
-              />
-            </div>
-          </template>
+          <search :items="selected.items" @change="searchChanged" />
           <el-button type="primary" size="mini" @click="getList">
             <i class="el-icon-refresh-right"></i> 刷新
           </el-button>
@@ -136,7 +125,7 @@ export default {
   data() {
     return {
       statusMap: statusMap,
-       // 查询数据
+      // 查询数据
       selected: {
         items: [
           {
@@ -147,8 +136,7 @@ export default {
             value: "UUID",
             label: "UUID"
           }
-        ],
-        showSearch: false
+        ]
       },
       // 分页数据
       page: {
@@ -205,7 +193,6 @@ export default {
       };
       GetTaskList(params)
         .then(body => {
-          _this.loading = true;
           _this.devices = [];
           body.data.result.map(function(item, index) {
             let obj = {};
@@ -255,7 +242,6 @@ export default {
 
     //搜索
     searchChanged(data) {
-      this.selected.showSearch = data.showSearch;
       console.log(data);
     }
   },
@@ -272,7 +258,6 @@ export default {
   width: 100%;
   height: 40px;
   margin-bottom: 10px;
-  line-height: 40px;
   padding: 5px 10px;
 }
 
