@@ -152,8 +152,8 @@ export default {
             label: "名称"
           },
           {
-            value: "UUID",
-            label: "UUID"
+            value: "作业ID",
+            label: "作业ID"
           }
         ]
       },

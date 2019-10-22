@@ -176,10 +176,6 @@ export default {
           {
             value: "名称",
             label: "名称"
-          },
-          {
-            value: "UUID",
-            label: "UUID"
           }
         ]
       },

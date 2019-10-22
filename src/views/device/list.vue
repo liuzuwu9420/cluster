@@ -10,11 +10,6 @@
           <el-button type="primary" size="mini" @click="getList">
             <i class="el-icon-refresh-right"></i> 刷新
           </el-button>
-          <router-link :to="{ name: 'device.add' }">
-            <el-button type="primary" size="mini">
-              <i class="el-icon-plus"></i> 批量添加设备
-            </el-button>
-          </router-link>
         </div>
         <el-table
           v-loading="loading"
@@ -275,8 +270,8 @@ export default {
             label: "名称"
           },
           {
-            value: "UUID",
-            label: "UUID"
+            value: "IP",
+            label: "IP"
           }
         ]
       },
