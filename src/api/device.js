@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-//import {fetch} from '@/utils/request'
+
 /**
  * 获取所有节点简单信息
  * @param {*} params 查询参数
@@ -10,7 +10,6 @@ export function GetList(data) {
     method: 'post',
     data
   })
-  //return fetch('/selectNodeEntityPage', params)
 }
 /**
  * 获取单个节点所有信息
@@ -21,7 +20,6 @@ export function GetNodeList(id) {
     url: `/getNodeInfo/${id}`,
     method: 'get'
   })
-  //return fetch('/queryNodeInfo', params)
 }
 
 /**
@@ -34,7 +32,6 @@ export function SaveNodeEntity(params) {
     method: 'post',
     params
   })
-  //return fetch('/saveNodeEntity', params)
 }
 
 
@@ -48,7 +45,6 @@ export function DeleteEntityOne(params) {
     method: 'post',
     params
   })
-  //return fetch('/deleteNodeEntityOne', params)
 }
 
 /**
@@ -61,7 +57,6 @@ export function UpdateEntityOne(params) {
     method: 'post',
     params
   })
-  //return fetch('/updateNodeEntityOne', params)
 }
 
 
