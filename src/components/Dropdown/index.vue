@@ -1,6 +1,6 @@
 <template>
   <el-dropdown @command="handleDropdownCommand">
-    <el-button type="primary" size="mini">
+    <el-button type="primary">
       {{ selected.value }}
       <i class="el-icon-arrow-down el-icon--right"></i>
     </el-button>
@@ -39,3 +39,9 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+.el-dropdown {
+  float: left;
+  margin-right: 10px;
+}
+</style>

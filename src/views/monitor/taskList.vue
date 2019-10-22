@@ -3,6 +3,11 @@
     <el-container>
       <el-main>
         <div class="hasten">
+          <dropdown
+                  :selected="dropdown.selected"
+                  :items="dropdown.items"
+                  @change="dropdownChanged"
+                />
           <search :items="selected.items" @change="searchChanged" />
           <el-button type="primary" size="mini" @click="getList">
             <i class="el-icon-refresh-right"></i> 刷新
@@ -79,6 +84,7 @@ import { initFirst, connection, disconnect } from "@/utils/sockJS"; */
 
 import Pagination from "@/components/Pagination";
 import Search from "@/components/Search";
+import Dropdown from "@/components/Dropdown";
 
 const statusMap = {
   RUN: {
@@ -115,7 +121,8 @@ const statusMap = {
 export default {
   components: {
     Pagination,
-    Search
+    Search,
+    Dropdown
   },
   filters: {
     status(type) {
@@ -125,6 +132,18 @@ export default {
   data() {
     return {
       statusMap: statusMap,
+      // 下拉选择数据
+      dropdown: {
+        selected: {
+          key: "RUN",
+          value: "运行中"
+        },
+        items: {
+          RUN: "运行中",
+          PEND: "等待中",
+          DONE: "已完成"
+        }
+      },
       // 查询数据
       selected: {
         items: [
@@ -152,7 +171,7 @@ export default {
     };
   },
   created() {
-    this.getList();
+    //this.getList();
     if (this.$route.params.status) {
       this.taskSta = this.$route.params.status;
     }
@@ -238,6 +257,11 @@ export default {
           _this.loading = false;
         }
       }; */
+    },
+
+    // 下拉选择发生改变触发事件
+    dropdownChanged(data) {
+      console.log("click on item " + this.dropdown.selected.key);
     },
 
     //搜索

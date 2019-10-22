@@ -33,23 +33,23 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-    	/* commit('SET_TOKEN', 'admin-token')
+    	commit('SET_TOKEN', 'admin-token')
         setToken('admin-token')
-        resolve() */
-      login({ username: username.trim(), password: password, host: "16.16.18.20", port: 22 }).then(res => {
+        resolve(true)
+      /* login({ username: username.trim(), password: password, host: "16.16.18.20", port: 22 }).then(res => {
         if(res.data.code == "01") {
           commit('SET_TOKEN', 'admin-token')
           setToken('admin-token')
-          /* const { data } = res
-          commit('SET_TOKEN', data.token)
-          setToken(data.token) */
+          // const { data } = res
+          // commit('SET_TOKEN', data.token)
+          // setToken(data.token)
           resolve(true)
         }else if(res.data.code == "02") {
           resolve(false)
         }
       }).catch(error => {
         reject(error)
-      })
+      }) */
     })
   },
 

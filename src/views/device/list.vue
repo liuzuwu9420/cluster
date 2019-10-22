@@ -24,46 +24,90 @@
           highlight-current-row
           style="width: 100%"
         >
-          <el-table-column label="主机名" width="120">
+        <el-table-column type="expand">
+      <template slot-scope="props">
+        <el-form label-position="left" inline class="table-expand">
+          <el-form-item label="节点名称">
+            <span>{{ props.row.hostname }}</span>
+          </el-form-item>
+          <el-form-item label="内存">
+            <span>{{ props.row.totalMem }}</span>
+          </el-form-item>
+          <el-form-item label="cpu核心数量">
+            <span>{{ props.row.cpuInfo.count }}</span>
+          </el-form-item>
+          <el-form-item label="物理CPU个数">
+            <span>{{ props.row.cpuInfo.physicalcount }}</span>
+          </el-form-item>
+          <el-form-item label="IPV4">
+            <span>{{ props.row.allIPV4.toString() }}</span>
+          </el-form-item>
+          <el-form-item label="主板信息">
+            <span>{{ props.row.mainboard }}</span>
+          </el-form-item>
+          <el-form-item label="dns服务器">
+            <span>{{ props.row.dnsServer.toString() }}</span>
+          </el-form-item>
+          <el-form-item label="磁盘的UUID">
+            <span>{{ props.row.diskListMounts[0].uuid }}</span>
+          </el-form-item>
+          <el-form-item label="磁盘总大小">
+            <span>{{ props.row.diskListMounts[0].size_total }}</span>
+          </el-form-item>
+          <el-form-item label="可用磁盘">
+            <span>{{ props.row.diskListMounts[0].size_available }}</span>
+          </el-form-item>
+          <el-form-item label="磁盘路径">
+            <span>{{ props.row.diskListMounts[0].device }}</span>
+          </el-form-item>
+          <el-form-item label="挂载路径">
+            <span>{{ props.row.diskListMounts[0].mount }}</span>
+          </el-form-item>
+          <el-form-item label="扇区总个数">
+            <span>{{ props.row.diskListMounts[0].block_total }}</span>
+          </el-form-item>
+          <el-form-item label="可用的扇区个数">
+            <span>{{ props.row.diskListMounts[0].block_available }}</span>
+          </el-form-item>
+          <el-form-item label="每一个扇区的大小">
+            <span>{{ props.row.diskListMounts[0].block_size }}</span>
+          </el-form-item>
+          <el-form-item label="可用的扇区大小">
+            <span>{{ props.row.diskListMounts[0].inode_available }}</span>
+          </el-form-item>
+          <el-form-item label="分区类型">
+            <span>{{ props.row.diskListMounts[0].fstype }}</span>
+          </el-form-item>
+        </el-form>
+      </template>
+    </el-table-column>
+          <el-table-column label="节点名称" width="120">
             <template v-slot="{row}">
               <template v-if="row.edit">
-                <el-input v-model="row.name" class="edit-input" size="small" />
+                <el-input v-model="row.hostname" class="edit-input" size="small" />
               </template>
-              <span v-else>{{ row.name }}</span>
+              <span v-else>{{ row.hostname }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column label="组别" width="110">
+          <el-table-column label="内存" width="110">
             <template v-slot="{row}">
-              <template v-if="row.edit">
-                <el-input v-model="row.group" class="edit-input" size="small" />
-              </template>
-              <span v-else>{{ row.group }}</span>
+              <span>{{ row.totalMem }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="状态">
+          <!-- <el-table-column label="状态">
             <template v-slot="{row}">
               <el-tag size="mini" :type="statusMap[row.type].type">{{row.type | type}}</el-tag>
             </template>
-          </el-table-column>
-          <!--<el-table-column label="电源">
-						<template v-slot="{row}">
-							<el-tag size="mini" :type="powerSupplyMap[row.powerSupply].type">{{row.powerSupply | powerSupply}}</el-tag>
-						</template>
-          </el-table-column>-->
-          <el-table-column label="IP" width="140">
+          </el-table-column> -->
+          <el-table-column label="IPV4">
             <template v-slot="{row}">
               <template v-if="row.edit">
-                <el-input v-model="row.hostIp" class="edit-input" size="small" />
+                <el-input v-model="row.allIPV4" class="edit-input" size="small" />
               </template>
-              <span v-else>{{ row.hostIp }}</span>
+              <span v-else>{{ row.allIPV4.toString() }}</span>
             </template>
           </el-table-column>
-          <!--<el-table-column label="硬件配置" align="center" width="220">
-						<template v-slot="{row}">
-							<span>{{ row.hardware }}</span>
-						</template>
-          </el-table-column>-->
           <el-table-column fixed="right" label="操作" width="200">
             <template v-slot="{row}">
               <el-button-group>
@@ -243,7 +287,48 @@ export default {
         pageSize: 5,
         total: 0
       },
-      devices: [],
+      devices: [
+    {
+        hostname: "node-1", //节点名称
+        systemVersion: "1.11.1", //节点系统版本
+        totalMem: "200GB",//内存大小
+        cpuInfo:    //cpu信息
+        {
+            count: 10, //cpu核心数量
+            physicalcount: 5 // 物理CPU个数
+        },
+        allIPV4:
+        [
+            "16.16.18.66", //所有的IPV4网络地址,不包含127
+            "172.17.0.1"
+        ],
+        mainboard: "主板信息",  //主板信息
+        dnsServer:
+        [
+            "114.114.114.114" //dns服务器
+        ],
+        diskListMounts:
+        [
+            {
+                block_used: 10,   //已经使用的扇区个数block_used
+                uuid: "UUID", //磁盘的UUID
+                size_total: "200GB", //磁盘总大小  单位byte
+                block_total: 20,  //扇区总个数block_used
+                mount: "挂载路径", //挂载路径
+                block_available: 10, //可用的扇区个数
+                size_available: "100GB",  //可用的磁盘大小
+                fstype: "分区类型", //分区类型
+                inode_total: 1, //可以创建的索引个数
+                options: "rw", //设置,rw为可读可写
+                device: "磁盘路径", //磁盘路径
+                inode_used: 2, //已经创建的索引个数
+                block_size: "50GB", //每一个扇区的大小  单位byte
+                inode_available: "100GB" //可用的扇区大小
+            }
+        ],
+        edit: false
+    }
+ ],
       loading: false,
       dialogCreating: false,
       titleHead: "",
@@ -297,7 +382,7 @@ export default {
     };
   },
   created() {
-    this.getList();
+    //this.getList();
   },
   methods: {
     getList() {
@@ -442,9 +527,9 @@ export default {
     cancelEdit(row) {
       row.edit = false;
       // 还原数据
-      row.name = row.original.name;
+      /* row.name = row.original.name;
       row.hostIp = row.original.hostIp;
-      row.group = row.original.group;
+      row.group = row.original.group; */
     },
 
     // 确认编辑
@@ -516,7 +601,7 @@ export default {
 .table-expand .el-form-item {
   margin-right: 0;
   margin-bottom: 0;
-  width: 50%;
+  width: 33.33%;
 }
 
 .app-container .el-dialog .el-row .size {
