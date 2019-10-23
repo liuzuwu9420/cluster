@@ -1,17 +1,28 @@
 import request from '@/utils/request'
-//import {fetch} from '@/utils/request'
+
+//版本
+let v = "v1"
 
 /**
  * 获取用户信息
- * @param {*} data 查询参数
+ * 
  */
-export function GetUserList(data) {
+export function GetUserList() {
   return request({
-    url: '/queryUserData',
-    method: 'post',
-    data
+    url: `/api/${v}/users`,
+    method: 'get'
   })
-  //return fetch('/queryUserData', params)
+}
+
+/**
+ * 根据ID查询用户
+ * @id {*} id 查询ID
+ */
+export function GetIDUser(id) {
+  return request({
+    url: `/api/${v}/users/${id}`,
+    method: 'get'
+  })
 }
 
 /**
@@ -72,15 +83,24 @@ export function ChangeBill(params) {
 
 /**
  * 获取用户组信息
- * @param {*} data 查询参数
+ * 
  */
-export function GetUserGroupList(data) {
+export function GetUserGroupList() {
   return request({
-    url: '/queryGroupData',
-    method: 'post',
-    data
+    url: `/api/${v}/groups`,
+    method: 'get'
   })
-  //return fetch('/queryGroupData', params)
+}
+
+/**
+ * 根据ID获取用户组信息
+ * @id {*} id 用户组id
+ */
+export function GetGroupIDList(id) {
+  return request({
+    url: `/api/${v}/groups/${id}`,
+    method: 'get'
+  })
 }
 
 /**

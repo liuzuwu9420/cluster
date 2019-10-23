@@ -1,28 +1,61 @@
-@url=http://192.168.3.87:80/
+@host=http://16.16.18.61:80
 @json=Content-Type: application/json
 
 ###
-POST {{url}}selectNodeEntityPage
+POST {{host}}/api/v1/users/login
 {{json}}
 
 {
-	"pageOption": {
-		"pageNumber": 1, 
-		"pageSize": 5
-	},
-	"selectOption": {}
-}
-
+        "username":"root",
+        "password":"password"
+    }
 
 ###
-GET {{url}}getNodeInfo/node1
+GET {{host}}/api/v1/users
 
 ###
-POST {{url}}userLogin
+GET {{host}}/api/v1/users/1024
+
+###
+POST {{host}}/api/v1/users/sync
+
+###
+GET {{host}}/api/v1/groups
+
+###
+GET {{host}}/api/v1/groups/1025
+
+###
+POST {{host}}/api/v1/groups/sync
+
+###
+POST {{host}}/api/v1/hosts
 {{json}}
 
-{
-  "username": "root",
-  "password": "password"
-}
+    {
+        "HostName": "node7",
+        "HostIP": "16.16.18.67",
+        "State": "Running",
+        "Desc": "主机节点7",
+        "Tags": "dev|web|test"
+    }
 
+###
+GET {{host}}/api/v1/hosts
+
+###
+GET {{host}}/api/v1/hosts/
+
+###
+DELETE {{host}}/api/v1/hosts/da723f77-870f-4c34-b81d-109f8d8da463
+
+###
+GET {{host}}/api/v1/jobs/statistics
+
+###
+POST {{host}}/api/v1/users/login
+
+{
+  "password": "password",
+  "username": "root"
+}

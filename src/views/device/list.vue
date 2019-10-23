@@ -19,88 +19,105 @@
           highlight-current-row
           style="width: 100%"
         >
-        <el-table-column type="expand">
-      <template slot-scope="props">
-        <el-form label-position="left" inline class="table-expand">
-          <el-form-item label="节点名称">
-            <span>{{ props.row.hostname }}</span>
-          </el-form-item>
-          <el-form-item label="内存">
-            <span>{{ props.row.totalMem }}</span>
-          </el-form-item>
-          <el-form-item label="cpu核心数量">
-            <span>{{ props.row.cpuInfo.count }}</span>
-          </el-form-item>
-          <el-form-item label="物理CPU个数">
-            <span>{{ props.row.cpuInfo.physicalcount }}</span>
-          </el-form-item>
-          <el-form-item label="IPV4">
-            <span>{{ props.row.allIPV4.toString() }}</span>
-          </el-form-item>
-          <el-form-item label="主板信息">
-            <span>{{ props.row.mainboard }}</span>
-          </el-form-item>
-          <el-form-item label="dns服务器">
-            <span>{{ props.row.dnsServer.toString() }}</span>
-          </el-form-item>
-          <el-form-item label="磁盘的UUID">
-            <span>{{ props.row.diskListMounts[0].uuid }}</span>
-          </el-form-item>
-          <el-form-item label="磁盘总大小">
-            <span>{{ props.row.diskListMounts[0].size_total }}</span>
-          </el-form-item>
-          <el-form-item label="可用磁盘">
-            <span>{{ props.row.diskListMounts[0].size_available }}</span>
-          </el-form-item>
-          <el-form-item label="磁盘路径">
-            <span>{{ props.row.diskListMounts[0].device }}</span>
-          </el-form-item>
-          <el-form-item label="挂载路径">
-            <span>{{ props.row.diskListMounts[0].mount }}</span>
-          </el-form-item>
-          <el-form-item label="扇区总个数">
-            <span>{{ props.row.diskListMounts[0].block_total }}</span>
-          </el-form-item>
-          <el-form-item label="可用的扇区个数">
-            <span>{{ props.row.diskListMounts[0].block_available }}</span>
-          </el-form-item>
-          <el-form-item label="每一个扇区的大小">
-            <span>{{ props.row.diskListMounts[0].block_size }}</span>
-          </el-form-item>
-          <el-form-item label="可用的扇区大小">
-            <span>{{ props.row.diskListMounts[0].inode_available }}</span>
-          </el-form-item>
-          <el-form-item label="分区类型">
-            <span>{{ props.row.diskListMounts[0].fstype }}</span>
-          </el-form-item>
-        </el-form>
-      </template>
-    </el-table-column>
+          <el-table-column type="expand">
+            <template slot-scope="props">
+              <el-form label-position="left" inline class="table-expand">
+                <el-form-item label="节点名称">
+                  <span>{{ props.row.HostName }}</span>
+                </el-form-item>
+                <!-- <el-form-item label="内存">
+                  <span>{{ props.row.totalMem }}</span>
+                </el-form-item>
+                <el-form-item label="cpu核心数量">
+                  <span>{{ props.row.cpuInfo.count }}</span>
+                </el-form-item>
+                <el-form-item label="物理CPU个数">
+                  <span>{{ props.row.cpuInfo.physicalcount }}</span>
+                </el-form-item>
+                <el-form-item label="IPV4">
+                  <span>{{ props.row.allIPV4.toString() }}</span>
+                </el-form-item>
+                <el-form-item label="主板信息">
+                  <span>{{ props.row.mainboard }}</span>
+                </el-form-item>
+                <el-form-item label="dns服务器">
+                  <span>{{ props.row.dnsServer.toString() }}</span>
+                </el-form-item>
+                <el-form-item label="磁盘的UUID">
+                  <span>{{ props.row.diskListMounts[0].uuid }}</span>
+                </el-form-item>
+                <el-form-item label="磁盘总大小">
+                  <span>{{ props.row.diskListMounts[0].size_total }}</span>
+                </el-form-item>
+                <el-form-item label="可用磁盘">
+                  <span>{{ props.row.diskListMounts[0].size_available }}</span>
+                </el-form-item>
+                <el-form-item label="磁盘路径">
+                  <span>{{ props.row.diskListMounts[0].device }}</span>
+                </el-form-item>
+                <el-form-item label="挂载路径">
+                  <span>{{ props.row.diskListMounts[0].mount }}</span>
+                </el-form-item>
+                <el-form-item label="扇区总个数">
+                  <span>{{ props.row.diskListMounts[0].block_total }}</span>
+                </el-form-item>
+                <el-form-item label="可用的扇区个数">
+                  <span>{{ props.row.diskListMounts[0].block_available }}</span>
+                </el-form-item>
+                <el-form-item label="每一个扇区的大小">
+                  <span>{{ props.row.diskListMounts[0].block_size }}</span>
+                </el-form-item>
+                <el-form-item label="可用的扇区大小">
+                  <span>{{ props.row.diskListMounts[0].inode_available }}</span>
+                </el-form-item>
+                <el-form-item label="分区类型">
+                  <span>{{ props.row.diskListMounts[0].fstype }}</span>
+                </el-form-item>-->
+              </el-form>
+            </template>
+          </el-table-column>
           <el-table-column label="节点名称" width="120">
             <template v-slot="{row}">
               <template v-if="row.edit">
-                <el-input v-model="row.hostname" class="edit-input" size="small" />
+                <el-input v-model="row.HostName" class="edit-input" size="small" />
               </template>
-              <span v-else>{{ row.hostname }}</span>
+              <span v-else>{{ row.HostName }}</span>
             </template>
           </el-table-column>
-
-          <el-table-column label="内存" width="110">
+          <el-table-column label="标签">
+            <template v-slot="{row}">
+              <template v-if="row.edit">
+                <tags :tags="row.Tags" size="mini" />
+              </template>
+              <span v-else>
+                <el-tag v-for="(tag, index) in row.Tags" :key="index" >{{tag}}</el-tag>
+              </span>
+            </template>
+          </el-table-column>
+          <!-- <el-table-column label="内存" width="110">
             <template v-slot="{row}">
               <span>{{ row.totalMem }}</span>
             </template>
-          </el-table-column>
-          <!-- <el-table-column label="状态">
+          </el-table-column>-->
+          <el-table-column label="状态">
             <template v-slot="{row}">
-              <el-tag size="mini" :type="statusMap[row.type].type">{{row.type | type}}</el-tag>
+              <el-tag size="mini" :type="statusMap[row.State].type">{{row.State | State}}</el-tag>
             </template>
-          </el-table-column> -->
-          <el-table-column label="IPV4">
+          </el-table-column>
+          <el-table-column label="IP">
             <template v-slot="{row}">
               <template v-if="row.edit">
-                <el-input v-model="row.allIPV4" class="edit-input" size="small" />
+                <el-input v-model="row.HostIP" class="edit-input" size="small" />
               </template>
-              <span v-else>{{ row.allIPV4.toString() }}</span>
+              <span v-else>{{ row.HostIP }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="描述">
+            <template v-slot="{row}">
+              <template v-if="row.edit">
+                <el-input v-model="row.Desc" class="edit-input" size="small" />
+              </template>
+              <span v-else>{{ row.Desc }}</span>
             </template>
           </el-table-column>
           <el-table-column fixed="right" label="操作" width="200">
@@ -166,10 +183,10 @@
             <el-form-item label="节点主机名" prop="name">
               <el-input class="formInp" v-model="create.name"></el-input>
             </el-form-item>
-            <el-form-item label="节点类型" prop="type">
-              <el-select class="formInp" v-model="create.type" clearable placeholder="请选择">
+            <el-form-item label="节点状态" prop="type">
+              <el-select class="formInp" v-model="create.state" clearable placeholder="请选择">
                 <el-option
-                  v-for="item in create.types"
+                  v-for="item in create.states"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -179,8 +196,11 @@
             <el-form-item label="节点IP" prop="hostIp">
               <el-input class="formInp" v-model="create.hostIp"></el-input>
             </el-form-item>
-            <el-form-item label="节点所属组" prop="group">
-              <el-input class="formInp" v-model="create.group"></el-input>
+            <el-form-item label="标签" prop="tags">
+              <tags :tags="create.dynamicTags" size="mini" />
+            </el-form-item>
+            <el-form-item label="描述" prop="desc">
+              <el-input type="textarea" :rows="2" class="formInp" v-model="create.desc"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="submitForm('create')">立即创建</el-button>
@@ -205,6 +225,7 @@
 <script>
 import {
   GetList,
+  GetNodeList,
   SaveNodeEntity,
   UpdateEntityOne,
   DeleteEntityOne
@@ -212,6 +233,7 @@ import {
 
 import Pagination from "@/components/Pagination";
 import Search from "@/components/Search";
+import Tags from "@/components/Tags";
 
 const statusMap = {
   head: {
@@ -222,12 +244,8 @@ const statusMap = {
     name: "繁忙",
     type: "danger"
   },
-  2: {
-    name: "繁忙",
-    type: "danger"
-  },
-  222: {
-    name: "繁忙",
+  Running: {
+    name: "Running",
     type: "danger"
   },
   test: {
@@ -248,11 +266,12 @@ const powerSupplyMap = {
 export default {
   components: {
     Pagination,
-    Search
+    Search,
+    Tags
   },
   filters: {
-    type(type) {
-      return statusMap[type].name;
+    State(State) {
+      return statusMap[State].name;
     },
     powerSupply(powerSupply) {
       return powerSupplyMap[powerSupply].name;
@@ -266,12 +285,12 @@ export default {
       selected: {
         items: [
           {
-            value: "名称",
+            value: "name",
             label: "名称"
           },
           {
-            value: "IP",
-            label: "IP"
+            value: "UUID",
+            label: "UUID"
           }
         ]
       },
@@ -282,67 +301,23 @@ export default {
         pageSize: 5,
         total: 0
       },
-      devices: [
-    {
-        hostname: "node-1", //节点名称
-        systemVersion: "1.11.1", //节点系统版本
-        totalMem: "200GB",//内存大小
-        cpuInfo:    //cpu信息
-        {
-            count: 10, //cpu核心数量
-            physicalcount: 5 // 物理CPU个数
-        },
-        allIPV4:
-        [
-            "16.16.18.66", //所有的IPV4网络地址,不包含127
-            "172.17.0.1"
-        ],
-        mainboard: "主板信息",  //主板信息
-        dnsServer:
-        [
-            "114.114.114.114" //dns服务器
-        ],
-        diskListMounts:
-        [
-            {
-                block_used: 10,   //已经使用的扇区个数block_used
-                uuid: "UUID", //磁盘的UUID
-                size_total: "200GB", //磁盘总大小  单位byte
-                block_total: 20,  //扇区总个数block_used
-                mount: "挂载路径", //挂载路径
-                block_available: 10, //可用的扇区个数
-                size_available: "100GB",  //可用的磁盘大小
-                fstype: "分区类型", //分区类型
-                inode_total: 1, //可以创建的索引个数
-                options: "rw", //设置,rw为可读可写
-                device: "磁盘路径", //磁盘路径
-                inode_used: 2, //已经创建的索引个数
-                block_size: "50GB", //每一个扇区的大小  单位byte
-                inode_available: "100GB" //可用的扇区大小
-            }
-        ],
-        edit: false
-    }
- ],
+      devices: [],
       loading: false,
       dialogCreating: false,
       titleHead: "",
       // 节点添加信息
       create: {
         name: "",
-        type: "",
-        types: [
+        state: "",
+        states: [
           {
-            value: "head",
-            label: "head"
-          },
-          {
-            value: "compute",
-            label: "compute"
+            value: "Running",
+            label: "Running"
           }
         ],
         hostIp: "",
-        group: ""
+        dynamicTags: [],
+        desc: ""
       },
       rules: {
         name: [
@@ -352,10 +327,10 @@ export default {
             trigger: "blur"
           }
         ],
-        type: [
+        state: [
           {
             required: true,
-            message: "请选择节点类型",
+            message: "请选择节点状态",
             trigger: "change"
           }
         ],
@@ -365,61 +340,30 @@ export default {
             message: "请输入节点IP",
             trigger: "blur"
           }
-        ],
-        group: [
-          {
-            required: true,
-            message: "请输入节点所属组",
-            trigger: "blur"
-          }
         ]
       }
     };
   },
   created() {
-    //this.getList();
+    this.getList();
   },
   methods: {
     getList() {
       let _this = this;
       _this.loading = true;
-      let params = {
-        pageOption: {
-          pageNumber: _this.page.currentPage, //当前页数
-          pageSize: _this.page.pageSize //每一页显示条数
-        },
-        selectOption: {}
-      };
-      if (_this.hostname !== "") {
-        params.selectOption.name = _this.hostname;
-      }
-      if (_this.hosttype !== "") {
-        params.selectOption.type = _this.hosttype;
-      }
-      if (_this.hostip !== "") {
-        params.selectOption.hostIp = _this.hostip;
-      }
-      if (_this.group !== "") {
-        params.selectOption.group = _this.group;
-      }
-      GetList(params)
+      let params = {};
+      GetList()
         .then(res => {
-          //_this.devices = []
-          console.log(res);
-          _this.devices = res.data.result.nodeData.map(function(item, index) {
-            /*let obj = {
-							edit: false
-						};
-						Object.assign(obj, item);
-						_this.devices.push(obj);*/
+          _this.devices = res.data.Inventory.data.map(function(item, index) {
+            item.Tags = item.Tags.split("|")
             // 保存一份原始数据，便于取消编辑的时候还原数据
             const original = _.cloneDeep(item);
             item.original = original;
             _this.$set(item, "edit", false);
             return item;
           });
-          _this.page.total = res.data.result.pageResultData.totalDataNumber;
-          _this.page.pageCount = res.data.result.pageResultData.totalCount;
+          /* _this.page.total = res.data.result.pageResultData.totalDataNumber;
+          _this.page.pageCount = res.data.result.pageResultData.totalCount; */
           _this.loading = false;
         })
         .catch(res => {
@@ -429,7 +373,34 @@ export default {
 
     //搜索
     searchChanged(data) {
-      console.log(data);
+      let _this = this;
+      if (data.select === "name") {
+        _this.$message({
+          message: "名称暂时无法查询",
+          type: "warning",
+          duration: 1000
+        });
+      } else if (data.select === "UUID") {
+        _this.loading = true;
+        GetNodeList(data.value)
+          .then(res => {
+            _this.devices = [];
+            _this.devices.push(res.data.Inventory.data);
+            _this.devices = _this.devices.map(function(item, index) {
+              // 保存一份原始数据，便于取消编辑的时候还原数据
+              const original = _.cloneDeep(item);
+              item.original = original;
+              _this.$set(item, "edit", false);
+              return item;
+            });
+            /* _this.page.total = res.data.pageResultData.totalDataNumber;
+          _this.page.pageCount = res.data.pageResultData.totalCount; */
+            _this.loading = false;
+          })
+          .catch(res => {
+            console.log(res);
+          });
+      }
     },
 
     saveEntity() {
@@ -441,12 +412,24 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           let _this = this;
-          let params = {
-            name: _this.create.name,
-            type: _this.create.type,
-            hostIp: _this.create.hostIp,
-            group: _this.create.group
-          };
+          let params = {};
+          params.HostName = _this.create.name;
+          params.State = _this.create.state;
+          params.HostIP = _this.create.hostIp;
+          if (_this.create.desc !== "") {
+            params.Desc = _this.create.desc;
+          }
+          if (_this.create.dynamicTags.length !== 0) {
+            let tags = "";
+            _this.create.dynamicTags.map((item, index) => {
+              if (index === 0) {
+                tags = item;
+              } else {
+                tags = tags + "|" + item;
+              }
+            });
+            params.Tags = tags;
+          }
           SaveNodeEntity(params)
             .then(res => {
               _this.getList();
@@ -492,10 +475,7 @@ export default {
           type: "warning"
         })
         .then(() => {
-          let params = {
-            _id: row._id
-          };
-          DeleteEntityOne(params)
+          DeleteEntityOne(row.UUID)
             .then(res => {
               _this.getList();
               _this.$message({
@@ -614,5 +594,21 @@ export default {
 
 .app-container .el-dialog .formInp {
   width: 95%;
+}
+
+.el-tag + .el-tag {
+  margin-left: 10px;
+}
+.button-new-tag {
+  margin-left: 10px;
+  height: 32px;
+  line-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.input-new-tag {
+  width: 90px;
+  margin-left: 10px;
+  vertical-align: bottom;
 }
 </style>

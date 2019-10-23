@@ -7,14 +7,12 @@
             <i class="el-icon-plus"></i> 创建用户组
           </el-button>
           <search :items="selected.items" @change="searchChanged" />
-          <el-button type="primary" size="mini" @click="getList">
+          <el-button type="primary" size="mini"  @click="getList">
             <i class="el-icon-refresh-right"></i> 刷新
           </el-button>
-          <!-- <el-input
-            placeholder="搜索"
-            v-model="searchValue"
-            @keyup.enter="getList()"
-          ><el-button slot="append" icon="el-icon-search" @click="getList"></el-button></el-input>-->
+          <el-button type="primary" size="mini" @click="sync">
+            <i class="el-icon-refresh"></i> 同步
+          </el-button>
         </div>
         <el-table
           v-loading="loading"
@@ -38,7 +36,7 @@
               <span v-else>{{ row.groupName }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="用户">
+          <!-- <el-table-column label="用户">
             <template v-slot="{row}">
               <template v-if="row.edit">
                 <el-input v-model="row.users" class="edit-input" size="small" />
@@ -53,7 +51,7 @@
               </template>
               <span v-else>{{ row.description }}</span>
             </template>
-          </el-table-column>
+          </el-table-column> -->
           <el-table-column fixed="right" label="操作" width="200">
             <template v-slot="{row}">
               <el-button-group>
@@ -147,10 +145,12 @@
 <script>
 import {
   GetUserGroupList,
+  GetGroupIDList,
   CreateUserGroup,
   ChangeUserGroup,
   DeleteUserGroup
 } from "@/api/role";
+import { syncGroup } from "@/api/sync";
 
 import Pagination from "@/components/Pagination";
 import Search from "@/components/Search";
@@ -166,8 +166,11 @@ export default {
       selected: {
         items: [
           {
-            value: "名称",
+            value: "name",
             label: "名称"
+          },{
+            value: "ID",
+            label: "ID"
           }
         ]
       },
@@ -218,8 +221,8 @@ export default {
       GetUserGroupList()
         .then(res => {
           //_this.devices = []
-          _this.devices = res.data.result.dataList.map(function(item, index) {
-            item.users = item.users.toString();
+          _this.devices = res.data.Inventory.data.map(function(item, index) {
+            
             // 保存一份原始数据，便于取消编辑的时候还原数据
             const original = _.cloneDeep(item);
             item.original = original;
@@ -273,9 +276,61 @@ export default {
       this.$refs[formName].resetFields();
     },
 
+    //同步
+    sync() {
+      syncGroup()
+      .then(res => {
+        if(res.data.Success) {  
+        _this.getList();
+        _this.$message({
+          type: "success",
+          message: "同步成功!"
+        });
+        }else {
+          _this.$message({
+          type: "error",
+          message: "同步失败!"
+        });
+        }
+      })
+      .catch(res => {
+        _this.$message({
+          type: "error",
+          message: "同步失败"
+        });
+      });
+    },
+
     //搜索
     searchChanged(data) {
-      console.log(data);
+      let _this = this;
+      if (data.select === "name") {
+        _this.$message({
+          message: '名称暂时无法查询',
+          type: 'warning',
+          duration: 1000
+        });
+      }else if (data.select === "ID") {
+      _this.loading = true;
+        GetGroupIDList(data.value)
+          .then(res => {
+            _this.devices = [];
+            _this.devices.push(res.data.Inventory.data);
+            _this.devices = _this.devices.map(function(item, index) {
+              // 保存一份原始数据，便于取消编辑的时候还原数据
+              const original = _.cloneDeep(item);
+              item.original = original;
+              _this.$set(item, "edit", false);
+              return item;
+            });
+            /* _this.page.total = res.data.pageResultData.totalDataNumber;
+          _this.page.pageCount = res.data.pageResultData.totalCount; */
+            _this.loading = false;
+          })
+          .catch(res => {
+            console.log(res);
+          });
+      }
     },
 
     // 查看详情
@@ -370,16 +425,15 @@ export default {
   height: 36px;
   line-height: 0;
   float: right;
-}
-
-.hasten .el-input-group {
-  float: right;
+  margin-left: 10px;
 }
 
 .hasten .headBut {
   margin-right: 10px;
+  margin-left: 0px;
   float: left;
 }
+
 .pagination {
   text-align: right;
 }

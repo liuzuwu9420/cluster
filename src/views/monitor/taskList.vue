@@ -173,7 +173,7 @@ export default {
   created() {
     //this.getList();
     if (this.$route.params.status) {
-      this.taskSta = this.$route.params.status;
+      this.dropdown.selected = this.$route.params;
     }
   },
   methods: {

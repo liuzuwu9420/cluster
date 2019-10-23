@@ -1,49 +1,50 @@
 import request from '@/utils/request'
 
+//版本
+let v = "v1"
+
 /**
  * 获取所有节点简单信息
- * @param {*} params 查询参数
+ * 
  */
-export function GetList(data) {
+export function GetList() {
   return request({
-    url: '/selectNodeEntityPage',
-    method: 'post',
-    data
+    url: `/api/${v}/hosts`,
+    method: 'get'
   })
 }
 /**
- * 获取单个节点所有信息
- * @param {*} id 节点ID
+ * 根据uuid获取节点信息
+ * @param {*} uuid 节点uuid
  */
-export function GetNodeList(id) {
+export function GetNodeList(uuid) {
   return request({
-    url: `/getNodeInfo/${id}`,
+    url: `/api/${v}/hosts/${uuid}`,
     method: 'get'
   })
 }
 
 /**
  * 添加节点
- * @param {*} params 节点参数
+ * @param {*} data 节点参数
  */
-export function SaveNodeEntity(params) {
+export function SaveNodeEntity(data) {
   return request({
-    url: '/saveNodeEntity',
+    url: `/api/${v}/hosts`,
     method: 'post',
-    params
+    data
   })
 }
 
 
 /**
  * 删除节点
- * @param {*} params 节点ID
+ * @param {*} uuid 节点UUID
  */
-export function DeleteEntityOne(params) {
+export function DeleteEntityOne(uuid) {
   return request({
-    url: '/deleteNodeEntityOne',
-    method: 'post',
-    params
+    url: `/api/${v}/hosts/${uuid}`,
+    method: 'delete'
   })
 }
 

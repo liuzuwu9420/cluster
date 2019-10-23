@@ -4,10 +4,10 @@
   </div>
   <div class="headBut" v-else>
     <el-input placeholder="请输入内容" v-model="input" @keyup.native="handleSearch" class="input-with-select">
-      <el-select v-model="select" slot="prepend">
+      <el-select v-model="select" slot="prepend" @change="handleSearch">
         <el-option v-for="item in items" :key="item.value" :label="item.label" :value="item.value"></el-option>
       </el-select>
-      <i slot="suffix" class="el-input__icon el-icon-circle-close" @click="showSearch = true"></i>
+      <i slot="suffix" class="el-input__icon el-icon-circle-close" @click="close()"></i>
       <!-- <el-button slot="append" icon="el-icon-circle-close" @click="handleSearch(false)"></el-button> -->
     </el-input>
   </div>
@@ -36,6 +36,10 @@ export default {
     }
   },
   methods: {
+    close() {
+      this.showSearch = true;
+      this.input = ""
+    },
     handleSearch() {
       let Params = {
         select: this.select,

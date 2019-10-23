@@ -166,6 +166,7 @@ export const asyncRoutes = [
 				name: 'role.billing',
 				component: () =>
 					import('@/views/users/billing'),
+				hidden: true,
 				meta: {
 					title: '计费组',
 					icon: 'money'
@@ -203,17 +204,6 @@ export const asyncRoutes = [
 				meta: {
 					title: '设备详情'
 				}
-			},
-			{
-				path: 'add',
-				name: 'device.add',
-				component: () =>
-					import('@/views/device/add'),
-				hidden: false,
-				meta: {
-					title: '批量添加设备',
-					icon: 'edit'
-				}
 			}
 		]
 	},
@@ -235,12 +225,12 @@ export const asyncRoutes = [
 	      name: 'monitor.taskList',
 	      meta: { title: '作业信息', icon: 'skill' }
 			},
-			{
+			/* {
 	      path: 'alarmList',
 	      component: () => import('@/views/monitor/alarmList'),
 	      name: 'monitor.alarmList',
 	      meta: { title: '报警信息', icon: 'bug' }
-	    }
+	    } */
 	  ]
 	},
 

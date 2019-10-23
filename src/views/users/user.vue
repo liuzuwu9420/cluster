@@ -3,12 +3,15 @@
     <el-container>
       <el-main>
         <div class="hasten">
-          <el-button class="headBut" type="primary" size="mini" @click="saveEntity">
+          <el-button class="headBut" type="primary"  size="mini" @click="saveEntity">
             <i class="el-icon-plus"></i> 创建用户
           </el-button>
           <search :items="selected.items" @change="searchChanged" />
-          <el-button type="primary" size="mini" @click="getList">
+          <el-button type="primary"  size="mini" @click="getList">
             <i class="el-icon-refresh-right"></i> 刷新
+          </el-button>
+          <el-button type="primary"  size="mini" @click="sync">
+            <i class="el-icon-refresh"></i> 同步
           </el-button>
         </div>
         <el-table
@@ -195,7 +198,14 @@
 </template>
 
 <script>
-import { GetUserList, CreateUser, DeleteUser, ChangeUser } from "@/api/role";
+import {
+  GetUserList,
+  GetIDUser,
+  CreateUser,
+  DeleteUser,
+  ChangeUser
+} from "@/api/role";
+import { syncUser } from "@/api/sync";
 
 import Pagination from "@/components/Pagination";
 import Search from "@/components/Search";
@@ -230,12 +240,12 @@ export default {
       selected: {
         items: [
           {
-            value: "名称",
+            value: "name",
             label: "名称"
           },
           {
-            value: "UUID",
-            label: "UUID"
+            value: "ID",
+            label: "ID"
           }
         ]
       },
@@ -346,7 +356,7 @@ export default {
       GetUserList()
         .then(res => {
           //_this.devices = []
-          _this.devices = res.data.result.dataList.map(function(item, index) {
+          _this.devices = res.data.Inventory.map(function(item, index) {
             // 保存一份原始数据，便于取消编辑的时候还原数据
             const original = _.cloneDeep(item);
             item.original = original;
@@ -365,7 +375,35 @@ export default {
 
     //搜索
     searchChanged(data) {
-      console.log(data);
+      let _this = this;
+      if (data.select === "name") {
+        _this.$message({
+          message: '名称暂时无法查询',
+          type: 'warning',
+          duration: 1000
+        });
+      }else if (data.select === "ID") {
+      _this.loading = true;
+        GetIDUser(data.value)
+          .then(res => {
+            _this.devices = [];
+            _this.devices.push(res.data.Inventory);
+            _this.devices = _this.devices.map(function(item, index) {
+              // 保存一份原始数据，便于取消编辑的时候还原数据
+              const original = _.cloneDeep(item);
+              item.original = original;
+              _this.$set(item, "role", "用户");
+              _this.$set(item, "edit", false);
+              return item;
+            });
+            /* _this.page.total = res.data.pageResultData.totalDataNumber;
+          _this.page.pageCount = res.data.pageResultData.totalCount; */
+            _this.loading = false;
+          })
+          .catch(res => {
+            console.log(res);
+          });
+      }
     },
 
     saveEntity() {
@@ -407,6 +445,31 @@ export default {
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
+    },
+    
+    //同步
+    sync() {
+      syncUser()
+      .then(res => {
+        if(res.data.Success) {  
+        _this.getList();
+        _this.$message({
+          type: "success",
+          message: "同步成功!"
+        });
+        }else {
+          _this.$message({
+          type: "error",
+          message: "同步失败!"
+        });
+        }
+      })
+      .catch(res => {
+        _this.$message({
+          type: "error",
+          message: "同步失败"
+        });
+      });
     },
 
     // 查看用户详情
@@ -517,10 +580,12 @@ export default {
   height: 36px;
   line-height: 0;
   float: right;
+  margin-left: 10px;
 }
 
 .hasten .headBut {
   margin-right: 10px;
+  margin-left: 0px;
   float: left;
 }
 

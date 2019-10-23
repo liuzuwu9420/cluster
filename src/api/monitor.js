@@ -1,5 +1,7 @@
 import request from '@/utils/request'
-//import {fetch} from '@/utils/request'
+
+//版本
+let v = "v1"
 
 /**
  * 获取作业ID
@@ -8,6 +10,18 @@ import request from '@/utils/request'
 export function GetTaskID(params) {
   //return fetch('/queryJobInfo', params)
 }
+
+/**
+ * 获取作业信息
+ * 
+ */
+export function GetTaskNum() {
+  return request({
+    url: `/api/${v}/jobs/statistics`,
+    method: 'get'
+  })
+}
+
 
 /**
  * 获取作业信息
