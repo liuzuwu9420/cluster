@@ -33,97 +33,98 @@ import Layout from '@/layout'
  * all roles can be accessed
  */
 export const constantRoutes = [{
-		path: '/redirect',
-		component: Layout,
-		hidden: true,
-		children: [{
-			path: '/redirect/:path*',
-			component: () =>
-				import('@/views/redirect/index')
-		}]
-	},
-	{
-		path: '/login',
-		component: () =>
-			import('@/views/login/index'),
-		hidden: true
-	},
-	{
-		path: '/auth-redirect',
-		component: () =>
-			import('@/views/login/auth-redirect'),
-		hidden: true
-	},
-	{
-		path: '/404',
-		component: () =>
-			import('@/views/error-page/404'),
-		hidden: true
-	},
-	{
-		path: '/401',
-		component: () =>
-			import('@/views/error-page/401'),
-		hidden: true
-	},
-	{
-		path: '',
-		component: Layout,
-		redirect: 'dashboard',
-		children: [{
-			path: 'dashboard',
-			component: () =>
-				import('@/views/dashboard/index'),
-			name: 'Dashboard',
-			meta: {
-				title: 'dashboard',
-				icon: 'dashboard',
-				affix: true
-			}
-		}]
-	},
-	/*{
-	  path: '/documentation',
-	  component: Layout,
-	  children: [
-	    {
-	      path: 'index',
-	      component: () => import('@/views/documentation/index'),
-	      name: 'Documentation',
-	      meta: { title: 'documentation', icon: 'documentation', affix: true }
-	    }
-	  ]
-	},
-	{
-	  path: '/guide',
-	  component: Layout,
-	  redirect: '/guide/index',
-	  children: [
-	    {
-	      path: 'index',
-	      component: () => import('@/views/guide/index'),
-	      name: 'Guide',
-	      meta: { title: 'guide', icon: 'guide', noCache: true }
-	    }
-	  ]
-	},*/
-	{
-		path: '/profile',
-		component: Layout,
-		redirect: '/profile/index',
-		hidden: true,
-		children: [{
+  path: '/redirect',
+  component: Layout,
+  hidden: true,
+  children: [{
+    path: '/redirect/:path*',
+    component: () =>
+			import('@/views/redirect/index')
+  }]
+},
+{
+  path: '/login',
+  component: () =>
+		import('@/views/login/index'),
+  hidden: true
+},
+{
+  path: '/auth-redirect',
+  component: () =>
+		import('@/views/login/auth-redirect'),
+  hidden: true
+},
+{
+  path: '/404',
+  component: () =>
+		import('@/views/error-page/404'),
+  hidden: true
+},
+{
+  path: '/401',
+  component: () =>
+		import('@/views/error-page/401'),
+  hidden: true
+},
+{
+  path: '',
+  component: Layout,
+  redirect: 'dashboard',
+  children: [{
+    path: 'dashboard',
+    component: () =>
+			import('@/views/dashboard/index'),
+    name: 'Dashboard',
+    meta: {
+      title: 'dashboard',
+      icon: 'dashboard',
+      affix: true
+    }
+  }]
+},
+/**
+ * {
+	path: '/documentation',
+	component: Layout,
+	children: [
+		{
 			path: 'index',
-			component: () =>
-				import('@/views/profile/index'),
-			name: 'Profile',
-			meta: {
-				title: 'profile',
-				icon: 'user',
-				noCache: true
-			}
-		}]
-	}
+			component: () => import('@/views/documentation/index'),
+			name: 'Documentation',
+			meta: { title: 'documentation', icon: 'documentation', affix: true }
+		}
+	]
+},
+{
+	path: '/guide',
+	component: Layout,
+	redirect: '/guide/index',
+	children: [
+		{
+			path: 'index',
+			component: () => import('@/views/guide/index'),
+			name: 'Guide',
+			meta: { title: 'guide', icon: 'guide', noCache: true }
+		}
+	]
+},*/
+{
+  path: '/profile',
+  component: Layout,
+  redirect: '/profile/index',
+  hidden: true,
+  children: [{
+    path: 'index',
+    component: () =>
+			import('@/views/profile/index'),
+    name: 'Profile',
+    meta: {
+      title: 'profile',
+      icon: 'user',
+      noCache: true
+    }
+  }]
+}
 ]
 
 /**
@@ -131,125 +132,113 @@ export const constantRoutes = [{
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
-	// 用户
-	{
-		path: '/role',
-		component: Layout,
-		redirect: '/role/user',
-		name: 'role',
-		meta: {
-			title: '用户',
-			icon: 'user'
-		},
-		children: [{
-			path: 'userGroup',
-			name: 'role.userGroup',
-			component: () =>
+  // 用户
+  {
+    path: '/role',
+    component: Layout,
+    redirect: '/role/user',
+    name: 'role',
+    meta: {
+      title: '用户',
+      icon: 'user'
+    },
+    children: [{
+      path: 'userGroup',
+      name: 'role.userGroup',
+      component: () =>
 				import('@/views/users/userGroup'),
-			meta: {
-				title: '用户组',
-				icon: 'peoples'
-			}
-		},
-		{
-				path: 'user',
-				name: 'role.user',
-				component: () =>
-					import('@/views/users/user'),
-				meta: {
-					title: '用户',
-					icon: 'people'
-				}
-			},
-			{
-				path: 'billing',
-				name: 'role.billing',
-				component: () =>
-					import('@/views/users/billing'),
-				hidden: true,
-				meta: {
-					title: '计费组',
-					icon: 'money'
-				}
-			}
-		]
-	},
+      meta: {
+        title: '用户组',
+        icon: 'peoples'
+      }
+    },
+    {
+      path: 'user',
+      name: 'role.user',
+      component: () =>
+				import('@/views/users/user'),
+      meta: {
+        title: '用户',
+        icon: 'people'
+      }
+    },
+    {
+      path: 'billing',
+      name: 'role.billing',
+      component: () =>
+				import('@/views/users/billing'),
+      hidden: true,
+      meta: {
+        title: '计费组',
+        icon: 'money'
+      }
+    }
+    ]
+  },
 
-	// 设备
-	{
-		path: '/device',
-		component: Layout,
-		redirect: '/device/list',
-		name: 'device',
-		meta: {
-			title: '设备管理',
-			icon: 'iot'
-		},
-		children: [{
-				path: 'list',
-				name: 'device.list',
-				component: () =>
-					import('@/views/device/list'),
-				meta: {
-					title: '所有设备',
-					icon: 'table'
-				}
-			},
-			{
-				path: 'info',
-				name: 'device.info',
-				component: () =>
-					import('@/views/device/info'),
-				hidden: true,
-				meta: {
-					title: '设备详情'
-				}
-			}
-		]
-	},
-	
-	//监控列表
-	{
-	  path: '/monitor',
-		component: Layout,
-		redirect: '/monitor/taskList',
-		name: 'monitor',
-		meta: {
-			title: '监控',
-			icon: 'example'
-		},
-	  children: [
-	    {
-	      path: 'taskList',
-	      component: () => import('@/views/monitor/taskList'),
-	      name: 'monitor.taskList',
-	      meta: { title: '作业信息', icon: 'skill' }
-			},
-			/* {
+  // 设备
+  {
+    path: '/device',
+    component: Layout,
+    redirect: '/device/list',
+    name: 'device',
+    meta: {
+      title: '设备管理',
+      icon: 'iot'
+    },
+    children: [{
+      path: 'list',
+      name: 'device.list',
+      component: () =>
+				import('@/views/device/list'),
+      meta: {
+        title: '所有设备',
+        icon: 'table'
+      }
+    },
+    {
+      path: 'info',
+      name: 'device.info',
+      component: () =>
+				import('@/views/device/info'),
+      hidden: true,
+      meta: {
+        title: '设备详情'
+      }
+    }
+    ]
+  },
+
+  // 监控列表
+  {
+    path: '/monitor',
+    component: Layout,
+    redirect: '/monitor/taskList',
+    name: 'monitor',
+    meta: {
+      title: '监控',
+      icon: 'example'
+    },
+    children: [{
+      path: 'taskList',
+      component: () => import('@/views/monitor/taskList'),
+      name: 'monitor.taskList',
+      meta: {
+        title: '作业信息',
+        icon: 'skill'
+      }
+    }
+      /* {
 	      path: 'alarmList',
 	      component: () => import('@/views/monitor/alarmList'),
 	      name: 'monitor.alarmList',
 	      meta: { title: '报警信息', icon: 'bug' }
 	    } */
-	  ]
-	},
+    ]
+  },
 
-	{
-		path: '/icon',
-		component: Layout,
-		children: [{
-			path: 'index',
-			component: () =>
-				import('@/views/icons/index'),
-			name: 'Icons',
-			meta: {
-				title: 'icons',
-				icon: 'icon',
-				noCache: true
-			}
-		}]
-	},
-	/*{
+  /**
+	 * {
 		path: '/permission',
 		component: Layout,
 		redirect: '/permission/page',
@@ -294,6 +283,21 @@ export const asyncRoutes = [
 	},
 
 	{
+		path: '/icon',
+		component: Layout,
+		children: [{
+			path: 'index',
+			component: () =>
+				import('@/views/icons/index'),
+			name: 'Icons',
+			meta: {
+				title: 'icons',
+				icon: 'icon',
+				noCache: true
+			}
+		}]
+	},
+	{
 	  path: '/example',
 	  component: Layout,
 	  redirect: '/example/list',
@@ -324,8 +328,6 @@ export const asyncRoutes = [
 	    }
 	  ]
 	},
-
-	
 
 	{
 	  path: '/tab',
@@ -510,27 +512,27 @@ export const asyncRoutes = [
     ]
   },
 */
-	{
-		path: '*',
-		redirect: '/404',
-		hidden: true
-	}
+  {
+    path: '*',
+    redirect: '/404',
+    hidden: true
+  }
 ]
 
 const createRouter = () => new Router({
-	// mode: 'history', // require service support
-	scrollBehavior: () => ({
-		y: 0
-	}),
-	routes: constantRoutes
+  // mode: 'history', // require service support
+  scrollBehavior: () => ({
+    y: 0
+  }),
+  routes: constantRoutes
 })
 
 const router = createRouter()
 
 // Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export function resetRouter() {
-	const newRouter = createRouter()
-	router.matcher = newRouter.matcher // reset router
+  const newRouter = createRouter()
+  router.matcher = newRouter.matcher // reset router
 }
 
 export default router

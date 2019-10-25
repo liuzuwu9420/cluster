@@ -1,4 +1,4 @@
-import { login } from '@/api/user'
+import { login, logout } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
@@ -33,41 +33,44 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-    	commit('SET_TOKEN', 'admin-token')
+      /**
+      commit('SET_TOKEN', 'admin-token')
         setToken('admin-token')
-        resolve(true)
-      /* login({ username: username.trim(), password: password, host: "16.16.18.20", port: 22 }).then(res => {
-        if(res.data.code == "01") {
+        resolve(true) */
+      login({ username: username.trim(), password: password }).then(res => {
+        if (res.Success) {
           commit('SET_TOKEN', 'admin-token')
           setToken('admin-token')
           // const { data } = res
           // commit('SET_TOKEN', data.token)
           // setToken(data.token)
           resolve(true)
-        }else if(res.data.code == "02") {
+        } else {
           resolve(false)
         }
       }).catch(error => {
+        console.log(error)
         reject(error)
-      }) */
+      })
     })
   },
 
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-    	let data = {
-    roles: ['admin'],
-    introduction: 'I am a super administrator',
-    avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
-    name: 'Super Admin'
-  }
-    	commit('SET_ROLES', ['admin'])
-        commit('SET_NAME', 'Super Admin')
-        commit('SET_AVATAR', 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif')
-        commit('SET_INTRODUCTION', 'I am a super administrator')
-        resolve(data)
-      /*getInfo(state.token).then(response => {
+      const data = {
+        roles: ['admin'],
+        introduction: 'I am a super administrator',
+        avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+        name: 'Super Admin'
+      }
+      commit('SET_ROLES', ['admin'])
+      commit('SET_NAME', 'Super Admin')
+      commit('SET_AVATAR', 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif')
+      commit('SET_INTRODUCTION', 'I am a super administrator')
+      resolve(data)
+      /**
+       * getInfo(state.token).then(response => {
         const { data } = response
 
         if (!data) {

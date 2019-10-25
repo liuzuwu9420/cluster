@@ -4,14 +4,14 @@
       <el-main>
         <div class="hasten">
           <el-button class="headBut" type="primary" size="mini" @click="saveEntity">
-            <i class="el-icon-plus"></i> 创建用户组
+            <i class="el-icon-plus" /> 创建用户组
           </el-button>
           <search :items="selected.items" @change="searchChanged" />
-          <el-button type="primary" size="mini"  @click="getList">
-            <i class="el-icon-refresh-right"></i> 刷新
+          <el-button type="primary" size="mini" @click="getList">
+            <i class="el-icon-refresh-right" /> 刷新
           </el-button>
           <el-button type="primary" size="mini" @click="sync">
-            <i class="el-icon-refresh"></i> 同步
+            <i class="el-icon-refresh" /> 同步
           </el-button>
         </div>
         <el-table
@@ -22,13 +22,13 @@
           highlight-current-row
           style="width: 100%"
         >
-          <el-table-column label="ID" width="120">
+          <el-table-column label="ID" width="150">
             <template v-slot="{row}">
               <span>{{ row.groupID }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column label="名称" width="150">
+          <el-table-column label="名称">
             <template v-slot="{row}">
               <template v-if="row.edit">
                 <el-input v-model="row.groupName" class="edit-input" size="small" />
@@ -51,7 +51,7 @@
               </template>
               <span v-else>{{ row.description }}</span>
             </template>
-          </el-table-column> -->
+          </el-table-column>-->
           <el-table-column fixed="right" label="操作" width="200">
             <template v-slot="{row}">
               <el-button-group>
@@ -80,7 +80,7 @@
                     icon="el-icon-view"
                     size="mini"
                     @click="info(row)"
-                  ></el-button>
+                  />
                 </el-tooltip>
                 <el-tooltip class="item" effect="dark" content="编辑" placement="top-end">
                   <el-button
@@ -89,7 +89,7 @@
                     size="mini"
                     icon="el-icon-edit"
                     @click="row.edit=!row.edit"
-                  ></el-button>
+                  />
                 </el-tooltip>
                 <el-tooltip class="item" effect="dark" content="删除" placement="top-end">
                   <el-button
@@ -98,7 +98,7 @@
                     size="mini"
                     icon="el-icon-delete"
                     @click="deleteItem(row)"
-                  ></el-button>
+                  />
                 </el-tooltip>
               </el-button-group>
             </template>
@@ -106,21 +106,21 @@
         </el-table>
         <el-dialog :title="titleHead" :visible.sync="dialogCreating" width="50%">
           <el-form
+            ref="create"
             :model="create"
             :rules="rules"
-            ref="create"
             label-width="100px"
             class="demo-ruleForm"
           >
             <el-form-item label="名称" prop="name">
-              <el-input class="formInp" v-model="create.name"></el-input>
+              <el-input v-model="create.name" class="formInp" />
             </el-form-item>
             <el-form-item class="formInp" label="描述" prop="description">
               <el-input
+                v-model="create.description"
                 type="textarea"
                 :autosize="{ minRows: 2, maxRows: 4}"
-                v-model="create.description"
-              ></el-input>
+              />
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="submitForm('create')">立即创建</el-button>
@@ -149,11 +149,11 @@ import {
   CreateUserGroup,
   ChangeUserGroup,
   DeleteUserGroup
-} from "@/api/role";
-import { syncGroup } from "@/api/sync";
+} from '@/api/role'
+import { syncGroup } from '@/api/sync'
 
-import Pagination from "@/components/Pagination";
-import Search from "@/components/Search";
+import Pagination from '@/components/Pagination'
+import Search from '@/components/Search'
 
 export default {
   components: {
@@ -166,11 +166,12 @@ export default {
       selected: {
         items: [
           {
-            value: "name",
-            label: "名称"
-          },{
-            value: "ID",
-            label: "ID"
+            value: 'name',
+            label: '名称'
+          },
+          {
+            value: 'ID',
+            label: 'ID'
           }
         ]
       },
@@ -178,158 +179,157 @@ export default {
       page: {
         currentPage: 1,
         pageCount: 1,
-        pageSize: 5,
+        pageSize: 10,
         total: 1
       },
       devices: [],
       loading: false,
       dialogCreating: false,
-      titleHead: "",
+      titleHead: '',
       // 节点添加信息
       create: {
-        name: "",
-        description: ""
+        name: '',
+        description: ''
       },
       rules: {
         name: [
           {
             required: true,
-            message: "请输入名称",
-            trigger: "blur"
+            message: '请输入名称',
+            trigger: 'blur'
           }
         ]
       }
-    };
+    }
   },
   created() {
-    this.getList();
+    this.getList()
   },
   methods: {
     getList() {
-      let _this = this;
-      _this.loading = true;
-      let params = {
+      const _this = this
+      _this.loading = true
+      const params = {
         pageOption: {
-          pageNumber: _this.page.currentPage, //当前页数
-          pageSize: _this.page.pageSize //每一页显示条数
+          pageNumber: _this.page.currentPage, // 当前页数
+          pageSize: _this.page.pageSize // 每一页显示条数
         },
         selectOption: {}
-      };
-      if (_this.searchValue !== "") {
-        params.selectOption.name = _this.searchValue;
+      }
+      if (_this.searchValue !== '') {
+        params.selectOption.name = _this.searchValue
       }
       GetUserGroupList()
         .then(res => {
-          //_this.devices = []
-          _this.devices = res.data.Inventory.data.map(function(item, index) {
-            
+          // _this.devices = []
+          _this.devices = res.Inventory.data.map(function(item, index) {
             // 保存一份原始数据，便于取消编辑的时候还原数据
-            const original = _.cloneDeep(item);
-            item.original = original;
-            _this.$set(item, "edit", false);
-            return item;
-          });
-          /* _this.page.total = res.data.pageResultData.totalDataNumber;
-          _this.page.pageCount = res.data.pageResultData.totalCount; */
-          _this.loading = false;
+            const original = _this._.cloneDeep(item)
+            item.original = original
+            _this.$set(item, 'edit', false)
+            return item
+          })
+          _this.page.total = _this.devices.length
+          _this.loading = false
         })
         .catch(res => {
-          console.log(res);
-        });
+          console.log(res)
+        })
     },
 
     saveEntity() {
-      this.dialogCreating = true;
-      this.titleHead = "新建用户组";
+      this.dialogCreating = true
+      this.titleHead = '新建用户组'
     },
-    //添加节点
+    // 添加节点
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          let _this = this;
-          let params = {
+          const _this = this
+          const params = {
             name: _this.create.name,
             description: _this.create.description
-          };
+          }
           CreateUserGroup(params)
             .then(res => {
-              _this.getList();
-              _this.dialogCreating = false;
+              _this.getList()
+              _this.dialogCreating = false
               _this.$message({
-                type: "success",
-                message: "添加成功!"
-              });
+                type: 'success',
+                message: '添加成功!'
+              })
             })
             .catch(res => {
               _this.$message({
-                type: "error",
-                message: "添加失败"
-              });
-            });
+                type: 'error',
+                message: '添加失败'
+              })
+            })
         } else {
-          console.log("error submit!!");
-          return false;
-        }
-      });
-    },
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
-    },
-
-    //同步
-    sync() {
-      syncGroup()
-      .then(res => {
-        if(res.data.Success) {  
-        _this.getList();
-        _this.$message({
-          type: "success",
-          message: "同步成功!"
-        });
-        }else {
-          _this.$message({
-          type: "error",
-          message: "同步失败!"
-        });
+          console.log('error submit!!')
+          return false
         }
       })
-      .catch(res => {
-        _this.$message({
-          type: "error",
-          message: "同步失败"
-        });
-      });
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields()
     },
 
-    //搜索
+    // 同步
+    sync() {
+      const _this = this
+      syncGroup()
+        .then(res => {
+          if (res.Success) {
+            _this.getList()
+            _this.$message({
+              type: 'success',
+              message: '同步成功!'
+            })
+          } else {
+            _this.$message({
+              type: 'error',
+              message: '同步失败!'
+            })
+          }
+        })
+        .catch(res => {
+          _this.$message({
+            type: 'error',
+            message: '同步失败'
+          })
+        })
+    },
+
+    // 搜索
     searchChanged(data) {
-      let _this = this;
-      if (data.select === "name") {
+      const _this = this
+      if (data.select === 'name') {
         _this.$message({
           message: '名称暂时无法查询',
           type: 'warning',
           duration: 1000
-        });
-      }else if (data.select === "ID") {
-      _this.loading = true;
+        })
+      } else if (data.select === 'ID') {
+        _this.loading = true
         GetGroupIDList(data.value)
           .then(res => {
-            _this.devices = [];
-            _this.devices.push(res.data.Inventory.data);
+            _this.devices = []
+            _this.devices.push(res.Inventory.data)
             _this.devices = _this.devices.map(function(item, index) {
               // 保存一份原始数据，便于取消编辑的时候还原数据
-              const original = _.cloneDeep(item);
-              item.original = original;
-              _this.$set(item, "edit", false);
-              return item;
-            });
+              const original = _this._.cloneDeep(item)
+              item.original = original
+              _this.$set(item, 'edit', false)
+              return item
+            })
             /* _this.page.total = res.data.pageResultData.totalDataNumber;
           _this.page.pageCount = res.data.pageResultData.totalCount; */
-            _this.loading = false;
+            _this.loading = false
           })
           .catch(res => {
-            console.log(res);
-          });
+            console.log(res)
+          })
       }
     },
 
@@ -345,72 +345,72 @@ export default {
 
     // 删除
     async deleteItem(row) {
-      let _this = this;
+      const _this = this
       _this
-        .$confirm("此操作将删除该用户组, 是否继续?", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
+        .$confirm('此操作将删除该用户组, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
         })
         .then(() => {
-          let params = {
+          const params = {
             _id: row._id
-          };
+          }
           DeleteUserGroup(params)
             .then(res => {
-              _this.getList();
+              _this.getList()
               _this.$message({
-                type: "success",
-                message: "删除成功!"
-              });
+                type: 'success',
+                message: '删除成功!'
+              })
             })
             .catch(res => {
               _this.$message({
-                type: "error",
-                message: "删除失败"
-              });
-            });
+                type: 'error',
+                message: '删除失败'
+              })
+            })
         })
         .catch(() => {
           _this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
     },
 
     // 取消编辑
     cancelEdit(row) {
-      row.edit = false;
+      row.edit = false
       // 还原数据
-      row.groupName = row.original.groupName;
-      row.users = row.original.users;
-      row.description = row.original.description;
+      row.groupName = row.original.groupName
+      row.users = row.original.users
+      row.description = row.original.description
     },
 
     // 确认编辑
     async confirmEdit(row) {
-      let params = {
+      const params = {
         oldOption: {
           _id: row._id
         },
         newOption: {}
-      };
-      if (row.groupName !== "") {
-        params.newOption.groupName = row.groupName;
       }
-      if (row.description !== "") {
-        params.newOption.description = row.description;
+      if (row.groupName !== '') {
+        params.newOption.groupName = row.groupName
+      }
+      if (row.description !== '') {
+        params.newOption.description = row.description
       }
 
-      await ChangeUserGroup(params);
-      row.original.groupName = row.groupName;
-      row.original.users = row.users;
-      row.original.description = row.description;
-      row.edit = false;
+      await ChangeUserGroup(params)
+      row.original.groupName = row.groupName
+      row.original.users = row.users
+      row.original.description = row.description
+      row.edit = false
     }
   }
-};
+}
 </script>
 
 <style scoped>

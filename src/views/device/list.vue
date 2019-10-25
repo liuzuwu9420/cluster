@@ -4,11 +4,11 @@
       <el-main>
         <div class="hasten">
           <el-button class="headBut" type="primary" size="mini" @click="saveEntity">
-            <i class="el-icon-plus"></i> 添加主机
+            <i class="el-icon-plus" /> 添加主机
           </el-button>
           <search :items="selected.items" @change="searchChanged" />
           <el-button type="primary" size="mini" @click="getList">
-            <i class="el-icon-refresh-right"></i> 刷新
+            <i class="el-icon-refresh-right" /> 刷新
           </el-button>
         </div>
         <el-table
@@ -90,7 +90,7 @@
                 <tags :tags="row.Tags" size="mini" />
               </template>
               <span v-else>
-                <el-tag v-for="(tag, index) in row.Tags" :key="index" >{{tag}}</el-tag>
+                <el-tag v-for="(tag, index) in row.Tags" :key="index">{{ tag }}</el-tag>
               </span>
             </template>
           </el-table-column>
@@ -101,7 +101,7 @@
           </el-table-column>-->
           <el-table-column label="状态">
             <template v-slot="{row}">
-              <el-tag size="mini" :type="statusMap[row.State].type">{{row.State | State}}</el-tag>
+              <el-tag size="mini" :type="statusMap[row.State].type">{{ row.State | State }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="IP">
@@ -148,7 +148,7 @@
                     icon="el-icon-view"
                     size="mini"
                     @click="info(row)"
-                  ></el-button>
+                  />
                 </el-tooltip>
                 <el-tooltip class="item" effect="dark" content="编辑" placement="top-end">
                   <el-button
@@ -157,7 +157,7 @@
                     size="mini"
                     icon="el-icon-edit"
                     @click="row.edit=!row.edit"
-                  ></el-button>
+                  />
                 </el-tooltip>
                 <el-tooltip class="item" effect="dark" content="删除" placement="top-end">
                   <el-button
@@ -166,7 +166,7 @@
                     size="mini"
                     icon="el-icon-delete"
                     @click="deleteItem(row)"
-                  ></el-button>
+                  />
                 </el-tooltip>
               </el-button-group>
             </template>
@@ -174,33 +174,33 @@
         </el-table>
         <el-dialog :title="titleHead" :visible.sync="dialogCreating" width="50%">
           <el-form
+            ref="create"
             :model="create"
             :rules="rules"
-            ref="create"
             label-width="100px"
             class="demo-ruleForm"
           >
             <el-form-item label="节点主机名" prop="name">
-              <el-input class="formInp" v-model="create.name"></el-input>
+              <el-input v-model="create.name" class="formInp" />
             </el-form-item>
             <el-form-item label="节点状态" prop="type">
-              <el-select class="formInp" v-model="create.state" clearable placeholder="请选择">
+              <el-select v-model="create.state" class="formInp" clearable placeholder="请选择">
                 <el-option
                   v-for="item in create.states"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
-                ></el-option>
+                />
               </el-select>
             </el-form-item>
             <el-form-item label="节点IP" prop="hostIp">
-              <el-input class="formInp" v-model="create.hostIp"></el-input>
+              <el-input v-model="create.hostIp" class="formInp" />
             </el-form-item>
             <el-form-item label="标签" prop="tags">
               <tags :tags="create.dynamicTags" size="mini" />
             </el-form-item>
             <el-form-item label="描述" prop="desc">
-              <el-input type="textarea" :rows="2" class="formInp" v-model="create.desc"></el-input>
+              <el-input v-model="create.desc" type="textarea" :rows="2" class="formInp" />
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="submitForm('create')">立即创建</el-button>
@@ -229,40 +229,40 @@ import {
   SaveNodeEntity,
   UpdateEntityOne,
   DeleteEntityOne
-} from "@/api/device";
+} from '@/api/device'
 
-import Pagination from "@/components/Pagination";
-import Search from "@/components/Search";
-import Tags from "@/components/Tags";
+import Pagination from '@/components/Pagination'
+import Search from '@/components/Search'
+import Tags from '@/components/Tags'
 
 const statusMap = {
   head: {
-    name: "空闲",
-    type: "success"
+    name: '空闲',
+    type: 'success'
   },
   compute: {
-    name: "繁忙",
-    type: "danger"
+    name: '繁忙',
+    type: 'danger'
   },
   Running: {
-    name: "Running",
-    type: "danger"
+    name: 'Running',
+    type: 'danger'
   },
   test: {
-    name: "占用",
-    type: "warning"
+    name: '占用',
+    type: 'warning'
   }
-};
+}
 const powerSupplyMap = {
   OFF: {
-    name: "关机",
-    type: "danger"
+    name: '关机',
+    type: 'danger'
   },
   ON: {
-    name: "开机",
-    type: "success"
+    name: '开机',
+    type: 'success'
   }
-};
+}
 export default {
   components: {
     Pagination,
@@ -271,10 +271,10 @@ export default {
   },
   filters: {
     State(State) {
-      return statusMap[State].name;
+      return statusMap[State].name
     },
     powerSupply(powerSupply) {
-      return powerSupplyMap[powerSupply].name;
+      return powerSupplyMap[powerSupply].name
     }
   },
   data() {
@@ -285,12 +285,12 @@ export default {
       selected: {
         items: [
           {
-            value: "name",
-            label: "名称"
+            value: 'name',
+            label: '名称'
           },
           {
-            value: "UUID",
-            label: "UUID"
+            value: 'UUID',
+            label: 'UUID'
           }
         ]
       },
@@ -298,209 +298,210 @@ export default {
       page: {
         currentPage: 1,
         pageCount: 1,
-        pageSize: 5,
-        total: 0
+        pageSize: 10,
+        total: 1
       },
       devices: [],
       loading: false,
       dialogCreating: false,
-      titleHead: "",
+      titleHead: '',
       // 节点添加信息
       create: {
-        name: "",
-        state: "",
+        name: '',
+        state: '',
         states: [
           {
-            value: "Running",
-            label: "Running"
+            value: 'Running',
+            label: 'Running'
           }
         ],
-        hostIp: "",
+        hostIp: '',
         dynamicTags: [],
-        desc: ""
+        desc: ''
       },
       rules: {
         name: [
           {
             required: true,
-            message: "请输入节点名",
-            trigger: "blur"
+            message: '请输入节点名',
+            trigger: 'blur'
           }
         ],
         state: [
           {
             required: true,
-            message: "请选择节点状态",
-            trigger: "change"
+            message: '请选择节点状态',
+            trigger: 'change'
           }
         ],
         hostIp: [
           {
             required: true,
-            message: "请输入节点IP",
-            trigger: "blur"
+            message: '请输入节点IP',
+            trigger: 'blur'
           }
         ]
       }
-    };
+    }
   },
   created() {
-    this.getList();
+    this.getList()
   },
   methods: {
     getList() {
-      let _this = this;
-      _this.loading = true;
-      let params = {};
+      const _this = this
+      _this.loading = true
+      // const params = {}
       GetList()
         .then(res => {
-          _this.devices = res.data.Inventory.data.map(function(item, index) {
-            item.Tags = item.Tags.split("|")
+          _this.devices = res.Inventory.data.map(function(item, index) {
+            item.Tags = item.Tags.split('|')
             // 保存一份原始数据，便于取消编辑的时候还原数据
-            const original = _.cloneDeep(item);
-            item.original = original;
-            _this.$set(item, "edit", false);
-            return item;
-          });
-          /* _this.page.total = res.data.result.pageResultData.totalDataNumber;
-          _this.page.pageCount = res.data.result.pageResultData.totalCount; */
-          _this.loading = false;
+            const original = _this._.cloneDeep(item)
+            item.original = original
+            _this.$set(item, 'edit', false)
+            return item
+          })
+          _this.page.total = _this.devices.length
+          _this.loading = false
         })
         .catch(res => {
-          console.log(res);
-        });
+          console.log(res)
+        })
     },
 
-    //搜索
+    // 搜索
     searchChanged(data) {
-      let _this = this;
-      if (data.select === "name") {
+      const _this = this
+      if (data.select === 'name') {
         _this.$message({
-          message: "名称暂时无法查询",
-          type: "warning",
+          message: '名称暂时无法查询',
+          type: 'warning',
           duration: 1000
-        });
-      } else if (data.select === "UUID") {
-        _this.loading = true;
+        })
+      } else if (data.select === 'UUID') {
+        _this.loading = true
         GetNodeList(data.value)
           .then(res => {
-            _this.devices = [];
-            _this.devices.push(res.data.Inventory.data);
+            _this.devices = []
+            _this.devices.push(res.Inventory.data)
             _this.devices = _this.devices.map(function(item, index) {
               // 保存一份原始数据，便于取消编辑的时候还原数据
-              const original = _.cloneDeep(item);
-              item.original = original;
-              _this.$set(item, "edit", false);
-              return item;
-            });
+              const original = _this._.cloneDeep(item)
+              item.original = original
+              _this.$set(item, 'edit', false)
+              return item
+            })
+            _this.page.total = _this.devices.length
             /* _this.page.total = res.data.pageResultData.totalDataNumber;
           _this.page.pageCount = res.data.pageResultData.totalCount; */
-            _this.loading = false;
+            _this.loading = false
           })
           .catch(res => {
-            console.log(res);
-          });
+            console.log(res)
+          })
       }
     },
 
     saveEntity() {
-      this.dialogCreating = true;
-      this.titleHead = "添加节点";
+      this.dialogCreating = true
+      this.titleHead = '添加节点'
     },
-    //添加节点
+    // 添加节点
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          let _this = this;
-          let params = {};
-          params.HostName = _this.create.name;
-          params.State = _this.create.state;
-          params.HostIP = _this.create.hostIp;
-          if (_this.create.desc !== "") {
-            params.Desc = _this.create.desc;
+          const _this = this
+          const params = {}
+          params.HostName = _this.create.name
+          params.State = _this.create.state
+          params.HostIP = _this.create.hostIp
+          if (_this.create.desc !== '') {
+            params.Desc = _this.create.desc
           }
           if (_this.create.dynamicTags.length !== 0) {
-            let tags = "";
+            let tags = ''
             _this.create.dynamicTags.map((item, index) => {
               if (index === 0) {
-                tags = item;
+                tags = item
               } else {
-                tags = tags + "|" + item;
+                tags = tags + '|' + item
               }
-            });
-            params.Tags = tags;
+            })
+            params.Tags = tags
           }
           SaveNodeEntity(params)
             .then(res => {
-              _this.getList();
-              _this.dialogCreating = false;
+              _this.getList()
+              _this.dialogCreating = false
               _this.$message({
-                type: "success",
-                message: "添加成功!"
-              });
+                type: 'success',
+                message: '添加成功!'
+              })
             })
             .catch(res => {
               _this.$message({
-                type: "error",
-                message: "添加失败"
-              });
-            });
+                type: 'error',
+                message: '添加失败'
+              })
+            })
         } else {
-          console.log("error submit!!");
-          return false;
+          console.log('error submit!!')
+          return false
         }
-      });
+      })
     },
     resetForm(formName) {
-      this.$refs[formName].resetFields();
+      this.$refs[formName].resetFields()
     },
 
     // 查看设备详情
     info(device) {
+      /* window.open("http://16.16.18.61:3000/d/9CWBz0bik/prometheus-node-exporterjian-kong-zhan-shi-kan-ban?orgId=1&var-interval=5s&var-env=All&var-name=All&var-node=16.16.18.61:9100&var-maxmount=%2F&kiosk") */
       this.$router.push({
-        name: "device.info",
+        name: 'device.info',
         params: {
           device: device
         }
-      });
+      })
     },
 
     // 删除
     async deleteItem(row) {
-      let _this = this;
+      const _this = this
       _this
-        .$confirm("此操作将删除该节点, 是否继续?", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
+        .$confirm('此操作将删除该节点, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
         })
         .then(() => {
           DeleteEntityOne(row.UUID)
             .then(res => {
-              _this.getList();
+              _this.getList()
               _this.$message({
-                type: "success",
-                message: "删除成功!"
-              });
+                type: 'success',
+                message: '删除成功!'
+              })
             })
             .catch(res => {
               _this.$message({
-                type: "error",
-                message: "删除失败"
-              });
-            });
+                type: 'error',
+                message: '删除失败'
+              })
+            })
         })
         .catch(() => {
           _this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
     },
 
     // 取消编辑
     cancelEdit(row) {
-      row.edit = false;
+      row.edit = false
       // 还原数据
       /* row.name = row.original.name;
       row.hostIp = row.original.hostIp;
@@ -509,33 +510,33 @@ export default {
 
     // 确认编辑
     async confirmEdit(row) {
-      let params = {
+      const params = {
         oldOption: {
           _id: row._id
         },
         newOption: {}
-      };
-      if (row.name !== "") {
-        params.newOption.name = row.name;
       }
-      if (row.type !== "") {
-        params.newOption.type = row.type;
+      if (row.name !== '') {
+        params.newOption.name = row.name
       }
-      if (row.hostIp !== "") {
-        params.newOption.hostIp = row.hostIp;
+      if (row.type !== '') {
+        params.newOption.type = row.type
       }
-      if (row.group !== "") {
-        params.newOption.group = row.group;
+      if (row.hostIp !== '') {
+        params.newOption.hostIp = row.hostIp
+      }
+      if (row.group !== '') {
+        params.newOption.group = row.group
       }
 
-      await UpdateEntityOne(params);
-      row.original.name = row.name;
-      row.original.hostIp = row.hostIp;
-      row.original.group = row.group;
-      row.edit = false;
+      await UpdateEntityOne(params)
+      row.original.name = row.name
+      row.original.hostIp = row.hostIp
+      row.original.group = row.group
+      row.edit = false
     }
   }
-};
+}
 </script>
 
 <style scoped>

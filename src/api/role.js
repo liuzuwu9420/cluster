@@ -1,11 +1,15 @@
 import request from '@/utils/request'
 
-//版本
-let v = "v1"
+/**
+ * 版本
+ * @constant
+ * @type {string}
+ * @default
+ * */
+const v = 'v1'
 
 /**
  * 获取用户信息
- * 
  */
 export function GetUserList() {
   return request({
@@ -27,63 +31,86 @@ export function GetIDUser(id) {
 
 /**
  * 创建用户
- * @param {*} params 用户参数
+ * @param {*} data 用户参数
  */
-export function CreateUser(params) {
-  //return fetch('/queryJobInfoASK', params)
+export function CreateUser(data) {
+  return request({
+    url: `/api/${v}/hosts`,
+    method: 'post',
+    data
+  })
 }
 
 /**
  * 删除用户
- * @param {*} params 用户参数
+ * @param {*} uuid 用户ID
  */
-export function DeleteUser(params) {
-  //return fetch('/queryJobInfoASK', params)
+export function DeleteUser(uuid) {
+  return request({
+    url: `/api/${v}/hosts/${uuid}`,
+    method: 'delete'
+  })
 }
 
 /**
  * 修改用户
  * @param {*} params 用户参数
  */
-export function ChangeUser(params) {
-  //return fetch('/queryJobInfoASK', params)
+export function ChangeUser(data) {
+  return request({
+    url: `/api/${v}/hosts`,
+    method: 'post',
+    data
+  })
 }
 
 /**
  * 获取计费信息
- * @param {*} params 查询参数
  */
-export function GetBillList(params) {
-  //return fetch('/queryJobInfoASK', params)
+export function GetBillList() {
+  return request({
+    url: `/api/${v}/users`,
+    method: 'get'
+  })
 }
 
 /**
  * 创建计费组
- * @param {*} params 计费组参数
+ * @param {*} data 计费组参数
  */
-export function CreateBill(params) {
-  //return fetch('/queryJobInfoASK', params)
+export function CreateBill(data) {
+  return request({
+    url: `/api/${v}/hosts`,
+    method: 'post',
+    data
+  })
 }
 
 /**
  * 删除计费组
- * @param {*} params 计费组参数
+ * @param {*} uuid 计费组id
  */
-export function DeleteBill(params) {
-  //return fetch('/queryJobInfoASK', params)
+export function DeleteBill(uuid) {
+  return request({
+    url: `/api/${v}/hosts/${uuid}`,
+    method: 'delete'
+  })
 }
 
 /**
  * 修改计费组
- * @param {*} params 计费组参数
+ * @param {*} data 计费组参数
  */
-export function ChangeBill(params) {
-  //return fetch('/queryJobInfoASK', params)
+export function ChangeBill(data) {
+  return request({
+    url: `/api/${v}/hosts`,
+    method: 'post',
+    data
+  })
 }
 
 /**
  * 获取用户组信息
- * 
  */
 export function GetUserGroupList() {
   return request({
@@ -105,24 +132,35 @@ export function GetGroupIDList(id) {
 
 /**
  * 创建用户组
- * @param {*} params 用户组参数
+ * @param {*} data 用户组参数
  */
-export function CreateUserGroup(params) {
-  //return fetch('/queryJobInfoASK', params)
+export function CreateUserGroup(data) {
+  return request({
+    url: `/api/${v}/hosts`,
+    method: 'post',
+    data
+  })
 }
 
 /**
  * 删除用户组
- * @param {*} params 用户组参数
+ * @param {*} uuid 用户组id
  */
-export function DeleteUserGroup(params) {
-  //return fetch('/queryJobInfoASK', params)
+export function DeleteUserGroup(uuid) {
+  return request({
+    url: `/api/${v}/hosts/${uuid}`,
+    method: 'delete'
+  })
 }
 
 /**
  * 修改用户组
- * @param {*} params 用户组参数
+ * @param {*} data 用户组参数
  */
-export function ChangeUserGroup(params) {
-  //return fetch('/queryJobInfoASK', params)
+export function ChangeUserGroup(data) {
+  return request({
+    url: `/api/${v}/hosts`,
+    method: 'post',
+    data
+  })
 }

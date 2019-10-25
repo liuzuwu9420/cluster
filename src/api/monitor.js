@@ -1,19 +1,15 @@
 import request from '@/utils/request'
 
-//版本
-let v = "v1"
+/**
+ * 版本
+ * @constant
+ * @type {string}
+ * @default
+ * */
+const v = 'v1'
 
 /**
- * 获取作业ID
- * @param {*} params 查询参数
- */
-export function GetTaskID(params) {
-  //return fetch('/queryJobInfo', params)
-}
-
-/**
- * 获取作业信息
- * 
+ * 获取作业状态数目
  */
 export function GetTaskNum() {
   return request({
@@ -22,18 +18,50 @@ export function GetTaskNum() {
   })
 }
 
+/**
+ * 获取未完成作业信息
+ * @param {*} params 查询参数
+ */
+export function GetRunTaskList(params) {
+  return request({
+    url: `/api/${v}/jobs/run?PageSize=${params.PageSize}&PageNumber=${params.PageNumber}`,
+    method: 'get'
+  })
+}
 
 /**
  * 获取作业信息
- * @param {*} params 查询ID
+ * @param {*} params 查询参数
  */
 export function GetTaskList(params) {
   return request({
-    url: '/getJobRedisData',
+    url: `/api/${v}/jobs`,
     method: 'get',
     params
   })
-  //return fetch('/queryJobInfoASK', params)
+}
+
+/**
+ * 根据作业名获取作业信息
+ * @param {*} param 作业名
+ */
+export function GetJobNameList(params) {
+  return request({
+    url: `/api/${v}/jobs/test`,
+    method: 'get',
+    params
+  })
+}
+
+/**
+ * 根据jobID获取作业信息
+ * @param {*} jobID 作业ID
+ */
+export function GetJobIDList(jobID) {
+  return request({
+    url: `/api/${v}/jobs/${jobID}`,
+    method: 'get'
+  })
 }
 
 /**
@@ -41,7 +69,11 @@ export function GetTaskList(params) {
  * @param {*} params 查询参数
  */
 export function GetAlarmList(params) {
-  //return fetch('/queryJobInfoASK', params)
+  return request({
+    url: `/api/${v}/jobs/test`,
+    method: 'get',
+    params
+  })
 }
 
 /**
@@ -49,7 +81,11 @@ export function GetAlarmList(params) {
  * @param {*} params 报警参数
  */
 export function DeleteAlarm(params) {
-  //return fetch('/queryJobInfoASK', params)
+  return request({
+    url: `/api/${v}/jobs/test`,
+    method: 'get',
+    params
+  })
 }
 
 /**
@@ -57,5 +93,9 @@ export function DeleteAlarm(params) {
  * @param {*} params 报警参数
  */
 export function ChangeAlarm(params) {
-  //return fetch('/queryJobInfoASK', params)
+  return request({
+    url: `/api/${v}/jobs/test`,
+    method: 'get',
+    params
+  })
 }

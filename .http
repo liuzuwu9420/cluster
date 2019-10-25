@@ -1,4 +1,5 @@
 @host=http://16.16.18.61:80
+//@host=http://192.168.3.87:80
 @json=Content-Type: application/json
 
 ###
@@ -54,8 +55,30 @@ GET {{host}}/api/v1/jobs/statistics
 
 ###
 POST {{host}}/api/v1/users/login
+{{json}}
 
 {
   "password": "password",
   "username": "root"
 }
+
+###
+GET {{host}}/api/v1/jobs?PageSize=200&PageNumber=1
+
+###
+GET {{host}}/api/v1/jobs/411
+
+###
+POST {{host}}/api/v1/jobs/sync
+
+###
+GET {{host}}/api/v1/jobs/run?PageSize=5&PageNumber=1
+
+###
+GET {{host}}/api/v1/jobs/test?page={"PageSize":5,"PageNumber":1}&query={"job_name":"sleep 100000","cwd":"/home/lsf/work/cluster1/lsf_cmddir"}
+
+###
+GET {{host}}/api/v1/jobs/history?page={"PageSize":5,"PageNumber":3}
+
+###
+GET {{host}}/api/v1/jobs/history/544

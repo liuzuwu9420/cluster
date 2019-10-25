@@ -3,12 +3,12 @@
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
       <el-card shadow="hover" class="mgb20">
         <div class="card-panel" @click="handleSetLineChartData('newVisitis')">
-          <iframe :src="CPUSrc" width="100%" height="100%" frameborder="0"></iframe>
+          <iframe :src="CPUSrc" width="100%" height="100%" frameborder="0" />
         </div>
       </el-card>
       <el-card shadow="hover">
         <div class="card-panel card-panel-foot" @click="handleSetLineChartData('shoppings')">
-          <iframe :src="nodeSrc" width="100%" height="100%" frameborder="0"></iframe>
+          <iframe :src="nodeSrc" width="100%" height="100%" frameborder="0" />
         </div>
       </el-card>
     </el-col>
@@ -18,21 +18,21 @@
         <el-col :xs="12" :sm="12" :lg="12" class="RAM-padding">
           <el-card shadow="hover" class="mgb20">
             <div class="card-panel" @click="handleSetLineChartData('messages')">
-              <iframe :src="RAMSrc" width="100%" height="100%" frameborder="0"></iframe>
+              <iframe :src="RAMSrc" width="100%" height="100%" frameborder="0" />
             </div>
           </el-card>
         </el-col>
         <el-col :xs="12" :sm="12" :lg="12" class="sto-padding">
           <el-card shadow="hover" class="mgb20">
             <div class="card-panel" @click="handleSetLineChartData('purchases')">
-              <iframe :src="storageSrc" width="100%" height="100%" frameborder="0"></iframe>
+              <iframe :src="storageSrc" width="100%" height="100%" frameborder="0" />
             </div>
           </el-card>
         </el-col>
       </el-row>
       <el-card shadow="hover">
         <div class="card-panel card-panel-foot">
-          <iframe :src="netSrc" width="100%" height="100%" frameborder="0"></iframe>
+          <iframe :src="netSrc" width="100%" height="100%" frameborder="0" />
         </div>
       </el-card>
     </el-col>
@@ -40,23 +40,23 @@
       <div class="logContainer">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
-            <i class="el-icon-bell"></i>
+            <i class="el-icon-bell" />
             <span>消息：</span>
           </div>
           <div class="logArea el-scrollbar">
             <div
-              class="item"
               v-for="(item,index) in logsData"
               :key="index"
+              class="item"
               @click="handleSetLineChartData(item.level.value)"
             >
               <p class="timeArea">
-                <span>{{item.citem}}</span>
+                <span>{{ item.citem }}</span>
               </p>
               <div class="logContent">
-                <span class="title time">{{item.createTime}}</span>
+                <span class="title time">{{ item.createTime }}</span>
               </div>
-              <el-divider></el-divider>
+              <el-divider />
             </div>
           </div>
         </el-card>
@@ -69,145 +69,145 @@
 export default {
   data() {
     return {
-      CPUSrc: "",
-      RAMSrc: "",
-      storageSrc: "",
-      nodeSrc: "",
-      nodeSrc: "",
+      CPUSrc: '',
+      RAMSrc: '',
+      storageSrc: '',
+      netSrc: '',
+      nodeSrc: '',
       logsData: [
         {
-          citem: "xxxxxx",
+          citem: 'xxxxxx',
           level: {
-            value: "INFO",
-            label: "严重"
+            value: 'INFO',
+            label: '严重'
           },
-          createTime: "2019-10-01"
+          createTime: '2019-10-01'
         },
         {
-          citem: "xxxxxx",
+          citem: 'xxxxxx',
           level: {
-            value: "WARNING",
-            label: "警告"
+            value: 'WARNING',
+            label: '警告'
           },
-          createTime: "2019-10-01"
+          createTime: '2019-10-01'
         },
         {
-          citem: "xxxxxx",
+          citem: 'xxxxxx',
           level: {
-            value: "DANGER",
-            label: "致命"
+            value: 'DANGER',
+            label: '致命'
           },
-          createTime: "2019-10-01"
+          createTime: '2019-10-01'
         },
         {
-          citem: "xxxxxx",
+          citem: 'xxxxxx',
           level: {
-            value: "INFO",
-            label: "严重"
+            value: 'INFO',
+            label: '严重'
           },
-          createTime: "2019-10-01"
+          createTime: '2019-10-01'
         },
         {
-          citem: "xxxxxx",
+          citem: 'xxxxxx',
           level: {
-            value: "DANGER",
-            label: "致命"
+            value: 'DANGER',
+            label: '致命'
           },
-          createTime: "2019-10-01"
+          createTime: '2019-10-01'
         },
         {
-          citem: "xxxxxx",
+          citem: 'xxxxxx',
           level: {
-            value: "INFO",
-            label: "严重"
+            value: 'INFO',
+            label: '严重'
           },
-          createTime: "2019-10-01"
+          createTime: '2019-10-01'
         },
         {
-          citem: "xxxxxx",
-          createTime: "2019-10-01"
+          citem: 'xxxxxx',
+          createTime: '2019-10-01'
         },
         {
-          citem: "xx1xxx",
-          createTime: "2019-10-01"
+          citem: 'xx1xxx',
+          createTime: '2019-10-01'
         },
         {
-          citem: "xxx3xxx",
-          createTime: "2019-10-01"
+          citem: 'xxx3xxx',
+          createTime: '2019-10-01'
         },
         {
-          citem: "xxx23xxx",
-          createTime: "2019-10-01"
+          citem: 'xxx23xxx',
+          createTime: '2019-10-01'
         },
         {
-          citem: "xxx22xxx",
-          createTime: "2019-10-01"
+          citem: 'xxx22xxx',
+          createTime: '2019-10-01'
         },
         {
-          citem: "xx12xxxx",
-          createTime: "2019-10-01"
+          citem: 'xx12xxxx',
+          createTime: '2019-10-01'
         },
         {
-          citem: "xxx23xxx",
-          createTime: "2019-10-01"
+          citem: 'xxx23xxx',
+          createTime: '2019-10-01'
         },
         {
-          citem: "xxxxxx",
-          createTime: "2019-10-01"
+          citem: 'xxxxxx',
+          createTime: '2019-10-01'
         },
         {
-          citem: "1xxxxxx",
-          createTime: "2019-10-01"
+          citem: '1xxxxxx',
+          createTime: '2019-10-01'
         },
         {
-          citem: "2xxxxxx",
-          createTime: "2019-10-01"
+          citem: '2xxxxxx',
+          createTime: '2019-10-01'
         },
         {
-          citem: "3xxxxxx",
-          createTime: "2019-10-01"
+          citem: '3xxxxxx',
+          createTime: '2019-10-01'
         },
         {
-          citem: "4xxxxxx",
-          createTime: "2019-10-01"
+          citem: '4xxxxxx',
+          createTime: '2019-10-01'
         },
         {
-          citem: "5xxxxxx",
-          createTime: "2019-10-01"
+          citem: '5xxxxxx',
+          createTime: '2019-10-01'
         }
       ]
-    };
+    }
   },
   created() {
-    this.iframeTime();
+    this.iframeTime()
   },
   methods: {
     handleSetLineChartData(level) {
       this.$router.push({
-        name: "monitor.alarmList",
+        name: 'monitor.alarmList',
         params: {
           level: level
         }
-      });
+      })
     },
     iframeTime() {
-      let _this = this;
-      let httpUrl =
-        "http://16.16.18.61:3000/d-solo/fafSLghZz/dashboard?orgId=1";
-      let timeInterval = "&from=now-30m&to=now";
-      let CPUId = "&panelId=2";
-      let RAMId = "&panelId=6";
-      let storageId = "&panelId=4";
-      let nodeId = "&panelId=10";
-      let netId = "&panelId=8";
-      _this.netSrc = httpUrl + timeInterval + netId;
-      _this.CPUSrc = httpUrl + timeInterval + CPUId;
-      _this.RAMSrc = httpUrl + timeInterval + RAMId;
-      _this.storageSrc = httpUrl + timeInterval + storageId;
-      _this.nodeSrc = httpUrl + timeInterval + nodeId;
+      const _this = this
+      const httpUrl =
+        'http://16.16.18.61:3000/d-solo/fafSLghZz/dashboard?orgId=1'
+      const timeInterval = '&from=now-30m&to=now'
+      const CPUId = '&panelId=2'
+      const RAMId = '&panelId=6'
+      const storageId = '&panelId=4'
+      const nodeId = '&panelId=10'
+      const netId = '&panelId=8'
+      _this.netSrc = httpUrl + timeInterval + netId
+      _this.CPUSrc = httpUrl + timeInterval + CPUId
+      _this.RAMSrc = httpUrl + timeInterval + RAMId
+      _this.storageSrc = httpUrl + timeInterval + storageId
+      _this.nodeSrc = httpUrl + timeInterval + nodeId
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -252,7 +252,7 @@ export default {
       padding: 10px 20px;
     }
     .item {
-			cursor: pointer;
+      cursor: pointer;
       .timeArea {
         margin: 2px;
       }

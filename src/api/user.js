@@ -1,5 +1,12 @@
 import request from '@/utils/request'
-//import {fetch} from '@/utils/request'
+
+/**
+ * 版本
+ * @constant
+ * @type {string}
+ * @default
+ * */
+const v = 'v1'
 
 /**
  * 登录
@@ -7,9 +14,23 @@ import request from '@/utils/request'
  */
 export function login(data) {
   return request({
-    url: '/userLogin',
+    url: `/api/${v}/users/login`,
     method: 'post',
     data
   })
-  //return fetch('/userLogin', params)
+}
+
+export function getInfo(token) {
+  return request({
+    url: '/user/info',
+    method: 'get',
+    params: { token }
+  })
+}
+
+export function logout() {
+  return request({
+    url: '/user/logout',
+    method: 'post'
+  })
 }

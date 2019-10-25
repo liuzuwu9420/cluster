@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-container">
+  <div class="dashboard-container el-scrollbar">
     <component :is="currentRole" />
   </div>
 </template>
@@ -29,3 +29,9 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+.dashboard-container {
+  height: 100%;
+  overflow-y: auto;
+}
+</style>

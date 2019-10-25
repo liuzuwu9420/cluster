@@ -13,7 +13,7 @@
             <el-row class="card-panel-description">
               <el-col :span="8">
                 <div class="card-iframe">
-                  <iframe :src="CPUUseSrc" width="100%" height="100%" frameborder="0"></iframe>
+                  <iframe :src="CPUUseSrc" width="100%" height="100%" frameborder="0" />
                 </div>
               </el-col>
               <el-col :span="2">
@@ -21,7 +21,7 @@
               </el-col>
               <el-col :span="10">
                 <div class="card-iframe">
-                  <iframe :src="CPUAllSrc" width="100%" height="100%" frameborder="0"></iframe>
+                  <iframe :src="CPUAllSrc" width="100%" height="100%" frameborder="0" />
                 </div>
               </el-col>
               <el-col :span="4">
@@ -45,7 +45,7 @@
             <el-row class="card-panel-description">
               <el-col :span="11">
                 <div class="card-iframe">
-                  <iframe :src="RAMUseSrc" width="100%" height="100%" frameborder="0"></iframe>
+                  <iframe :src="RAMUseSrc" width="100%" height="100%" frameborder="0" />
                 </div>
               </el-col>
               <el-col :span="2">
@@ -53,7 +53,7 @@
               </el-col>
               <el-col :span="11">
                 <div class="card-iframe">
-                  <iframe :src="RAMAllSrc" width="100%" height="100%" frameborder="0"></iframe>
+                  <iframe :src="RAMAllSrc" width="100%" height="100%" frameborder="0" />
                 </div>
               </el-col>
             </el-row>
@@ -65,10 +65,17 @@
       <div class="card-panel" @click="handleSetLineChartData('RUN','运行中')">
         <div class="card-panel-icon-wrapper icon-loading">
           <div class="card-panel-text">运行作业</div>
-          <i class="el-icon-loading card-panel-icon card-task-icon" />
+          <i class="el-icon-refresh card-panel-icon card-task-icon" />
         </div>
         <div class="card-panel-task-description">
-          <count-to :start-val="0" :end-val="runTask" :duration="1200" class="card-panel-runnum" />
+          <count-to
+            :start-val="runTaskOld"
+            :end-val="runTask"
+            :duration="1000"
+            class="card-panel-runnum"
+          />
+          <span class="segmentationRun">/</span>
+          <count-to :start-val="TotalOld" :end-val="Total" :duration="1200" class="card-panel-all" />
         </div>
       </div>
     </el-col>
@@ -79,7 +86,14 @@
           <i class="el-icon-time card-panel-icon card-task-icon" />
         </div>
         <div class="card-panel-task-description">
-          <count-to :start-val="0" :end-val="pendTask" :duration="1400" class="card-panel-waitnum" />
+          <count-to
+            :start-val="pendTaskOld"
+            :end-val="pendTask"
+            :duration="1200"
+            class="card-panel-waitnum"
+          />
+          <span class="segmentationPend">/</span>
+          <count-to :start-val="TotalOld" :end-val="Total" :duration="1400" class="card-panel-all" />
         </div>
       </div>
     </el-col>
@@ -87,85 +101,78 @@
 </template>
 
 <script>
-import CountTo from "vue-count-to";
-import { GetTaskList } from "@/api/monitor";
+import CountTo from 'vue-count-to'
+import { GetTaskNum } from '@/api/monitor'
 export default {
   components: {
     CountTo
   },
   data() {
     return {
-      CPUAllSrc: "",
-      CPUUseSrc: "",
-      RAMAllSrc: "",
-      RAMUseSrc: "",
+      CPUAllSrc: '',
+      CPUUseSrc: '',
+      RAMAllSrc: '',
+      RAMUseSrc: '',
       runTask: 0,
-      pendTask: 0
-    };
+      pendTask: 0,
+      Total: 0,
+      runTaskOld: 0,
+      pendTaskOld: 0,
+      TotalOld: 0
+    }
   },
   created() {
-    this.iframeTime();
-    this.getList();
+    this.iframeTime()
+    this.getList()
+    this.polling()
   },
   methods: {
     getList() {
-      let _this = this;
-      let params = {
-        UserName: "root"
-      };
-      GetTaskList(params)
+      const _this = this
+      _this.runTaskOld = _this.runTask
+      _this.pendTaskOld = _this.pendTask
+      _this.TotalOld = _this.Total
+      GetTaskNum()
         .then(body => {
-          let devices = [];
-          body.data.result.map(function(item, index) {
-            let obj = {};
-            obj.ID = item.JID;
-            obj.taskName = item.Name;
-            obj.status = item.Status;
-            obj.queue = item.QueueName;
-            obj.startTime = "2019-10-10";
-            obj.runTime = "2019-10-10";
-            obj.userName = item.UserName;
-            devices.push(obj);
-          });
-          let runTaskList = devices.filter(item => item.status == "RUN");
-          _this.runTask = runTaskList.length;
-          /* 
-            //loadsh的filter方法
-            let pendTaskList = _.filter(devices, function(o) {
-              return o.status == "PEND";
-            }); */
-          let pendTaskList = devices.filter(item => item.status == "PEND");
-          _this.pendTask = pendTaskList.length;
+          _this.runTask = body.Inventory.Run
+          _this.pendTask = body.Inventory.Pend
+          _this.Total = body.Inventory.Total
         })
         .catch(res => {
-          console.log(res);
-        });
+          console.log(res)
+        })
+    },
+    polling() {
+      const _this = this
+      setInterval(() => {
+        _this.getList()
+      }, 5000)
     },
     handleSetLineChartData(key, value) {
       this.$router.push({
-        name: "monitor.taskList",
+        name: 'monitor.taskList',
         params: {
           key: key,
           value: value
         }
-      });
+      })
     },
     iframeTime() {
-      let _this = this;
-      let httpUrl =
-        "http://16.16.18.61:3000/d-solo/fafSLghZz/dashboard?orgId=1";
-      let timeInterval = "&from=now-30m&to=now";
-      let CPUAllId = "&panelId=12";
-      let CPUUseId = "&panelId=14";
-      let RAMAllId = "&panelId=16";
-      let RAMUseId = "&panelId=18";
-      _this.CPUAllSrc = httpUrl + timeInterval + CPUAllId;
-      _this.CPUUseSrc = httpUrl + timeInterval + CPUUseId;
-      _this.RAMAllSrc = httpUrl + timeInterval + RAMAllId;
-      _this.RAMUseSrc = httpUrl + timeInterval + RAMUseId;
+      const _this = this
+      const httpUrl =
+        'http://16.16.18.61:3000/d-solo/fafSLghZz/dashboard?orgId=1'
+      const timeInterval = '&from=now-30m&to=now'
+      const CPUAllId = '&panelId=12'
+      const CPUUseId = '&panelId=14'
+      const RAMAllId = '&panelId=16'
+      const RAMUseId = '&panelId=18'
+      _this.CPUAllSrc = httpUrl + timeInterval + CPUAllId
+      _this.CPUUseSrc = httpUrl + timeInterval + CPUUseId
+      _this.RAMAllSrc = httpUrl + timeInterval + RAMAllId
+      _this.RAMUseSrc = httpUrl + timeInterval + RAMUseId
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -282,13 +289,28 @@ export default {
       font-weight: bold;
 
       .card-panel-runnum {
-        font-size: 36px;
+        font-size: 30px;
         color: #f4516c;
       }
 
       .card-panel-waitnum {
-        font-size: 36px;
+        font-size: 30px;
         color: #34bfa3;
+      }
+
+      .segmentationRun {
+        font-size: 35px;
+        color: #f4516c;
+      }
+
+      .segmentationPend {
+        font-size: 35px;
+        color: #34bfa3;
+      }
+
+      .card-panel-all {
+        font-size: 30px;
+        color: #4994e9;
       }
     }
   }

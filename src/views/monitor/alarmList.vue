@@ -12,11 +12,11 @@
               end-placeholder="结束日期"
               align="right"
               value-format="yyyy-MM-dd,HH-mm-ss"
-            ></el-date-picker>
+            />
           </div>
           <search :items="selected.items" @change="searchChanged" />
           <el-button type="primary" size="mini" @click="getList">
-            <i class="el-icon-refresh-right"></i> 刷新
+            <i class="el-icon-refresh-right" /> 刷新
           </el-button>
         </div>
         <el-table
@@ -40,7 +40,7 @@
           </el-table-column>
           <el-table-column label="等级" width="110">
             <template v-slot="{row}">
-              <el-tag size="mini" :type="gradeMap[row.grade].type">{{row.grade | grade}}</el-tag>
+              <el-tag size="mini" :type="gradeMap[row.grade].type">{{ row.grade | grade }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="状态" width="110">
@@ -94,7 +94,7 @@
                     icon="el-icon-view"
                     size="mini"
                     @click="info(row)"
-                  ></el-button>
+                  />
                 </el-tooltip>
                 <el-tooltip class="item" effect="dark" content="编辑" placement="top-end">
                   <el-button
@@ -103,7 +103,7 @@
                     size="mini"
                     icon="el-icon-edit"
                     @click="row.edit=!row.edit"
-                  ></el-button>
+                  />
                 </el-tooltip>
                 <el-tooltip class="item" effect="dark" content="删除" placement="top-end">
                   <el-button
@@ -112,7 +112,7 @@
                     size="mini"
                     icon="el-icon-delete"
                     @click="deleteItem(row)"
-                  ></el-button>
+                  />
                 </el-tooltip>
               </el-button-group>
             </template>
@@ -133,25 +133,25 @@
 </template>
 
 <script>
-import { GetAlarmList, DeleteAlarm, ChangeAlarm } from "@/api/monitor";
+import { GetAlarmList, DeleteAlarm, ChangeAlarm } from '@/api/monitor'
 
-import Pagination from "@/components/Pagination";
-import Search from "@/components/Search";
+import Pagination from '@/components/Pagination'
+import Search from '@/components/Search'
 
 const gradeMap = {
   INFO: {
-    name: "严重",
-    type: "info"
+    name: '严重',
+    type: 'info'
   },
   WARNING: {
-    name: "警告",
-    type: "warning"
+    name: '警告',
+    type: 'warning'
   },
   DANGER: {
-    name: "致命",
-    type: "danger"
+    name: '致命',
+    type: 'danger'
   }
-};
+}
 export default {
   components: {
     Pagination,
@@ -159,7 +159,7 @@ export default {
   },
   filters: {
     status(type) {
-      return gradeMap[type].name;
+      return gradeMap[type].name
     }
   },
   data() {
@@ -169,43 +169,43 @@ export default {
       selected: {
         items: [
           {
-            value: "名称",
-            label: "名称"
+            value: '名称',
+            label: '名称'
           },
           {
-            value: "UUID",
-            label: "UUID"
+            value: 'UUID',
+            label: 'UUID'
           }
         ]
       },
-      dateTime: "",
+      dateTime: '',
       pickerOptions: {
         shortcuts: [
           {
-            text: "最近一天",
+            text: '最近一天',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24);
-              picker.$emit("pick", [start, end]);
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24)
+              picker.$emit('pick', [start, end])
             }
           },
           {
-            text: "最近一周",
+            text: '最近一周',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-              picker.$emit("pick", [start, end]);
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+              picker.$emit('pick', [start, end])
             }
           },
           {
-            text: "最近一个月",
+            text: '最近一个月',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-              picker.$emit("pick", [start, end]);
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+              picker.$emit('pick', [start, end])
             }
           }
         ]
@@ -214,33 +214,33 @@ export default {
       page: {
         currentPage: 1,
         pageCount: 1,
-        pageSize: 5,
+        pageSize: 10,
         total: 0
       },
       devices: [],
       loading: false
-    };
+    }
   },
   created() {
-    //this.getList();
+    // this.getList();
     if (this.$route.params.level) {
-      this.level = this.$route.params.level;
+      this.level = this.$route.params.level
     }
   },
   methods: {
     getList() {
-      let _this = this;
-      let params = {};
+      // const _this = this
+      const params = {}
       GetAlarmList(params)
-        .then(body => {})
+        .then(body => { })
         .catch(res => {
-          console.log(res);
-        });
+          console.log(res)
+        })
     },
 
-    //搜索
+    // 搜索
     searchChanged(data) {
-      console.log(data);
+      console.log(data)
     },
 
     // 查看详情
@@ -255,65 +255,65 @@ export default {
 
     // 删除
     async deleteItem(row) {
-      let _this = this;
+      const _this = this
       _this
-        .$confirm("此操作将删除该报警, 是否继续?", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
+        .$confirm('此操作将删除该报警, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
         })
         .then(() => {
-          let params = {
+          const params = {
             _id: row._id
-          };
+          }
           DeleteAlarm(params)
             .then(res => {
-              _this.getList();
+              _this.getList()
               _this.$message({
-                type: "success",
-                message: "删除成功!"
-              });
+                type: 'success',
+                message: '删除成功!'
+              })
             })
             .catch(res => {
               _this.$message({
-                type: "error",
-                message: "删除失败"
-              });
-            });
+                type: 'error',
+                message: '删除失败'
+              })
+            })
         })
         .catch(() => {
           _this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
     },
 
     // 取消编辑
     cancelEdit(row) {
-      row.edit = false;
+      row.edit = false
       // 还原数据
-      row.remark = row.original.remark;
+      row.remark = row.original.remark
     },
 
     // 确认编辑
     async confirmEdit(row) {
-      let params = {
+      const params = {
         oldOption: {
           _id: row._id
         },
         newOption: {}
-      };
-      if (row.name !== "") {
-        params.newOption.remark = row.remark;
+      }
+      if (row.name !== '') {
+        params.newOption.remark = row.remark
       }
 
-      await ChangeAlarm(params);
-      row.original.remark = row.remark;
-      row.edit = false;
+      await ChangeAlarm(params)
+      row.original.remark = row.remark
+      row.edit = false
     }
   }
-};
+}
 </script>
 
 <style scoped>

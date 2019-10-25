@@ -1,11 +1,15 @@
 import request from '@/utils/request'
 
-//版本
-let v = "v1"
+/**
+ * 版本
+ * @constant
+ * @type {string}
+ * @default
+ * */
+const v = 'v1'
 
 /**
  * 获取所有节点简单信息
- * 
  */
 export function GetList() {
   return request({
@@ -36,7 +40,6 @@ export function SaveNodeEntity(data) {
   })
 }
 
-
 /**
  * 删除节点
  * @param {*} uuid 节点UUID
@@ -59,5 +62,4 @@ export function UpdateEntityOne(params) {
     params
   })
 }
-
 
