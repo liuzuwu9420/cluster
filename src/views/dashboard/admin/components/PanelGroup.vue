@@ -1,30 +1,30 @@
 <template>
   <el-row :gutter="10" class="panel-group">
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
+    <el-col :xs="8" :sm="8" :lg="6" class="card-panel-col">
       <el-card shadow="hover" class="mgb20">
-        <div class="card-panel" @click="handleSetLineChartData('newVisitis')">
+        <div class="card-panel">
           <iframe :src="CPUSrc" width="100%" height="100%" frameborder="0" />
         </div>
       </el-card>
       <el-card shadow="hover">
-        <div class="card-panel card-panel-foot" @click="handleSetLineChartData('shoppings')">
+        <div class="card-panel card-panel-foot">
           <iframe :src="nodeSrc" width="100%" height="100%" frameborder="0" />
         </div>
       </el-card>
     </el-col>
 
-    <el-col :xs="12" :sm="12" :lg="12">
+    <el-col :xs="16" :sm="16" :lg="12">
       <el-row>
         <el-col :xs="12" :sm="12" :lg="12" class="RAM-padding">
           <el-card shadow="hover" class="mgb20">
-            <div class="card-panel" @click="handleSetLineChartData('messages')">
+            <div class="card-panel">
               <iframe :src="RAMSrc" width="100%" height="100%" frameborder="0" />
             </div>
           </el-card>
         </el-col>
         <el-col :xs="12" :sm="12" :lg="12" class="sto-padding">
           <el-card shadow="hover" class="mgb20">
-            <div class="card-panel" @click="handleSetLineChartData('purchases')">
+            <div class="card-panel">
               <iframe :src="storageSrc" width="100%" height="100%" frameborder="0" />
             </div>
           </el-card>
@@ -38,23 +38,47 @@
     </el-col>
     <el-col :xs="24" :sm="24" :lg="6">
       <div class="logContainer">
-        <el-card class="box-card">
+        <el-card class="box-card-pend">
           <div slot="header" class="clearfix">
-            <i class="el-icon-bell" />
-            <span>消息：</span>
+            <i class="el-icon-time" />
+            <span>等待作业</span>
+            <span class="more" @click="handleSetLineChartData('PEND')">更多</span>
           </div>
           <div class="logArea el-scrollbar">
             <div
-              v-for="(item,index) in logsData"
+              v-for="(item,index) in pendTOPList"
               :key="index"
               class="item"
-              @click="handleSetLineChartData(item.level.value)"
+              @click="handleSetLineChartData('PEND')"
             >
               <p class="timeArea">
-                <span>{{ item.citem }}</span>
+                <span>{{ item.JobID }}</span>
               </p>
               <div class="logContent">
-                <span class="title time">{{ item.createTime }}</span>
+                <span class="title time">{{ item.time }}</span>
+              </div>
+              <el-divider />
+            </div>
+          </div>
+        </el-card>
+        <el-card class="box-card-run">
+          <div slot="header" class="clearfix">
+            <i class="el-icon-refresh" />
+            <span>运行作业</span>
+            <span class="more" @click="handleSetLineChartData('RUN')">更多</span>
+          </div>
+          <div class="logArea el-scrollbar">
+            <div
+              v-for="(item,index) in runTOPList"
+              :key="index"
+              class="item"
+              @click="handleSetLineChartData('RUN')"
+            >
+              <p class="timeArea">
+                <span>{{ item.JobID }}</span>
+              </p>
+              <div class="logContent">
+                <span class="title time">{{ item.time }}</span>
               </div>
               <el-divider />
             </div>
@@ -66,6 +90,11 @@
 </template>
 
 <script>
+import {
+  GetPendTaskTOPList,
+  GetRunTaskTOPList
+} from '@/api/monitor'
+import { formatDate, formatDiff } from '@/utils/format'
 export default {
   data() {
     return {
@@ -74,119 +103,59 @@ export default {
       storageSrc: '',
       netSrc: '',
       nodeSrc: '',
-      logsData: [
-        {
-          citem: 'xxxxxx',
-          level: {
-            value: 'INFO',
-            label: '严重'
-          },
-          createTime: '2019-10-01'
-        },
-        {
-          citem: 'xxxxxx',
-          level: {
-            value: 'WARNING',
-            label: '警告'
-          },
-          createTime: '2019-10-01'
-        },
-        {
-          citem: 'xxxxxx',
-          level: {
-            value: 'DANGER',
-            label: '致命'
-          },
-          createTime: '2019-10-01'
-        },
-        {
-          citem: 'xxxxxx',
-          level: {
-            value: 'INFO',
-            label: '严重'
-          },
-          createTime: '2019-10-01'
-        },
-        {
-          citem: 'xxxxxx',
-          level: {
-            value: 'DANGER',
-            label: '致命'
-          },
-          createTime: '2019-10-01'
-        },
-        {
-          citem: 'xxxxxx',
-          level: {
-            value: 'INFO',
-            label: '严重'
-          },
-          createTime: '2019-10-01'
-        },
-        {
-          citem: 'xxxxxx',
-          createTime: '2019-10-01'
-        },
-        {
-          citem: 'xx1xxx',
-          createTime: '2019-10-01'
-        },
-        {
-          citem: 'xxx3xxx',
-          createTime: '2019-10-01'
-        },
-        {
-          citem: 'xxx23xxx',
-          createTime: '2019-10-01'
-        },
-        {
-          citem: 'xxx22xxx',
-          createTime: '2019-10-01'
-        },
-        {
-          citem: 'xx12xxxx',
-          createTime: '2019-10-01'
-        },
-        {
-          citem: 'xxx23xxx',
-          createTime: '2019-10-01'
-        },
-        {
-          citem: 'xxxxxx',
-          createTime: '2019-10-01'
-        },
-        {
-          citem: '1xxxxxx',
-          createTime: '2019-10-01'
-        },
-        {
-          citem: '2xxxxxx',
-          createTime: '2019-10-01'
-        },
-        {
-          citem: '3xxxxxx',
-          createTime: '2019-10-01'
-        },
-        {
-          citem: '4xxxxxx',
-          createTime: '2019-10-01'
-        },
-        {
-          citem: '5xxxxxx',
-          createTime: '2019-10-01'
-        }
-      ]
+      pendTOPList: [],
+      runTOPList: []
     }
   },
   created() {
     this.iframeTime()
+    this.getPend()
+    this.getRun()
+    this.polling()
   },
   methods: {
-    handleSetLineChartData(level) {
+    getPend() {
+      const _this = this
+      GetPendTaskTOPList()
+        .then(res => {
+          if (res.Inventory) {
+            _this.pendTOPList = res.Inventory.map(item => {
+              const SubmitTime = formatDate(item.SubmitTime, 'yyyy-MM-dd hh:mm:ss')
+              item.time = formatDiff(SubmitTime)
+              return item
+            })
+          } else {
+            _this.pendTOPList = []
+          }
+        })
+    },
+    getRun() {
+      const _this = this
+      GetRunTaskTOPList()
+        .then(res => {
+          if (res.Inventory) {
+            _this.runTOPList = res.Inventory.map(item => {
+              const ExecuteTime = formatDate(item.ExecuteTime, 'yyyy-MM-dd hh:mm:ss')
+              item.time = formatDiff(ExecuteTime)
+              return item
+            })
+          } else {
+            _this.runTOPList = []
+          }
+        })
+    },
+    polling() {
+      const _this = this
+      setInterval(() => {
+        _this.getPend()
+        _this.getRun()
+      }, 1000)
+    },
+    handleSetLineChartData(Status) {
       this.$router.push({
-        name: 'monitor.alarmList',
+        name: 'monitor.taskList',
         params: {
-          level: level
+          Status: Status
         }
       })
     },
@@ -236,15 +205,18 @@ export default {
     height: 405px;
   }
   .logContainer {
-    padding: 10px;
     background: #fff;
     box-sizing: border-box;
     height: 715px;
     max-height: 715px;
     overflow: hidden;
     border-radius: 6px;
-    .box-card {
-      height: 100%;
+    .box-card-pend {
+      height: 300px;
+      margin-bottom: 10px
+    }
+    .box-card-run {
+      height: 405px;
     }
     .logArea {
       overflow: auto;
@@ -264,7 +236,7 @@ export default {
         font-size: 13px;
       }
       .time {
-        color: #87de75;
+        color: #000;
       }
     }
   }
@@ -275,6 +247,11 @@ export default {
   }
   .clearfix:after {
     clear: both;
+  }
+  .more {
+    color: #87de75;
+    cursor: pointer;
+    float: right;
   }
 }
 </style>

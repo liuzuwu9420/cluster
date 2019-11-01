@@ -24,10 +24,10 @@ export function syncGroup() {
   })
 }
 
-// 同步作业任务数据
-export function syncTask() {
+// 同步作业
+export function syncHost() {
   return request({
-    url: `/api/${v}/jobs/sync`,
+    url: `/api/${v}/jobs/sync/10`,
     method: 'post'
   })
 }

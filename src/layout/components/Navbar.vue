@@ -1,6 +1,11 @@
 <template>
   <div class="navbar">
-    <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
+    <hamburger
+      id="hamburger-container"
+      :is-active="sidebar.opened"
+      class="hamburger-container"
+      @toggleClick="toggleSideBar"
+    />
 
     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
 
@@ -15,9 +20,8 @@
         <!--<el-tooltip :content="$t('navbar.size')" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
         </el-tooltip>
--->
+        -->
         <!-- <lang-select class="right-menu-item hover-effect" /> -->
-
       </template>
 
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
@@ -32,9 +36,7 @@
             </el-dropdown-item>
           </router-link>-->
           <router-link to="/">
-            <el-dropdown-item>
-              {{ $t('navbar.dashboard') }}
-            </el-dropdown-item>
+            <el-dropdown-item>{{ $t('navbar.dashboard') }}</el-dropdown-item>
           </router-link>
           <el-dropdown-item divided>
             <span style="display:block;" @click="logout">{{ $t('navbar.logOut') }}</span>
@@ -50,20 +52,25 @@ import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import ErrorLog from '@/components/ErrorLog'
-import Screenfull from '@/components/Screenfull'
-import SizeSelect from '@/components/SizeSelect'
-import LangSelect from '@/components/LangSelect'
-import Search from '@/components/HeaderSearch'
+// import Screenfull from '@/components/Screenfull'
+// import SizeSelect from '@/components/SizeSelect'
+// import LangSelect from '@/components/LangSelect'
+// import Search from '@/components/HeaderSearch'
 
 export default {
   components: {
     Breadcrumb,
     Hamburger,
-    ErrorLog,
-    Screenfull,
-    SizeSelect,
-    LangSelect,
-    Search
+    ErrorLog
+    // Screenfull,
+    // SizeSelect,
+    // LangSelect,
+    // Search
+  },
+  data() {
+    return {
+      userImgUrl: require('../../assets/user_images/user.png')
+    }
   },
   computed: {
     ...mapGetters([
@@ -71,11 +78,6 @@ export default {
       'avatar',
       'device'
     ])
-  },
-  data() {
-    return {
-      userImgUrl: require('../../assets/user_images/user.png')
-    }
   },
   methods: {
     toggleSideBar() {
@@ -95,18 +97,18 @@ export default {
   overflow: hidden;
   position: relative;
   background: #fff;
-  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
 
   .hamburger-container {
     line-height: 46px;
     height: 100%;
     float: left;
     cursor: pointer;
-    transition: background .3s;
-    -webkit-tap-highlight-color:transparent;
+    transition: background 0.3s;
+    -webkit-tap-highlight-color: transparent;
 
     &:hover {
-      background: rgba(0, 0, 0, .025)
+      background: rgba(0, 0, 0, 0.025);
     }
   }
 
@@ -138,10 +140,10 @@ export default {
 
       &.hover-effect {
         cursor: pointer;
-        transition: background .3s;
+        transition: background 0.3s;
 
         &:hover {
-          background: rgba(0, 0, 0, .025)
+          background: rgba(0, 0, 0, 0.025);
         }
       }
     }

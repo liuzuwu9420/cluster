@@ -21,6 +21,7 @@
           fit
           highlight-current-row
           style="width: 100%"
+          max-height="610px"
         >
           <el-table-column label="ID" width="150">
             <template v-slot="{row}">
@@ -36,15 +37,13 @@
               <span v-else>{{ row.groupName }}</span>
             </template>
           </el-table-column>
-          <!-- <el-table-column label="用户">
+          <el-table-column label="用户">
             <template v-slot="{row}">
-              <template v-if="row.edit">
-                <el-input v-model="row.users" class="edit-input" size="small" />
-              </template>
-              <span v-else>{{ row.users }}</span>
+              <span v-for="(item, index) in row.users" :key="index" class="userLink" @click="getUserID(item)">&nbsp;{{ item.UserName?item.UserName:'' }}
+              </span>
             </template>
           </el-table-column>
-          <el-table-column label="描述">
+          <!-- <el-table-column label="描述">
             <template v-slot="{row}">
               <template v-if="row.edit">
                 <el-input v-model="row.description" class="edit-input" size="small" />
@@ -146,6 +145,7 @@
 import {
   GetUserGroupList,
   GetGroupIDList,
+  GetGroupIDUser,
   CreateUserGroup,
   ChangeUserGroup,
   DeleteUserGroup
@@ -202,8 +202,18 @@ export default {
       }
     }
   },
+  watch: {
+    devices() {
+      this.page.total = this.devices.length
+    }
+  },
   created() {
     this.getList()
+    if (this.$route.params.data) {
+      this.getList(this.$route.params.data)
+    } else {
+      this.getList()
+    }
   },
   methods: {
     getList() {
@@ -221,15 +231,24 @@ export default {
       }
       GetUserGroupList()
         .then(res => {
-          // _this.devices = []
-          _this.devices = res.Inventory.data.map(function(item, index) {
-            // 保存一份原始数据，便于取消编辑的时候还原数据
-            const original = _this._.cloneDeep(item)
-            item.original = original
-            _this.$set(item, 'edit', false)
-            return item
+          _this.devices = []
+          res.Inventory.map(async function(item, index) {
+            try {
+              const data = await GetGroupIDUser(item.groupID)
+              item.users = data.Inventory
+              // 保存一份原始数据，便于取消编辑的时候还原数据
+              const original = _this._.cloneDeep(item)
+              item.original = original
+              _this.$set(item, 'edit', false)
+              _this.devices.push(item)
+            } catch (e) {
+              _this.$message({
+                type: 'error',
+                message: '获取失败'
+              })
+            }
           })
-          _this.page.total = _this.devices.length
+          // _this.page.total = _this.devices.length
           _this.loading = false
         })
         .catch(res => {
@@ -313,16 +332,23 @@ export default {
       } else if (data.select === 'ID') {
         _this.loading = true
         GetGroupIDList(data.value)
-          .then(res => {
+          .then(async res => {
             _this.devices = []
-            _this.devices.push(res.Inventory.data)
-            _this.devices = _this.devices.map(function(item, index) {
+            const Inv = res.Inventory
+            try {
+              const data = await GetGroupIDUser(Inv.groupID)
+              Inv.users = data.Inventory
               // 保存一份原始数据，便于取消编辑的时候还原数据
-              const original = _this._.cloneDeep(item)
-              item.original = original
-              _this.$set(item, 'edit', false)
-              return item
-            })
+              const original = _this._.cloneDeep(Inv)
+              Inv.original = original
+              _this.$set(Inv, 'edit', false)
+              _this.devices.push(Inv)
+            } catch (e) {
+              _this.$message({
+                type: 'error',
+                message: '获取失败'
+              })
+            }
             /* _this.page.total = res.data.pageResultData.totalDataNumber;
           _this.page.pageCount = res.data.pageResultData.totalCount; */
             _this.loading = false
@@ -331,6 +357,17 @@ export default {
             console.log(res)
           })
       }
+    },
+
+    // 跳转用户
+    getUserID(data) {
+      /* const _this = this
+      _this.$router.push({
+        name: 'role.user',
+        params: {
+          data: data
+        }
+      }) */
     },
 
     // 查看详情
@@ -438,19 +475,9 @@ export default {
   text-align: right;
 }
 
-.table-expand {
-  font-size: 0;
-}
-
-.table-expand label {
-  width: 90px;
-  color: #99a9bf;
-}
-
-.table-expand .el-form-item {
-  margin-right: 0;
-  margin-bottom: 0;
-  width: 50%;
+.app-container .el-table .userLink {
+  cursor: pointer;
+  color: #49b0f9;
 }
 
 .app-container .el-dialog .el-row .size {

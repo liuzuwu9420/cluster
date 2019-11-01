@@ -11,7 +11,7 @@
               start-placeholder="开始日期"
               end-placeholder="结束日期"
               align="right"
-              value-format="yyyy-MM-dd,HH-mm-ss"
+              value-format="yyyy-MM-dd HH:mm:ss"
             />
           </div>
           <search :items="selected.items" @change="searchChanged" />

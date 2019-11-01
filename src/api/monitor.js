@@ -19,13 +19,26 @@ export function GetTaskNum() {
 }
 
 /**
- * 获取未完成作业信息
+ * 获取运行中作业信息
  * @param {*} params 查询参数
  */
 export function GetRunTaskList(params) {
   return request({
-    url: `/api/${v}/jobs/run?PageSize=${params.PageSize}&PageNumber=${params.PageNumber}`,
-    method: 'get'
+    url: `/api/${v}/jobs/status/run`,
+    method: 'get',
+    params
+  })
+}
+
+/**
+ * 获取等待中作业信息
+ * @param {*} params 查询参数
+ */
+export function GetPendTaskList(params) {
+  return request({
+    url: `/api/${v}/jobs/status/pend`,
+    method: 'get',
+    params
   })
 }
 
@@ -36,6 +49,30 @@ export function GetRunTaskList(params) {
 export function GetTaskList(params) {
   return request({
     url: `/api/${v}/jobs`,
+    method: 'get',
+    params
+  })
+}
+
+/**
+ * 获取部分等待作业信息
+ * @param {*} params 查询参数
+ */
+export function GetPendTaskTOPList(params) {
+  return request({
+    url: `/api/${v}/jobs/top/15?status=pend`,
+    method: 'get',
+    params
+  })
+}
+
+/**
+ * 获取部分运行作业信息
+ * @param {*} params 查询参数
+ */
+export function GetRunTaskTOPList(params) {
+  return request({
+    url: `/api/${v}/jobs/top/15?status=run`,
     method: 'get',
     params
   })
@@ -60,6 +97,17 @@ export function GetJobNameList(params) {
 export function GetJobIDList(jobID) {
   return request({
     url: `/api/${v}/jobs/${jobID}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 根据jobID获取作业所在节点
+ * @param {*} jobID 作业ID
+ */
+export function GetJobIDHost(jobID) {
+  return request({
+    url: `/api/${v}/jobs/${jobID}/host`,
     method: 'get'
   })
 }

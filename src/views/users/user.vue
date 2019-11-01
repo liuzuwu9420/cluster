@@ -21,6 +21,7 @@
           fit
           highlight-current-row
           style="width: 100%"
+          max-height="610px"
         >
           <el-table-column label="ID" width="120">
             <template v-slot="{row}">
@@ -44,14 +45,13 @@
               <span v-else>{{ row.role }}</span>
             </template>
           </el-table-column>
-          <!-- <el-table-column label="用户组">
+          <el-table-column label="用户组">
             <template v-slot="{row}">
-              <template v-if="row.edit">
-                <el-input v-model="row.group" class="edit-input" size="small" />
-              </template>
-              <span v-else>{{ row.group }}</span>
+              <span v-for="(item, index) in row.group" :key="index" class="GroupLink">
+                <span @click="getGroupID(item)">&nbsp;{{ item.GroupName }}</span>
+              </span>
             </template>
-          </el-table-column>-->
+          </el-table-column>
           <!-- <el-table-column label="登录时间" width="110">
             <template v-slot="{row}">
               <template v-if="row.edit">
@@ -201,6 +201,7 @@
 import {
   GetUserList,
   GetIDUser,
+  GetIDUserGroup,
   CreateUser,
   DeleteUser,
   ChangeUser
@@ -355,16 +356,25 @@ export default {
       }
       GetUserList()
         .then(res => {
-          // _this.devices = []
-          _this.devices = res.Inventory.map(function(item, index) {
-            // 保存一份原始数据，便于取消编辑的时候还原数据
-            const original = _this._.cloneDeep(item)
-            item.original = original
-            _this.$set(item, 'role', '用户')
-            _this.$set(item, 'edit', false)
-            return item
+          _this.devices = []
+          res.Inventory.map(async function(item, index) {
+            try {
+              const data = await GetIDUserGroup(item.uid)
+              item.group = data.Inventory
+              // 保存一份原始数据，便于取消编辑的时候还原数据
+              const original = _this._.cloneDeep(item)
+              item.original = original
+              _this.$set(item, 'role', '用户')
+              _this.$set(item, 'edit', false)
+              _this.devices.push(item)
+            } catch (e) {
+              _this.$message({
+                type: 'error',
+                message: '获取失败'
+              })
+            }
           })
-          _this.page.total = _this.devices.length
+          // _this.page.total = _this.devices.length
           _this.loading = false
         })
         .catch(res => {
@@ -470,6 +480,12 @@ export default {
             message: '同步失败'
           })
         })
+    },
+
+    // 跳转用户组
+    getGroupID(data) {
+      // const _this = this
+      console.log(data)
     },
 
     // 查看用户详情
@@ -593,19 +609,9 @@ export default {
   text-align: right;
 }
 
-.table-expand {
-  font-size: 0;
-}
-
-.table-expand label {
-  width: 90px;
-  color: #99a9bf;
-}
-
-.table-expand .el-form-item {
-  margin-right: 0;
-  margin-bottom: 0;
-  width: 50%;
+.app-container .el-table .GroupLink {
+  cursor: pointer;
+  color: #49b0f9;
 }
 
 .app-container .el-dialog .el-row .size {

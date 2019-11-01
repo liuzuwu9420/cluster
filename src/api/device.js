@@ -18,12 +18,23 @@ export function GetList() {
   })
 }
 /**
- * 根据uuid获取节点信息
+ * 根据uuid获取单个节点
  * @param {*} uuid 节点uuid
  */
 export function GetNodeList(uuid) {
   return request({
     url: `/api/${v}/hosts/${uuid}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 根据uuid获取节点详细信息
+ * @param {*} uuid 节点uuid
+ */
+export function GetNodeInfo(uuid) {
+  return request({
+    url: `/api/${v}/hosts/${uuid}/info`,
     method: 'get'
   })
 }

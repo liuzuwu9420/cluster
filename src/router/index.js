@@ -192,7 +192,7 @@ export const asyncRoutes = [
       component: () =>
 				import('@/views/device/list'),
       meta: {
-        title: '所有设备',
+        title: '主机',
         icon: 'table'
       }
     },
@@ -224,7 +224,7 @@ export const asyncRoutes = [
       component: () => import('@/views/monitor/taskList'),
       name: 'monitor.taskList',
       meta: {
-        title: '作业信息',
+        title: '作业',
         icon: 'skill'
       }
     }

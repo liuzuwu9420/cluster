@@ -6,7 +6,7 @@ function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
-const name = defaultSettings.title || '信同诚集群监控系统' // page title
+const name = defaultSettings.title || 'ClusterMom 信易达' // page title
 // If your port is set to 80,
 // use administrator privileges to execute the command line.
 // For example, Mac: sudo npm run
@@ -39,6 +39,8 @@ module.exports = {
       [process.env.VUE_APP_BASE_API]: {
         // target: `http://127.0.0.1:${port}/mock`,
         target: `http://16.16.18.61:80`,
+        // target: `http://192.168.2.209:80`,
+        // target: `http://192.168.3.87:80`,
         // target: `http://127.0.0.1:80`,
         changeOrigin: true,
         pathRewrite: {
@@ -103,7 +105,7 @@ module.exports = {
             .plugin('ScriptExtHtmlWebpackPlugin')
             .after('html')
             .use('script-ext-html-webpack-plugin', [{
-            // `runtime` must same as runtimeChunk name. default is `runtime`
+              // `runtime` must same as runtimeChunk name. default is `runtime`
               inline: /runtime\..*\.js$/
             }])
             .end()

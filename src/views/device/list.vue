@@ -18,61 +18,32 @@
           fit
           highlight-current-row
           style="width: 100%"
+          max-height="610px"
         >
           <el-table-column type="expand">
             <template slot-scope="props">
               <el-form label-position="left" inline class="table-expand">
-                <el-form-item label="节点名称">
-                  <span>{{ props.row.HostName }}</span>
-                </el-form-item>
-                <!-- <el-form-item label="内存">
-                  <span>{{ props.row.totalMem }}</span>
-                </el-form-item>
-                <el-form-item label="cpu核心数量">
-                  <span>{{ props.row.cpuInfo.count }}</span>
-                </el-form-item>
                 <el-form-item label="物理CPU个数">
-                  <span>{{ props.row.cpuInfo.physicalcount }}</span>
+                  <span>{{ props.row.facter_processors.physicalcount }}</span>
                 </el-form-item>
-                <el-form-item label="IPV4">
-                  <span>{{ props.row.allIPV4.toString() }}</span>
+                <el-form-item label="CPU信息">
+                  <span>{{ props.row.facter_processors.models[0] }}</span>
                 </el-form-item>
-                <el-form-item label="主板信息">
-                  <span>{{ props.row.mainboard }}</span>
+                <el-form-item label="平台">
+                  <span>{{ props.row.ansible_system }}</span>
                 </el-form-item>
-                <el-form-item label="dns服务器">
-                  <span>{{ props.row.dnsServer.toString() }}</span>
+                <el-form-item label="操作系统">
+                  <span>{{ props.row.ansible_distribution }}</span>
                 </el-form-item>
-                <el-form-item label="磁盘的UUID">
-                  <span>{{ props.row.diskListMounts[0].uuid }}</span>
+                <el-form-item label="系统版本">
+                  <span>{{ props.row.ansible_distribution_version }}</span>
                 </el-form-item>
-                <el-form-item label="磁盘总大小">
-                  <span>{{ props.row.diskListMounts[0].size_total }}</span>
+                <el-form-item label="标签">
+                  <span><el-tag v-for="(tag, index) in props.row.Tags" :key="index">{{ tag }}</el-tag></span>
                 </el-form-item>
-                <el-form-item label="可用磁盘">
-                  <span>{{ props.row.diskListMounts[0].size_available }}</span>
+                <el-form-item label="描述" class="form-item-finish">
+                  <span>{{ props.row.Desc }}</span>
                 </el-form-item>
-                <el-form-item label="磁盘路径">
-                  <span>{{ props.row.diskListMounts[0].device }}</span>
-                </el-form-item>
-                <el-form-item label="挂载路径">
-                  <span>{{ props.row.diskListMounts[0].mount }}</span>
-                </el-form-item>
-                <el-form-item label="扇区总个数">
-                  <span>{{ props.row.diskListMounts[0].block_total }}</span>
-                </el-form-item>
-                <el-form-item label="可用的扇区个数">
-                  <span>{{ props.row.diskListMounts[0].block_available }}</span>
-                </el-form-item>
-                <el-form-item label="每一个扇区的大小">
-                  <span>{{ props.row.diskListMounts[0].block_size }}</span>
-                </el-form-item>
-                <el-form-item label="可用的扇区大小">
-                  <span>{{ props.row.diskListMounts[0].inode_available }}</span>
-                </el-form-item>
-                <el-form-item label="分区类型">
-                  <span>{{ props.row.diskListMounts[0].fstype }}</span>
-                </el-form-item>-->
               </el-form>
             </template>
           </el-table-column>
@@ -84,7 +55,7 @@
               <span v-else>{{ row.HostName }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="标签">
+          <!-- <el-table-column label="标签">
             <template v-slot="{row}">
               <template v-if="row.edit">
                 <tags :tags="row.Tags" size="mini" />
@@ -93,18 +64,13 @@
                 <el-tag v-for="(tag, index) in row.Tags" :key="index">{{ tag }}</el-tag>
               </span>
             </template>
-          </el-table-column>
-          <!-- <el-table-column label="内存" width="110">
+          </el-table-column> -->
+          <el-table-column label="状态" width="100" align="center">
             <template v-slot="{row}">
-              <span>{{ row.totalMem }}</span>
-            </template>
-          </el-table-column>-->
-          <el-table-column label="状态">
-            <template v-slot="{row}">
-              <el-tag size="mini" :type="statusMap[row.State].type">{{ row.State | State }}</el-tag>
+              <el-tag size="mini" :type="statusMap[row.Status].type">{{ row.Status | Status }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="IP">
+          <el-table-column label="IP" width="140" align="center">
             <template v-slot="{row}">
               <template v-if="row.edit">
                 <el-input v-model="row.HostIP" class="edit-input" size="small" />
@@ -112,15 +78,25 @@
               <span v-else>{{ row.HostIP }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="描述">
+          <el-table-column label="硬件配置" align="center">
+            <template v-slot="{row}">
+              <span>{{ row.HostInfo }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="产品名/系统供应商" align="center">
+            <template v-slot="{row}">
+              <span>{{ row.ansible_product_name }} / {{ row.ansible_system_vendor }}</span>
+            </template>
+          </el-table-column>
+          <!-- <el-table-column label="描述">
             <template v-slot="{row}">
               <template v-if="row.edit">
                 <el-input v-model="row.Desc" class="edit-input" size="small" />
               </template>
               <span v-else>{{ row.Desc }}</span>
             </template>
-          </el-table-column>
-          <el-table-column fixed="right" label="操作" width="200">
+          </el-table-column> -->
+          <el-table-column fixed="right" label="操作" width="120" align="center">
             <template v-slot="{row}">
               <el-button-group>
                 <!-- 编辑模式：确定 -->
@@ -150,7 +126,7 @@
                     @click="info(row)"
                   />
                 </el-tooltip>
-                <el-tooltip class="item" effect="dark" content="编辑" placement="top-end">
+                <!-- <el-tooltip class="item" effect="dark" content="编辑" placement="top-end">
                   <el-button
                     v-if="!row.edit"
                     type="warning"
@@ -167,7 +143,7 @@
                     icon="el-icon-delete"
                     @click="deleteItem(row)"
                   />
-                </el-tooltip>
+                </el-tooltip> -->
               </el-button-group>
             </template>
           </el-table-column>
@@ -226,6 +202,7 @@
 import {
   GetList,
   GetNodeList,
+  GetNodeInfo,
   SaveNodeEntity,
   UpdateEntityOne,
   DeleteEntityOne
@@ -236,21 +213,17 @@ import Search from '@/components/Search'
 import Tags from '@/components/Tags'
 
 const statusMap = {
-  head: {
-    name: '空闲',
+  OFF: {
+    name: '不正常',
+    type: 'danger'
+  },
+  ON: {
+    name: '正常',
     type: 'success'
   },
-  compute: {
-    name: '繁忙',
-    type: 'danger'
-  },
-  Running: {
-    name: 'Running',
-    type: 'danger'
-  },
-  test: {
-    name: '占用',
-    type: 'warning'
+  UNKNOW: {
+    name: '未知',
+    type: 'info'
   }
 }
 const powerSupplyMap = {
@@ -270,8 +243,8 @@ export default {
     Tags
   },
   filters: {
-    State(State) {
-      return statusMap[State].name
+    Status(Status) {
+      return statusMap[Status].name
     },
     powerSupply(powerSupply) {
       return powerSupplyMap[powerSupply].name
@@ -354,13 +327,68 @@ export default {
       // const params = {}
       GetList()
         .then(res => {
-          _this.devices = res.Inventory.data.map(function(item, index) {
-            item.Tags = item.Tags.split('|')
+          _this.devices = []
+          res.Inventory.map(function(item, index) {
+            if (item.Tags) {
+              item.Tags = item.Tags.split('|')
+            }
+            if (item.HostIP) {
+              const httpRequest = new XMLHttpRequest()
+              httpRequest.open('GET', `http://16.16.18.61:9090/api/v1/query?query=up{job="node",instance="${item.HostIP}:9100"}`, true)
+              httpRequest.send()
+              httpRequest.onreadystatechange = function() {
+                if (httpRequest.readyState === 4 && httpRequest.status === 200) {
+                  const jsonData = httpRequest.responseText
+                  const data = JSON.parse(jsonData)
+                  if (data.data.result.length !== 0) {
+                    if (data.data.result[0].value[1] === '0') {
+                      item.Status = 'OFF'
+                    } else if (data.data.result[0].value[1] === '1') {
+                      item.Status = 'ON'
+                    }
+                  } else {
+                    item.Status = 'UNKNOW'
+                  }
+                }
+              }
+            }
+            GetNodeInfo(item.UUID)
+              .then(data => {
+                if (data.Inventory) {
+                  Object.assign(item, data.Inventory)
+                  item.HostInfo = item.ansible_processor_vcpus + '核 / ' + (item.ansible_memtotal_mb / 1024).toFixed(2) + 'GB / ' + item.ansible_architecture
+                  if (!item.facter_processors) {
+                    item.facter_processors = {
+                      'count': '',
+                      'models': [
+                        ''
+                      ],
+                      'physicalcount': ''
+                    }
+                  }
+                } else {
+                  item.HostInfo = ''
+                }
+              })
+              .catch(e => {
+                console.log(e)
+                _this.$message({
+                  type: 'info',
+                  message: '详细信息展示失败'
+                })
+              })
             // 保存一份原始数据，便于取消编辑的时候还原数据
             const original = _this._.cloneDeep(item)
             item.original = original
             _this.$set(item, 'edit', false)
-            return item
+            if (item.Status) {
+              _this.devices.push(item)
+            } else {
+              item.Status = 'ON'
+              item.HostInfo = ''
+              item.ansible_system_vendor = ''
+              _this.devices.push(item)
+            }
           })
           _this.page.total = _this.devices.length
           _this.loading = false
@@ -577,7 +605,19 @@ export default {
 .table-expand .el-form-item {
   margin-right: 0;
   margin-bottom: 0;
-  width: 33.33%;
+  width: 30%;
+}
+
+.table-expand .el-form-item:nth-child(3n-1) {
+  width: 40%;
+}
+
+.table-expand .el-form-item:nth-child(3n-2) {
+  width: 30%;
+}
+
+.el-table .table-expand .form-item-finish {
+  width: 100%;
 }
 
 .app-container .el-dialog .el-row .size {

@@ -62,7 +62,7 @@
       </div>
     </el-col>
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class="card-panel" @click="handleSetLineChartData('RUN','运行中')">
+      <div class="card-panel" @click="handleSetLineChartData('RUN')">
         <div class="card-panel-icon-wrapper icon-loading">
           <div class="card-panel-text">运行作业</div>
           <i class="el-icon-refresh card-panel-icon card-task-icon" />
@@ -80,7 +80,7 @@
       </div>
     </el-col>
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class="card-panel" @click="handleSetLineChartData('PEND','等待中')">
+      <div class="card-panel" @click="handleSetLineChartData('PEND')">
         <div class="card-panel-icon-wrapper icon-time">
           <div class="card-panel-text">等待作业</div>
           <i class="el-icon-time card-panel-icon card-task-icon" />
@@ -146,14 +146,13 @@ export default {
       const _this = this
       setInterval(() => {
         _this.getList()
-      }, 5000)
+      }, 1000)
     },
-    handleSetLineChartData(key, value) {
+    handleSetLineChartData(Status) {
       this.$router.push({
         name: 'monitor.taskList',
         params: {
-          key: key,
-          value: value
+          Status: Status
         }
       })
     },

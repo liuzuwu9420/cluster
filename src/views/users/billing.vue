@@ -4,11 +4,11 @@
       <el-main>
         <div class="hasten">
           <el-button class="headBut" type="primary" size="mini" @click="saveEntity">
-            <i class="el-icon-plus"></i> 创建计费组
+            <i class="el-icon-plus" /> 创建计费组
           </el-button>
           <search :items="selected.items" @change="searchChanged" />
           <el-button type="primary" size="mini" @click="getList">
-            <i class="el-icon-refresh-right"></i> 刷新
+            <i class="el-icon-refresh-right" /> 刷新
           </el-button>
         </div>
         <el-table
@@ -85,7 +85,7 @@
                     icon="el-icon-view"
                     size="mini"
                     @click="info(row)"
-                  ></el-button>
+                  />
                 </el-tooltip>
                 <el-tooltip class="item" effect="dark" content="编辑" placement="top-end">
                   <el-button
@@ -94,7 +94,7 @@
                     size="mini"
                     icon="el-icon-edit"
                     @click="row.edit=!row.edit"
-                  ></el-button>
+                  />
                 </el-tooltip>
                 <el-tooltip class="item" effect="dark" content="删除" placement="top-end">
                   <el-button
@@ -103,7 +103,7 @@
                     size="mini"
                     icon="el-icon-delete"
                     @click="deleteItem(row)"
-                  ></el-button>
+                  />
                 </el-tooltip>
               </el-button-group>
             </template>
@@ -111,31 +111,31 @@
         </el-table>
         <el-dialog :title="titleHead" :visible.sync="dialogCreating" width="50%">
           <el-form
+            ref="create"
             :model="create"
             :rules="rules"
-            ref="create"
             label-width="100px"
             class="demo-ruleForm"
           >
             <el-form-item label="名称" prop="name">
-              <el-input class="formInp" v-model="create.name"></el-input>
+              <el-input v-model="create.name" class="formInp" />
             </el-form-item>
             <el-form-item label="收费比率" prop="ratio">
-              <el-input class="formInp" v-model="create.ratio">
+              <el-input v-model="create.ratio" class="formInp">
                 <template slot="append">元每CPU&times;小时</template>
               </el-input>
             </el-form-item>
             <el-form-item label="初始金额" prop="money">
-              <el-input class="formInp" v-model="create.money">
+              <el-input v-model="create.money" class="formInp">
                 <template slot="append">￥</template>
               </el-input>
             </el-form-item>
             <el-form-item class="formInp" label="描述" prop="description">
               <el-input
+                v-model="create.description"
                 type="textarea"
                 :autosize="{ minRows: 2, maxRows: 4}"
-                v-model="create.description"
-              ></el-input>
+              />
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="submitForm('create')">立即创建</el-button>
@@ -158,10 +158,10 @@
 </template>
 
 <script>
-import { GetBillList, CreateBill, ChangeBill, DeleteBill } from "@/api/role";
+import { GetBillList, CreateBill, ChangeBill, DeleteBill } from '@/api/role'
 
-import Pagination from "@/components/Pagination";
-import Search from "@/components/Search";
+import Pagination from '@/components/Pagination'
+import Search from '@/components/Search'
 
 export default {
   components: {
@@ -174,8 +174,8 @@ export default {
       selected: {
         items: [
           {
-            value: "名称",
-            label: "名称"
+            value: 'name',
+            label: '名称'
           }
         ]
       },
@@ -189,116 +189,116 @@ export default {
       devices: [],
       loading: false,
       dialogCreating: false,
-      titleHead: "",
+      titleHead: '',
       // 节点添加信息
       create: {
-        name: "",
-        ratio: "",
-        money: "",
-        description: ""
+        name: '',
+        ratio: '',
+        money: '',
+        description: ''
       },
       rules: {
         name: [
           {
             required: true,
-            message: "请输入名称",
-            trigger: "blur"
+            message: '请输入名称',
+            trigger: 'blur'
           }
         ],
         ratio: [
           {
             required: true,
-            message: "请输入收费比率",
-            trigger: "blur"
+            message: '请输入收费比率',
+            trigger: 'blur'
           }
         ],
         money: [
           {
             required: true,
-            message: "请输入初始金额",
-            trigger: "blur"
+            message: '请输入初始金额',
+            trigger: 'blur'
           }
         ]
       }
-    };
+    }
   },
   created() {
-    //this.getList();
+    // this.getList();
   },
   methods: {
     getList() {
-      let _this = this;
-      let params = {
+      const _this = this
+      const params = {
         pageOption: {
-          pageNumber: _this.page.currentPage, //当前页数
-          pageSize: _this.page.pageSize //每一页显示条数
+          pageNumber: _this.page.currentPage, // 当前页数
+          pageSize: _this.page.pageSize // 每一页显示条数
         },
         selectOption: {}
-      };
-      if (_this.searchValue !== "") {
-        params.selectOption.name = _this.searchValue;
       }
-      GetList(params)
+      if (_this.searchValue !== '') {
+        params.selectOption.name = _this.searchValue
+      }
+      GetBillList(params)
         .then(res => {
-          //_this.devices = []
+          // _this.devices = []
           _this.devices = res.data.result.nodeData.map(function(item, index) {
             // 保存一份原始数据，便于取消编辑的时候还原数据
-            const original = _.cloneDeep(item);
-            item.original = original;
-            _this.$set(item, "edit", false);
-            return item;
-          });
-          _this.page.total = res.data.pageResultData.totalDataNumber;
-          _this.page.pageCount = res.data.pageResultData.totalCount;
+            const original = _this._.cloneDeep(item)
+            item.original = original
+            _this.$set(item, 'edit', false)
+            return item
+          })
+          _this.page.total = res.data.pageResultData.totalDataNumber
+          _this.page.pageCount = res.data.pageResultData.totalCount
         })
         .catch(res => {
-          console.log(res);
-        });
+          console.log(res)
+        })
     },
 
     saveEntity() {
-      this.dialogCreating = true;
-      this.titleHead = "新建计费组";
+      this.dialogCreating = true
+      this.titleHead = '新建计费组'
     },
-    //添加节点
+    // 添加节点
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          let _this = this;
-          let params = {
+          const _this = this
+          const params = {
             name: _this.create.name,
             ratio: _this.create.ratio,
             money: _this.create.money,
             description: _this.create.description
-          };
+          }
           CreateBill(params)
             .then(res => {
-              _this.getList();
-              _this.dialogCreating = false;
+              _this.getList()
+              _this.dialogCreating = false
               _this.$message({
-                type: "success",
-                message: "添加成功!"
-              });
+                type: 'success',
+                message: '添加成功!'
+              })
             })
             .catch(res => {
               _this.$message({
-                type: "error",
-                message: "添加失败"
-              });
-            });
+                type: 'error',
+                message: '添加失败'
+              })
+            })
         } else {
-          console.log("error submit!!");
-          return false;
+          console.log('error submit!!')
+          return false
         }
-      });
+      })
     },
     resetForm(formName) {
-      this.$refs[formName].resetFields();
+      this.$refs[formName].resetFields()
     },
 
-    //搜索
+    // 搜索
     searchChanged(data) {
-      console.log(data);
+      console.log(data)
     },
 
     // 查看详情
@@ -313,80 +313,80 @@ export default {
 
     // 删除
     async deleteItem(row) {
-      let _this = this;
+      const _this = this
       _this
-        .$confirm("此操作将删除该节点, 是否继续?", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
+        .$confirm('此操作将删除该节点, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
         })
         .then(() => {
-          let params = {
+          const params = {
             _id: row._id
-          };
+          }
           DeleteBill(params)
             .then(res => {
-              _this.getList();
+              _this.getList()
               _this.$message({
-                type: "success",
-                message: "删除成功!"
-              });
+                type: 'success',
+                message: '删除成功!'
+              })
             })
             .catch(res => {
               _this.$message({
-                type: "error",
-                message: "删除失败"
-              });
-            });
+                type: 'error',
+                message: '删除失败'
+              })
+            })
         })
         .catch(() => {
           _this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
     },
 
     // 取消编辑
     cancelEdit(row) {
-      row.edit = false;
+      row.edit = false
       // 还原数据
-      row.name = row.original.name;
-      row.ratio = row.original.ratio;
-      row.usemoney = row.original.usemoney;
-      row.description = row.original.description;
+      row.name = row.original.name
+      row.ratio = row.original.ratio
+      row.usemoney = row.original.usemoney
+      row.description = row.original.description
     },
 
     // 确认编辑
     async confirmEdit(row) {
-      let params = {
+      const params = {
         oldOption: {
           _id: row._id
         },
         newOption: {}
-      };
-      if (row.name !== "") {
-        params.newOption.name = row.name;
       }
-      if (row.ratio !== "") {
-        params.newOption.ratio = row.ratio;
+      if (row.name !== '') {
+        params.newOption.name = row.name
       }
-      if (row.usemoney !== "") {
-        params.newOption.usemoney = row.usemoney;
+      if (row.ratio !== '') {
+        params.newOption.ratio = row.ratio
       }
-      if (row.description !== "") {
-        params.newOption.description = row.description;
+      if (row.usemoney !== '') {
+        params.newOption.usemoney = row.usemoney
+      }
+      if (row.description !== '') {
+        params.newOption.description = row.description
       }
 
-      await ChangeBill(params);
-      row.original.name = row.name;
-      row.original.ratio = row.ratio;
-      row.original.usemoney = row.usemoney;
-      row.original.description = row.description;
-      row.edit = false;
+      await ChangeBill(params)
+      row.original.name = row.name
+      row.original.ratio = row.ratio
+      row.original.usemoney = row.usemoney
+      row.original.description = row.description
+      row.edit = false
     }
   }
-};
+}
 </script>
 
 <style scoped>

@@ -39,8 +39,9 @@ const actions = {
         resolve(true) */
       login({ username: username.trim(), password: password }).then(res => {
         if (res.Success) {
-          commit('SET_TOKEN', 'admin-token')
-          setToken('admin-token')
+          const token = res.Inventory
+          commit('SET_TOKEN', token)
+          setToken(token)
           // const { data } = res
           // commit('SET_TOKEN', data.token)
           // setToken(data.token)
@@ -50,7 +51,11 @@ const actions = {
         }
       }).catch(error => {
         console.log(error)
-        reject(error)
+        if (!error) {
+          resolve(false)
+        } else {
+          reject(error)
+        }
       })
     })
   },
@@ -98,7 +103,12 @@ const actions = {
   // user logout
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
+      commit('SET_TOKEN', '')
+      commit('SET_ROLES', [])
+      removeToken()
+      resetRouter()
+      resolve()
+      /* logout(state.token).then(() => {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])
         removeToken()
@@ -106,7 +116,7 @@ const actions = {
         resolve()
       }).catch(error => {
         reject(error)
-      })
+      }) */
     })
   },
 

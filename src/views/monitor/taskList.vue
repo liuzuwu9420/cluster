@@ -8,18 +8,22 @@
         <el-container>
           <el-main>
             <div class="hasten">
-              <!-- <dropdown
-                :selected="dropdown.selected"
-                :items="dropdown.items"
-                @change="dropdownChanged"
-              />-->
               <search :items="selected.items" @change="searchChanged" />
               <el-button type="primary" size="mini" @click="getList">
-                <i class="el-icon-refresh-right" /> 刷新
+                <i class="el-icon-refresh-right" /> 手动刷新
               </el-button>
               <el-button type="primary" size="mini" @click="sync">
-                <i class="el-icon-refresh" /> 同步
+                <i class="el-icon-refresh-right" /> 同步
               </el-button>
+              <div class="refreshBut">
+                <el-tooltip class="item" effect="dark" content="自动刷新" placement="top">
+                  <dropdown
+                    :selected="dropdown.selected"
+                    :items="dropdown.items"
+                    @change="dropdownChanged"
+                  />
+                </el-tooltip>
+              </div>
             </div>
             <el-table
               v-loading="loading"
@@ -74,6 +78,21 @@
                     <el-form-item label="描述">
                       <span>{{ props.row.JobDescription }}</span>
                     </el-form-item>
+                    <el-form-item label="运行节点">
+                      <el-table
+                        :data="props.row.Host"
+                        style="width: 100%"
+                      >
+                        <el-table-column
+                          prop="HostName"
+                          label="节点名"
+                        />
+                        <el-table-column
+                          prop="NumSlots"
+                          label="所占cpu核数"
+                        />
+                      </el-table>
+                    </el-form-item>
                   </el-form>
                 </template>
               </el-table-column>
@@ -106,7 +125,7 @@
                   <span>{{ row.StartTime }}</span>
                 </template>
               </el-table-column>
-              <el-table-column label="运行时间">
+              <el-table-column label="运行时长">
                 <template v-slot="{row}">
                   <span>{{ row.ExecuteDuration }}</span>
                 </template>
@@ -144,9 +163,6 @@
               <search :items="selected.items" @change="searchChanged" />
               <el-button type="primary" size="mini" @click="getFinishList">
                 <i class="el-icon-refresh-right" /> 刷新
-              </el-button>
-              <el-button type="primary" size="mini" @click="sync">
-                <i class="el-icon-refresh" /> 同步
               </el-button>
             </div>
             <el-table
@@ -252,24 +268,16 @@
           </el-footer>
         </el-container>
       </el-tab-pane>
-      <el-tab-pane name="EXIT">
+      <!-- <el-tab-pane name="EXIT">
         <span slot="label" class="tab-label">
           <i class="el-icon-document-delete" /> 已退出
         </span>
         <el-container>
           <el-main>
             <div class="hasten">
-              <!-- <dropdown
-                :selected="dropdown.selected"
-                :items="dropdown.items"
-                @change="dropdownChanged"
-              />-->
               <search :items="selected.items" @change="searchChanged" />
               <el-button type="primary" size="mini" @click="getFinishList">
                 <i class="el-icon-refresh-right" /> 刷新
-              </el-button>
-              <el-button type="primary" size="mini" @click="sync">
-                <i class="el-icon-refresh" /> 同步
               </el-button>
             </div>
             <el-table
@@ -385,7 +393,7 @@
             />
           </el-footer>
         </el-container>
-      </el-tab-pane>
+      </el-tab-pane> -->
       <el-tab-pane name="FINISH">
         <span slot="label" class="tab-label">
           <i class="el-icon-finished" /> 已完成
@@ -393,17 +401,20 @@
         <el-container>
           <el-main>
             <div class="hasten">
-              <!-- <dropdown
-                :selected="dropdown.selected"
-                :items="dropdown.items"
-                @change="dropdownChanged"
-              />-->
+              <div class="headBut">
+                <el-date-picker
+                  v-model="dateTime"
+                  type="datetimerange"
+                  :picker-options="pickerOptions"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  align="right"
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                />
+              </div>
               <search :items="selected.items" @change="searchChanged" />
               <el-button type="primary" size="mini" @click="getFinishList">
                 <i class="el-icon-refresh-right" /> 刷新
-              </el-button>
-              <el-button type="primary" size="mini" @click="sync">
-                <i class="el-icon-refresh" /> 同步
               </el-button>
             </div>
             <el-table
@@ -524,11 +535,13 @@
 <script>
 import {
   GetRunTaskList,
+  GetPendTaskList,
   GetTaskList,
   GetJobNameList,
-  GetJobIDList
+  GetJobIDList,
+  GetJobIDHost
 } from '@/api/monitor'
-import { syncTask } from '@/api/sync'
+import { syncHost } from '@/api/sync'
 
 import { formatDate } from '@/utils/format'
 
@@ -538,7 +551,7 @@ import { initFirst, connection, disconnect } from "@/utils/sockJS"; */
 
 import Pagination from '@/components/Pagination'
 import Search from '@/components/Search'
-// import Dropdown from '@/components/Dropdown'
+import Dropdown from '@/components/Dropdown'
 
 const statusMap = {
   RUN: {
@@ -575,8 +588,8 @@ const statusMap = {
 export default {
   components: {
     Pagination,
-    Search
-    // Dropdown
+    Search,
+    Dropdown
   },
   filters: {
     JobStatus(JobStatus) {
@@ -587,18 +600,54 @@ export default {
     return {
       statusMap: statusMap,
       activeName: 'RUN',
+      dateTime: [new Date(new Date().getTime() - 3600 * 1000 * 24 * 7), new Date()],
+      pickerOptions: {
+        shortcuts: [
+          {
+            text: '最近一天',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24)
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+              picker.$emit('pick', [start, end])
+            }
+          }
+        ]
+      },
       // 下拉选择数据
       dropdown: {
         selected: {
-          key: 'RUN',
-          value: '运行中'
+          key: 'OFF',
+          value: 'off'
         },
         items: {
-          RUN: '运行中',
-          PEND: '等待中',
-          DONE: '已完成'
+          OFF: 'off',
+          5000: '5s',
+          15000: '15s',
+          600000: '1m',
+          3000000: '5m'
         }
       },
+      // 计时器
+      setTime: null,
       // 查询数据
       selected: {
         items: [
@@ -625,10 +674,21 @@ export default {
       stompClient: ''
     }
   },
+  watch: {
+    dateTime() {
+      this.getFinishList()
+    }
+  },
   created() {
-    this.getList()
-    if (this.$route.params.status) {
-      this.dropdown.selected = this.$route.params
+    console.log(this.$route.params.Status)
+    if (this.$route.params.Status) {
+      const tab = {}
+      tab.name = this.$route.params.Status
+      this.activeName = tab.name
+      console.log(this.activeName)
+      this.handleClick(tab)
+    } else {
+      this.getList()
     }
   },
   beforeDestroy() {
@@ -648,6 +708,19 @@ export default {
         .then(res => {
           _this.devices = res.Inventory.ResultData.map(function(item, index) {
             item.StartTime = formatDate(item.StartTime, 'yyyy-MM-dd hh:mm:ss')
+            if (item.JobStatus === '') {
+              item.JobStatus = 'RUN'
+            }
+            GetJobIDHost(item.JobID)
+              .then(data => {
+                item.Host = data.Inventory
+              })
+              .catch(e => {
+                _this.$message({
+                  type: 'error',
+                  message: '同步失败'
+                })
+              })
             return item
           })
           _this.page.total = res.Inventory.TotalNumber
@@ -687,13 +760,44 @@ export default {
       }; */
     },
 
-    getFinishList() {
+    // 获取等待中作业
+    getPendList() {
       const _this = this
       _this.loading = true
       const params = {
         PageSize: _this.page.pageSize,
         PageNumber: _this.page.currentPage
       }
+      GetPendTaskList(params)
+        .then(res => {
+          _this.devices = res.Inventory.ResultData.map(function(item, index) {
+            item.SubmitTime = formatDate(item.SubmitTime, 'yyyy-MM-dd hh:mm:ss')
+            return item
+          })
+          _this.page.total = res.Inventory.TotalNumber
+          // _this.page.pageCount = res.Inventory.totalCount;
+          _this.loading = false
+        })
+        .catch(res => {
+          console.log(res)
+        })
+    },
+
+    getFinishList() {
+      const _this = this
+      _this.loading = true
+      const params = {
+        page: {
+          PageSize: _this.page.pageSize,
+          PageNumber: _this.page.currentPage
+        },
+        query: {},
+        time: {
+          StartTime: formatDate(_this.dateTime[0], 'yyyy-MM-dd hh:mm:ss'),
+          EndTime: formatDate(_this.dateTime[1], 'yyyy-MM-dd hh:mm:ss')
+        }
+      }
+      console.log(params)
       GetTaskList(params)
         .then(res => {
           _this.devices = res.Inventory.ResultData.map(function(item, index) {
@@ -715,7 +819,7 @@ export default {
       if (tab.name === 'RUN') {
         this.getList()
       } else if (tab.name === 'PEND') {
-        this.getFinishList()
+        this.getPendList()
       } else if (tab.name === 'EXIT') {
         this.getFinishList()
       } else if (tab.name === 'FINISH') {
@@ -723,35 +827,40 @@ export default {
       }
     },
 
-    // 下拉选择发生改变触发事件
-    dropdownChanged(data) {
-      console.log('click on item ' + this.dropdown.selected.key)
+    // tongbu
+    sync() {
+      syncHost()
+        .then(res => {
+          console.log(res)
+        })
     },
 
-    // 同步
-    sync() {
+    // 下拉选择发生改变触发事件
+    dropdownChanged(data) {
       const _this = this
-      syncTask()
-        .then(res => {
-          if (res.Success) {
-            _this.getList()
-            _this.$message({
-              type: 'success',
-              message: '同步成功!'
-            })
-          } else {
-            _this.$message({
-              type: 'error',
-              message: '同步失败!'
-            })
-          }
-        })
-        .catch(res => {
-          _this.$message({
-            type: 'error',
-            message: '同步失败'
-          })
-        })
+      if (data.key === 'OFF') {
+        _this.stop()
+      } else {
+        data.key = +data.key
+        _this.start(data.key)
+      }
+    },
+
+    start(time) {
+      const _this = this
+      if (_this.setTime != null) {
+        clearInterval(_this.setTime)
+        _this.setTime = null
+      }
+      _this.setTime = setInterval(function() {
+        _this.getList()
+      }, time)
+    },
+
+    stop() {
+      const _this = this
+      clearInterval(_this.setTime)
+      _this.setTime = null
     },
 
     // 搜索
@@ -830,6 +939,10 @@ export default {
   line-height: 0;
   float: right;
   margin-left: 10px;
+}
+
+.hasten .refreshBut {
+  float: right;
 }
 
 .hasten .headBut {

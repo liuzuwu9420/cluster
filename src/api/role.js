@@ -30,6 +30,17 @@ export function GetIDUser(id) {
 }
 
 /**
+ * 根据ID查询用户所属用户组
+ * @id {*} id 查询ID
+ */
+export function GetIDUserGroup(id) {
+  return request({
+    url: `/api/${v}/users/${id}/group`,
+    method: 'get'
+  })
+}
+
+/**
  * 创建用户
  * @param {*} data 用户参数
  */
@@ -126,6 +137,17 @@ export function GetUserGroupList() {
 export function GetGroupIDList(id) {
   return request({
     url: `/api/${v}/groups/${id}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 根据ID获取用户信息
+ * @id {*} id 用户组id
+ */
+export function GetGroupIDUser(id) {
+  return request({
+    url: `/api/${v}/groups/${id}/user`,
     method: 'get'
   })
 }

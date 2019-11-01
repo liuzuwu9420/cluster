@@ -1,5 +1,5 @@
 module.exports = {
-  title: '信同诚集群监控系统',
+  title: 'ClusterMom 信易达',
 
   /**
    * @type {boolean} true | false

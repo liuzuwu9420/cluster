@@ -15,6 +15,9 @@ POST {{host}}/api/v1/users/login
 GET {{host}}/api/v1/users
 
 ###
+GET  {{host}}/api/v1/users/1026/group
+
+###
 GET {{host}}/api/v1/users/1024
 
 ###
@@ -25,6 +28,9 @@ GET {{host}}/api/v1/groups
 
 ###
 GET {{host}}/api/v1/groups/1025
+
+###
+GET  {{host}}/api/v1/groups/1030/user
 
 ###
 POST {{host}}/api/v1/groups/sync
@@ -48,7 +54,13 @@ GET {{host}}/api/v1/hosts
 GET {{host}}/api/v1/hosts/
 
 ###
+GET   {{host}}/api/v1/hosts/19dd3a97-9439-45eb-9a82-63280701a586/info
+
+###
 DELETE {{host}}/api/v1/hosts/da723f77-870f-4c34-b81d-109f8d8da463
+
+###
+GET http://16.16.18.61:9090/api/v1/query?query=up{job="node",instance="16.16.18.61:9100"}
 
 ###
 GET {{host}}/api/v1/jobs/statistics
@@ -72,13 +84,22 @@ GET {{host}}/api/v1/jobs/411
 POST {{host}}/api/v1/jobs/sync
 
 ###
-GET {{host}}/api/v1/jobs/run?PageSize=5&PageNumber=1
+GET {{host}}/api/v1/jobs/status/run?PageSize=5&PageNumber=1
 
 ###
-GET {{host}}/api/v1/jobs/test?page={"PageSize":5,"PageNumber":1}&query={"job_name":"sleep 100000","cwd":"/home/lsf/work/cluster1/lsf_cmddir"}
+GET {{host}}/api/v1/jobs?page={"PageSize":5,"PageNumber":1}&query={"JobName":"testJob"}&time={"StartTime":"2019-09-23 16:17:17","EndTime":"2019-10-25 10:43:03"}
 
 ###
 GET {{host}}/api/v1/jobs/history?page={"PageSize":5,"PageNumber":3}
 
 ###
 GET {{host}}/api/v1/jobs/history/544
+
+###
+GET {{host}}/api/v1/jobs/101/host
+
+###
+GET  {{host}}/api/v1/jobs/top/10?status=pend
+
+###
+POST {{host}}/api/v1/jobs/sync/10
