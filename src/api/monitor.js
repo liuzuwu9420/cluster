@@ -79,18 +79,6 @@ export function GetRunTaskTOPList(params) {
 }
 
 /**
- * 根据作业名获取作业信息
- * @param {*} param 作业名
- */
-export function GetJobNameList(params) {
-  return request({
-    url: `/api/${v}/jobs/test`,
-    method: 'get',
-    params
-  })
-}
-
-/**
  * 根据jobID获取作业信息
  * @param {*} jobID 作业ID
  */

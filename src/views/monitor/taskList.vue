@@ -8,13 +8,6 @@
         <el-container>
           <el-main>
             <div class="hasten">
-              <search :items="selected.items" @change="searchChanged" />
-              <el-button type="primary" size="mini" @click="getList">
-                <i class="el-icon-refresh-right" /> 手动刷新
-              </el-button>
-              <el-button type="primary" size="mini" @click="sync">
-                <i class="el-icon-refresh-right" /> 同步
-              </el-button>
               <div class="refreshBut">
                 <el-tooltip class="item" effect="dark" content="自动刷新" placement="top">
                   <dropdown
@@ -24,6 +17,22 @@
                   />
                 </el-tooltip>
               </div>
+              <el-button type="primary" size="mini" @click="getList">
+                <i class="el-icon-refresh-right" /> 手动刷新
+              </el-button>
+              <el-button type="primary" size="mini" @click="sync">
+                <i class="el-icon-refresh" /> 同步
+              </el-button>
+              <search :items="selected.items" @change="searchChanged" />
+              <div class="pagination">
+                <pagination
+                  v-show="page.total>0"
+                  :total="page.total"
+                  :page.sync="page.currentPage"
+                  :limit.sync="page.pageSize"
+                  @pagination="getList"
+                />
+              </div>
             </div>
             <el-table
               v-loading="loading"
@@ -32,7 +41,7 @@
               fit
               highlight-current-row
               style="width: 100%"
-              max-height="610px"
+              max-height="750px"
             >
               <el-table-column type="expand">
                 <template slot-scope="props">
@@ -70,44 +79,28 @@
                       <span>{{ props.row.SubmissionHostName }}</span>
                     </el-form-item>
                     <el-form-item label="开始时间">
-                      <span>{{ props.row.StartTime }}</span>
+                      <span>{{ props.row.ExecuteTime }}</span>
                     </el-form-item>
-                    <el-form-item label="运行时间">
-                      <span>{{ props.row.ExecuteDuration }}</span>
+                    <el-form-item label="运行时长">
+                      <span>{{ props.row.time }}</span>
                     </el-form-item>
                     <el-form-item label="描述">
                       <span>{{ props.row.JobDescription }}</span>
                     </el-form-item>
-                    <el-form-item label="运行节点">
-                      <el-table
-                        :data="props.row.Host"
-                        style="width: 100%"
-                      >
-                        <el-table-column
-                          prop="HostName"
-                          label="节点名"
-                        />
-                        <el-table-column
-                          prop="NumSlots"
-                          label="所占cpu核数"
-                        />
-                      </el-table>
-                    </el-form-item>
                   </el-form>
                 </template>
               </el-table-column>
-              <el-table-column label="ID" width="120">
+              <el-table-column label="ID" width="100">
                 <template v-slot="{row}">
                   <span>{{ row.JobID }}</span>
                 </template>
               </el-table-column>
-
               <el-table-column label="作业名" show-overflow-tooltip>
                 <template v-slot="{row}">
                   <span>{{ row.JobName }}</span>
                 </template>
               </el-table-column>
-              <el-table-column label="作业状态">
+              <el-table-column label="作业状态" width="120">
                 <template v-slot="{row}">
                   <el-tag size="mini" :type="statusMap[row.JobStatus].type">
                     <i :class="statusMap[row.JobStatus].icon" />
@@ -122,12 +115,18 @@
               </el-table-column>
               <el-table-column label="开始时间" show-overflow-tooltip>
                 <template v-slot="{row}">
-                  <span>{{ row.StartTime }}</span>
+                  <span>{{ row.ExecuteTime }}</span>
                 </template>
               </el-table-column>
               <el-table-column label="运行时长">
                 <template v-slot="{row}">
-                  <span>{{ row.ExecuteDuration }}</span>
+                  <span>{{ row.time }}</span>
+                </template>
+              </el-table-column>
+
+              <el-table-column label="运行节点">
+                <template v-slot="{row}">
+                  <span v-for="(item, index) in row.Host" :key="index">{{ item.NumSlots }} * {{ item.HostName }}</span>
                 </template>
               </el-table-column>
               <el-table-column label="提交用户" width="140">
@@ -137,15 +136,6 @@
               </el-table-column>
             </el-table>
           </el-main>
-          <el-footer class="pagination">
-            <pagination
-              v-show="page.total>0"
-              :total="page.total"
-              :page.sync="page.currentPage"
-              :limit.sync="page.pageSize"
-              @pagination="getList"
-            />
-          </el-footer>
         </el-container>
       </el-tab-pane>
       <el-tab-pane name="PEND">
@@ -160,10 +150,19 @@
                 :items="dropdown.items"
                 @change="dropdownChanged"
               />-->
-              <search :items="selected.items" @change="searchChanged" />
               <el-button type="primary" size="mini" @click="getFinishList">
                 <i class="el-icon-refresh-right" /> 刷新
               </el-button>
+              <search :items="selected.items" @change="searchChanged" />
+              <div class="pagination">
+                <pagination
+                  v-show="page.total>0"
+                  :total="page.total"
+                  :page.sync="page.currentPage"
+                  :limit.sync="page.pageSize"
+                  @pagination="getPendList"
+                />
+              </div>
             </div>
             <el-table
               v-loading="loading"
@@ -172,7 +171,7 @@
               fit
               highlight-current-row
               style="width: 100%"
-              max-height="610px"
+              max-height="750px"
             >
               <el-table-column type="expand">
                 <template slot-scope="props">
@@ -212,8 +211,8 @@
                     <el-form-item label="作业提交时间">
                       <span>{{ props.row.SubmitTime }}</span>
                     </el-form-item>
-                    <el-form-item label="等待时间">
-                      <span>{{ props.row.PendDuration }}</span>
+                    <el-form-item label="等待时长">
+                      <span>{{ props.row.time }}</span>
                     </el-form-item>
                     <el-form-item label="描述">
                       <span>{{ props.row.JobDescription }}</span>
@@ -245,9 +244,9 @@
                   <span>{{ row.QueueName }}</span>
                 </template>
               </el-table-column>
-              <el-table-column label="等待时间">
+              <el-table-column label="等待时长">
                 <template v-slot="{row}">
-                  <span>{{ row.PendDuration }}</span>
+                  <span>{{ row.time }}</span>
                 </template>
               </el-table-column>
               <el-table-column label="提交用户" width="140">
@@ -257,15 +256,6 @@
               </el-table-column>
             </el-table>
           </el-main>
-          <el-footer class="pagination">
-            <pagination
-              v-show="page.total>0"
-              :total="page.total"
-              :page.sync="page.currentPage"
-              :limit.sync="page.pageSize"
-              @pagination="getFinishList"
-            />
-          </el-footer>
         </el-container>
       </el-tab-pane>
       <!-- <el-tab-pane name="EXIT">
@@ -275,10 +265,19 @@
         <el-container>
           <el-main>
             <div class="hasten">
-              <search :items="selected.items" @change="searchChanged" />
               <el-button type="primary" size="mini" @click="getFinishList">
                 <i class="el-icon-refresh-right" /> 刷新
               </el-button>
+              <search :items="selected.items" @change="searchChanged" />
+              <div class="pagination">
+                <pagination
+                  v-show="page.total>0"
+                  :total="page.total"
+                  :page.sync="page.currentPage"
+                  :limit.sync="page.pageSize"
+                  @pagination="getFinishList"
+                />
+              </div>
             </div>
             <el-table
               v-loading="loading"
@@ -287,7 +286,7 @@
               fit
               highlight-current-row
               style="width: 100%"
-              max-height="610px"
+              max-height="750px"
             >
               <el-table-column type="expand">
                 <template slot-scope="props">
@@ -325,10 +324,10 @@
                       <span>{{ props.row.SubmissionHostName }}</span>
                     </el-form-item>
                     <el-form-item label="开始时间">
-                      <span>{{ props.row.StartTime }}</span>
+                      <span>{{ props.row.ExecuteTime }}</span>
                     </el-form-item>
                     <el-form-item label="运行时间">
-                      <span>{{ props.row.ExecuteDuration }}</span>
+                      <span>{{ props.row.time }}</span>
                     </el-form-item>
                     <el-form-item label="结束时间">
                       <span>{{ props.row.EndTime }}</span>
@@ -368,12 +367,12 @@
               </el-table-column>
               <el-table-column label="开始时间" show-overflow-tooltip>
                 <template v-slot="{row}">
-                  <span>{{ row.StartTime }}</span>
+                  <span>{{ row.ExecuteTime }}</span>
                 </template>
               </el-table-column>
               <el-table-column label="运行时间">
                 <template v-slot="{row}">
-                  <span>{{ row.ExecuteDuration }}</span>
+                  <span>{{ row.time }}</span>
                 </template>
               </el-table-column>
               <el-table-column label="提交用户" width="140">
@@ -383,15 +382,6 @@
               </el-table-column>
             </el-table>
           </el-main>
-          <el-footer class="pagination">
-            <pagination
-              v-show="page.total>0"
-              :total="page.total"
-              :page.sync="page.currentPage"
-              :limit.sync="page.pageSize"
-              @pagination="getFinishList"
-            />
-          </el-footer>
         </el-container>
       </el-tab-pane> -->
       <el-tab-pane name="FINISH">
@@ -412,10 +402,19 @@
                   value-format="yyyy-MM-dd HH:mm:ss"
                 />
               </div>
-              <search :items="selected.items" @change="searchChanged" />
               <el-button type="primary" size="mini" @click="getFinishList">
                 <i class="el-icon-refresh-right" /> 刷新
               </el-button>
+              <search :items="DoneSelected.items" @change="searchChanged" />
+              <div class="pagination">
+                <pagination
+                  v-show="page.total>0"
+                  :total="page.total"
+                  :page.sync="page.currentPage"
+                  :limit.sync="page.pageSize"
+                  @pagination="getFinishList"
+                />
+              </div>
             </div>
             <el-table
               v-loading="loading"
@@ -424,7 +423,7 @@
               fit
               highlight-current-row
               style="width: 100%"
-              max-height="610px"
+              max-height="750px"
             >
               <el-table-column type="expand">
                 <template slot-scope="props">
@@ -462,10 +461,10 @@
                       <span>{{ props.row.SubmissionHostName }}</span>
                     </el-form-item>
                     <el-form-item label="开始时间">
-                      <span>{{ props.row.StartTime }}</span>
+                      <span>{{ props.row.ExecuteTime }}</span>
                     </el-form-item>
-                    <el-form-item label="运行时间">
-                      <span>{{ props.row.ExecuteDuration }}</span>
+                    <el-form-item label="运行时长">
+                      <span>{{ props.row.time }}</span>
                     </el-form-item>
                     <el-form-item label="结束时间">
                       <span>{{ props.row.EndTime }}</span>
@@ -502,12 +501,17 @@
               </el-table-column>
               <el-table-column label="开始时间" show-overflow-tooltip>
                 <template v-slot="{row}">
-                  <span>{{ row.StartTime }}</span>
+                  <span>{{ row.ExecuteTime }}</span>
                 </template>
               </el-table-column>
-              <el-table-column label="运行时间">
+              <el-table-column label="运行时长">
                 <template v-slot="{row}">
-                  <span>{{ row.ExecuteDuration }}</span>
+                  <span>{{ row.time }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="费用">
+                <template v-slot="{row}">
+                  <span>{{ row.TotalCost }}</span>
                 </template>
               </el-table-column>
               <el-table-column label="提交用户" width="140">
@@ -517,15 +521,6 @@
               </el-table-column>
             </el-table>
           </el-main>
-          <el-footer class="pagination">
-            <pagination
-              v-show="page.total>0"
-              :total="page.total"
-              :page.sync="page.currentPage"
-              :limit.sync="page.pageSize"
-              @pagination="getFinishList"
-            />
-          </el-footer>
         </el-container>
       </el-tab-pane>
     </el-tabs>
@@ -537,13 +532,12 @@ import {
   GetRunTaskList,
   GetPendTaskList,
   GetTaskList,
-  GetJobNameList,
   GetJobIDList,
   GetJobIDHost
 } from '@/api/monitor'
 import { syncHost } from '@/api/sync'
 
-import { formatDate } from '@/utils/format'
+import { formatDate, formatDiff } from '@/utils/format'
 
 /* import SockJS from "sockjs-client";
 import Stomp from "stompjs";
@@ -629,6 +623,33 @@ export default {
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
               picker.$emit('pick', [start, end])
             }
+          },
+          {
+            text: '最近三个月',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30 * 3)
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
+            text: '最近六个月',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30 * 6)
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
+            text: '最近一年',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30 * 12)
+              picker.$emit('pick', [start, end])
+            }
           }
         ]
       },
@@ -650,6 +671,14 @@ export default {
       setTime: null,
       // 查询数据
       selected: {
+        items: [
+          {
+            value: 'JobID',
+            label: '作业ID'
+          }
+        ]
+      },
+      DoneSelected: {
         items: [
           {
             value: 'name',
@@ -680,7 +709,6 @@ export default {
     }
   },
   created() {
-    console.log(this.$route.params.Status)
     if (this.$route.params.Status) {
       const tab = {}
       tab.name = this.$route.params.Status
@@ -701,13 +729,16 @@ export default {
       const _this = this
       _this.loading = true
       const params = {
-        PageSize: _this.page.pageSize,
-        PageNumber: _this.page.currentPage
+        page: {
+          PageSize: _this.page.pageSize,
+          PageNumber: _this.page.currentPage
+        }
       }
       GetRunTaskList(params)
         .then(res => {
           _this.devices = res.Inventory.ResultData.map(function(item, index) {
-            item.StartTime = formatDate(item.StartTime, 'yyyy-MM-dd hh:mm:ss')
+            item.ExecuteTime = formatDate(item.ExecuteTime, 'yyyy-MM-dd hh:mm:ss')
+            item.time = formatDiff(item.ExecuteTime)
             if (item.JobStatus === '') {
               item.JobStatus = 'RUN'
             }
@@ -721,7 +752,12 @@ export default {
                   message: '同步失败'
                 })
               })
-            return item
+            if (item.Host) {
+              return item
+            } else {
+              item.Host = []
+              return item
+            }
           })
           _this.page.total = res.Inventory.TotalNumber
           // _this.page.pageCount = res.Inventory.totalCount;
@@ -729,6 +765,7 @@ export default {
         })
         .catch(res => {
           console.log(res)
+          _this.loading = false
         })
       /* let herfUrl = window.location.hostname;
       //let ws = new WebSocket(`ws://${herfUrl}:878`);
@@ -765,13 +802,16 @@ export default {
       const _this = this
       _this.loading = true
       const params = {
-        PageSize: _this.page.pageSize,
-        PageNumber: _this.page.currentPage
+        page: {
+          PageSize: _this.page.pageSize,
+          PageNumber: _this.page.currentPage
+        }
       }
       GetPendTaskList(params)
         .then(res => {
           _this.devices = res.Inventory.ResultData.map(function(item, index) {
             item.SubmitTime = formatDate(item.SubmitTime, 'yyyy-MM-dd hh:mm:ss')
+            item.time = formatDiff(item.SubmitTime)
             return item
           })
           _this.page.total = res.Inventory.TotalNumber
@@ -780,29 +820,43 @@ export default {
         })
         .catch(res => {
           console.log(res)
+          _this.loading = false
         })
     },
 
-    getFinishList() {
+    getFinishList(query) {
       const _this = this
       _this.loading = true
+      const queryObj = {}
+      const timeObj = {
+        StartTime: '1970-10-01 00:00:00',
+        EndTime: formatDate(new Date(), 'yyyy-MM-dd hh:mm:ss')
+      }
+      if (query) {
+        queryObj.HostName = query.value
+      }
+      if (_this.dateTime) {
+        timeObj.StartTime = formatDate(_this.dateTime[0], 'yyyy-MM-dd hh:mm:ss')
+        timeObj.EndTime = formatDate(_this.dateTime[1], 'yyyy-MM-dd hh:mm:ss')
+      }
       const params = {
         page: {
           PageSize: _this.page.pageSize,
           PageNumber: _this.page.currentPage
         },
-        query: {},
-        time: {
-          StartTime: formatDate(_this.dateTime[0], 'yyyy-MM-dd hh:mm:ss'),
-          EndTime: formatDate(_this.dateTime[1], 'yyyy-MM-dd hh:mm:ss')
-        }
+        query: queryObj,
+        time: timeObj
       }
-      console.log(params)
       GetTaskList(params)
         .then(res => {
           _this.devices = res.Inventory.ResultData.map(function(item, index) {
-            item.StartTime = formatDate(item.StartTime, 'yyyy-MM-dd hh:mm:ss')
             item.EndTime = formatDate(item.EndTime, 'yyyy-MM-dd hh:mm:ss')
+            if (item.ExecuteTime) {
+              item.ExecuteTime = formatDate(item.ExecuteTime, 'yyyy-MM-dd hh:mm:ss')
+              item.time = formatDiff(item.ExecuteTime, item.EndTime)
+            } else {
+              item.time = '0秒'
+            }
             return item
           })
           _this.page.total = res.Inventory.TotalNumber
@@ -811,6 +865,7 @@ export default {
         })
         .catch(res => {
           console.log(res)
+          _this.loading = false
         })
     },
 
@@ -867,51 +922,40 @@ export default {
     searchChanged(data) {
       const _this = this
       if (data.select === 'name') {
-        _this.loading = true
-        const params = {
-          page: {
-            PageSize: _this.page.pageSize,
-            PageNumber: _this.page.currentPage
-          },
-          query: {
-            job_name: data.value
-          }
+        if (data.value === '') {
+          _this.getFinishList()
+        } else {
+          _this.getFinishList(data)
         }
-        GetJobNameList(params)
-          .then(res => {
-            _this.devices = res.Inventory.ResultData.map(function(item, index) {
-              // 保存一份原始数据，便于取消编辑的时候还原数据
-              const original = _this._.cloneDeep(item)
-              item.original = original
-              _this.$set(item, 'edit', false)
-              return item
-            })
-            _this.page.total = res.Inventory.TotalNumber
-            _this.loading = false
-          })
-          .catch(res => {
-            console.log(res)
-          })
       } else if (data.select === 'JobID') {
-        _this.loading = true
-        GetJobIDList(data.value)
-          .then(res => {
-            _this.devices = []
-            _this.devices.push(res.Inventory)
-            _this.devices = _this.devices.map(function(item, index) {
+        if (data.value === '' && _this.activeName === 'RUN') {
+          _this.getList()
+        } else if (data.value === '' && _this.activeName === 'PEND') {
+          _this.getPendList()
+        } else if (data.value === '' && _this.activeName === 'FINISH') {
+          _this.getFinishList()
+        } else {
+          _this.loading = true
+          GetJobIDList(data.value)
+            .then(res => {
+              _this.devices = []
+              _this.devices.push(res.Inventory)
+              _this.devices = _this.devices.map(function(item, index) {
               // 保存一份原始数据，便于取消编辑的时候还原数据
-              const original = _this._.cloneDeep(item)
-              item.original = original
-              _this.$set(item, 'edit', false)
-              return item
-            })
-            /* _this.page.total = res.data.pageResultData.totalDataNumber;
+                const original = _this._.cloneDeep(item)
+                item.original = original
+                _this.$set(item, 'edit', false)
+                return item
+              })
+              /* _this.page.total = res.data.pageResultData.totalDataNumber;
           _this.page.pageCount = res.data.pageResultData.totalCount; */
-            _this.loading = false
-          })
-          .catch(res => {
-            console.log(res)
-          })
+              _this.loading = false
+            })
+            .catch(res => {
+              console.log(res)
+              _this.loading = false
+            })
+        }
       }
     }
   }
@@ -937,22 +981,22 @@ export default {
 .hasten .el-button {
   height: 36px;
   line-height: 0;
-  float: right;
-  margin-left: 10px;
+  float: left;
+  margin-right: 10px;
+  margin-left: 0px;
 }
 
 .hasten .refreshBut {
-  float: right;
+  float: left;
 }
 
 .hasten .headBut {
   margin-right: 10px;
-  margin-left: 0px;
   float: left;
 }
 
 .pagination {
-  text-align: right;
+  float: right;
 }
 
 .table-expand {

@@ -6,13 +6,22 @@
           <el-button class="headBut" type="primary" size="mini" @click="saveEntity">
             <i class="el-icon-plus" /> 创建用户组
           </el-button>
-          <search :items="selected.items" @change="searchChanged" />
           <el-button type="primary" size="mini" @click="getList">
             <i class="el-icon-refresh-right" /> 刷新
           </el-button>
           <el-button type="primary" size="mini" @click="sync">
             <i class="el-icon-refresh" /> 同步
           </el-button>
+          <search :items="selected.items" @change="searchChanged" />
+          <div class="pagination">
+            <pagination
+              v-show="page.total>0"
+              :total="page.total"
+              :page.sync="page.currentPage"
+              :limit.sync="page.pageSize"
+              @pagination="getList"
+            />
+          </div>
         </div>
         <el-table
           v-loading="loading"
@@ -21,7 +30,7 @@
           fit
           highlight-current-row
           style="width: 100%"
-          max-height="610px"
+          max-height="750px"
         >
           <el-table-column label="ID" width="150">
             <template v-slot="{row}">
@@ -128,15 +137,6 @@
           </el-form>
         </el-dialog>
       </el-main>
-      <el-footer class="pagination">
-        <pagination
-          v-show="page.total>0"
-          :total="page.total"
-          :page.sync="page.currentPage"
-          :limit.sync="page.pageSize"
-          @pagination="getList"
-        />
-      </el-footer>
     </el-container>
   </div>
 </template>
@@ -144,7 +144,6 @@
 <script>
 import {
   GetUserGroupList,
-  GetGroupIDList,
   GetGroupIDUser,
   CreateUserGroup,
   ChangeUserGroup,
@@ -202,11 +201,6 @@ export default {
       }
     }
   },
-  watch: {
-    devices() {
-      this.page.total = this.devices.length
-    }
-  },
   created() {
     this.getList()
     if (this.$route.params.data) {
@@ -216,43 +210,50 @@ export default {
     }
   },
   methods: {
-    getList() {
+    getList(query) {
       const _this = this
       _this.loading = true
+      const obj = {}
+      if (query) {
+        if (query.select === 'name') {
+          obj.username = query.value
+        } else if (query.select === 'ID') {
+          obj.uid = query.value
+        }
+      }
       const params = {
-        pageOption: {
-          pageNumber: _this.page.currentPage, // 当前页数
-          pageSize: _this.page.pageSize // 每一页显示条数
+        page: {
+          PageNumber: _this.page.currentPage, // 当前页数
+          PageSize: _this.page.pageSize // 每一页显示条数
         },
-        selectOption: {}
+        query: obj
       }
-      if (_this.searchValue !== '') {
-        params.selectOption.name = _this.searchValue
-      }
-      GetUserGroupList()
-        .then(res => {
+      GetUserGroupList(params)
+        .then(async res => {
           _this.devices = []
-          res.Inventory.map(async function(item, index) {
-            try {
-              const data = await GetGroupIDUser(item.groupID)
+          res.Inventory.ResultData.map(function(item, index) {
+            GetGroupIDUser(item.groupID).then(data => {
               item.users = data.Inventory
-              // 保存一份原始数据，便于取消编辑的时候还原数据
-              const original = _this._.cloneDeep(item)
-              item.original = original
-              _this.$set(item, 'edit', false)
+            }).catch(res => {
+              console.log('err ' + res + ' end')
+            })
+            // 保存一份原始数据，便于取消编辑的时候还原数据
+            const original = _this._.cloneDeep(item)
+            item.original = original
+            _this.$set(item, 'edit', false)
+            if (item.users) {
               _this.devices.push(item)
-            } catch (e) {
-              _this.$message({
-                type: 'error',
-                message: '获取失败'
-              })
+            } else {
+              item.users = []
+              _this.devices.push(item)
             }
           })
-          // _this.page.total = _this.devices.length
+          _this.page.total = res.Inventory.TotalNumber
           _this.loading = false
         })
         .catch(res => {
           console.log(res)
+          _this.loading = false
         })
     },
 
@@ -323,7 +324,8 @@ export default {
     // 搜索
     searchChanged(data) {
       const _this = this
-      if (data.select === 'name') {
+      _this.getList(data)
+      /* if (data.select === 'name') {
         _this.$message({
           message: '名称暂时无法查询',
           type: 'warning',
@@ -349,14 +351,12 @@ export default {
                 message: '获取失败'
               })
             }
-            /* _this.page.total = res.data.pageResultData.totalDataNumber;
-          _this.page.pageCount = res.data.pageResultData.totalCount; */
             _this.loading = false
           })
           .catch(res => {
             console.log(res)
           })
-      }
+      } */
     },
 
     // 跳转用户
@@ -461,8 +461,8 @@ export default {
 .hasten .el-button {
   height: 36px;
   line-height: 0;
-  float: right;
-  margin-left: 10px;
+  float: left;
+  margin-right: 10px;
 }
 
 .hasten .headBut {
@@ -472,7 +472,7 @@ export default {
 }
 
 .pagination {
-  text-align: right;
+  float: right;
 }
 
 .app-container .el-table .userLink {

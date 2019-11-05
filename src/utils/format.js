@@ -29,9 +29,14 @@ export function formatDate(times, pattern) {
   return d.toLocaleString()
 }
 
-export function formatDiff(time) {
-  const Time1 = new Date(time)
-  const Time2 = (new Date().getTime() - Time1.getTime()) / 1000
+export function formatDiff(startTime, endTime) {
+  const Time1 = new Date(startTime)
+  let Time2
+  if (endTime) {
+    Time2 = (new Date(endTime).getTime() - Time1.getTime()) / 1000
+  } else {
+    Time2 = (new Date().getTime() - Time1.getTime()) / 1000
+  }
   const m = 60
   const h = 3600
   const d = 3600 * 24

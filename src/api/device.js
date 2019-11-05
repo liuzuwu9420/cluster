@@ -10,11 +10,13 @@ const v = 'v1'
 
 /**
  * 获取所有节点简单信息
+ * @param {*} params 节点参数
  */
-export function GetList() {
+export function GetList(params) {
   return request({
     url: `/api/${v}/hosts`,
-    method: 'get'
+    method: 'get',
+    params
   })
 }
 /**

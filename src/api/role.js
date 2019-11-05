@@ -10,11 +10,13 @@ const v = 'v1'
 
 /**
  * 获取用户信息
+ * @param {*} params 查询参数
  */
-export function GetUserList() {
+export function GetUserList(params) {
   return request({
     url: `/api/${v}/users`,
-    method: 'get'
+    method: 'get',
+    params
   })
 }
 
@@ -122,11 +124,13 @@ export function ChangeBill(data) {
 
 /**
  * 获取用户组信息
+ * @param {*} params 查询参数
  */
-export function GetUserGroupList() {
+export function GetUserGroupList(params) {
   return request({
     url: `/api/${v}/groups`,
-    method: 'get'
+    method: 'get',
+    params
   })
 }
 

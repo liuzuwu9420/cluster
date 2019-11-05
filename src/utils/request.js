@@ -1,6 +1,7 @@
 import axios from 'axios'
 import store from '@/store'
-// import Jsrsasign from 'jsrsasign'
+import router from '@/router'
+import Jsrsasign from 'jsrsasign'
 import { getToken } from '@/utils/auth'
 // create an axios instance
 const service = axios.create({
@@ -19,13 +20,19 @@ service.interceptors.request.use(
     // do something before request is sent
 
     if (store.getters.token) {
-      /* var isValid = Jsrsasign.KJUR.jws.JWS.verifyJWT('eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzeXN0ZW0iLCJzdWIiOiJ7XCJVc2VybmFtZVwiOlwicm9vdFwifSIsImV4cCI6MTU3MjQwMDQxNCwiaWF0IjoxNTcyMzk5ODE0LCJqdGkiOiIzOWM5OGJiMC0yZjFjLTQzOWEtYjkwOC0wZDY4YzkwN2ZiYjcifQ.-MHA3-J-vJVmt_VeS8TEYuJqQtUr2gwZ5DdYR5OJNC8', '', { alg: ['HS256'] })
-      console.log(isValid) */
+      // { utf8: '12345678' } 和 { b64: 'MTIzNDU2Nzg=' }两种验证格式
+      var isValid = Jsrsasign.KJUR.jws.JWS.verifyJWT(getToken(), { b64: 'MTIzNDU2Nzg=' }, { alg: ['HS256'] })
+      if (isValid) {
+        config.headers.Authorization = 'Bearer' + getToken()
+      } else {
+        store.dispatch('user/logout')
+        router.push(`/login?redirect=/dashboard`)
+      }
       // let each request carry token
       // ['X-Token'] is a custom headers key
       // please modify it according to the actual situation
       // config.headers['X-Token'] = getToken()
-      config.headers.Authorization = getToken()
+      // config.headers.Authorization = getToken()
     }
     return config
   },
@@ -49,10 +56,14 @@ service.interceptors.response.use(
     }
     return res
   }, (error) => {
-    if (error.response.status === 401) {
-      return false
+    if (error.response) {
+      if (error.response.status === 401) {
+        return false
+      }
+      return Promise.reject(error)
+    } else {
+      return Promise.reject(error)
     }
-    return Promise.reject(error)
   }
 )
 

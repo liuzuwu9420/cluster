@@ -6,13 +6,22 @@
           <el-button class="headBut" type="primary" size="mini" @click="saveEntity">
             <i class="el-icon-plus" /> 创建用户
           </el-button>
-          <search :items="selected.items" @change="searchChanged" />
           <el-button type="primary" size="mini" @click="getList">
             <i class="el-icon-refresh-right" /> 刷新
           </el-button>
           <el-button type="primary" size="mini" @click="sync">
             <i class="el-icon-refresh" /> 同步
           </el-button>
+          <search :items="selected.items" @change="searchChanged" />
+          <div class="pagination">
+            <pagination
+              v-show="page.total>0"
+              :total="page.total"
+              :page.sync="page.currentPage"
+              :limit.sync="page.pageSize"
+              @pagination="getList"
+            />
+          </div>
         </div>
         <el-table
           v-loading="loading"
@@ -21,7 +30,7 @@
           fit
           highlight-current-row
           style="width: 100%"
-          max-height="610px"
+          max-height="750px"
         >
           <el-table-column label="ID" width="120">
             <template v-slot="{row}">
@@ -184,15 +193,6 @@
           </el-form>
         </el-dialog>
       </el-main>
-      <el-footer class="pagination">
-        <pagination
-          v-show="page.total>0"
-          :total="page.total"
-          :page.sync="page.currentPage"
-          :limit.sync="page.pageSize"
-          @pagination="getList"
-        />
-      </el-footer>
     </el-container>
   </div>
 </template>
@@ -200,7 +200,6 @@
 <script>
 import {
   GetUserList,
-  GetIDUser,
   GetIDUserGroup,
   CreateUser,
   DeleteUser,
@@ -338,26 +337,28 @@ export default {
     this.getList()
   },
   methods: {
-    getList() {
+    getList(query) {
       const _this = this
       _this.loading = true
+      const obj = {}
+      if (query) {
+        if (query.select === 'name') {
+          obj.username = query.value
+        } else if (query.select === 'ID') {
+          obj.uid = query.value
+        }
+      }
       const params = {
-        pageOption: {
-          pageNumber: _this.page.currentPage, // 当前页数
-          pageSize: _this.page.pageSize // 每一页显示条数
+        page: {
+          PageNumber: _this.page.currentPage, // 当前页数
+          PageSize: _this.page.pageSize // 每一页显示条数
         },
-        selectOption: {}
+        query: obj
       }
-      if (_this.name !== '') {
-        params.selectOption.name = _this.name
-      }
-      if (_this.statustype !== '') {
-        params.selectOption.type = _this.statustype
-      }
-      GetUserList()
+      GetUserList(params)
         .then(res => {
           _this.devices = []
-          res.Inventory.map(async function(item, index) {
+          res.Inventory.ResultData.map(async function(item, index) {
             try {
               const data = await GetIDUserGroup(item.uid)
               item.group = data.Inventory
@@ -374,18 +375,20 @@ export default {
               })
             }
           })
-          // _this.page.total = _this.devices.length
+          _this.page.total = res.Inventory.TotalNumber
           _this.loading = false
         })
         .catch(res => {
           console.log(res)
+          _this.loading = false
         })
     },
 
     // 搜索
     searchChanged(data) {
       const _this = this
-      if (data.select === 'name') {
+      _this.getList(data)
+      /* if (data.select === 'name') {
         _this.$message({
           message: '名称暂时无法查询',
           type: 'warning',
@@ -405,14 +408,13 @@ export default {
               _this.$set(item, 'edit', false)
               return item
             })
-            /* _this.page.total = res.data.pageResultData.totalDataNumber;
-          _this.page.pageCount = res.data.pageResultData.totalCount; */
             _this.loading = false
           })
           .catch(res => {
             console.log(res)
+            _this.loading = false
           })
-      }
+      } */
     },
 
     saveEntity() {
@@ -595,8 +597,8 @@ export default {
 .hasten .el-button {
   height: 36px;
   line-height: 0;
-  float: right;
-  margin-left: 10px;
+  float: left;
+  margin-right: 10px;
 }
 
 .hasten .headBut {
@@ -606,7 +608,7 @@ export default {
 }
 
 .pagination {
-  text-align: right;
+  float: right;
 }
 
 .app-container .el-table .GroupLink {

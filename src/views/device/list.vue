@@ -6,56 +6,66 @@
           <el-button class="headBut" type="primary" size="mini" @click="saveEntity">
             <i class="el-icon-plus" /> 添加主机
           </el-button>
-          <search :items="selected.items" @change="searchChanged" />
           <el-button type="primary" size="mini" @click="getList">
             <i class="el-icon-refresh-right" /> 刷新
           </el-button>
+          <search :items="selected.items" @change="searchChanged" />
+          <div class="pagination">
+            <pagination
+              v-show="page.total>0"
+              :total="page.total"
+              :page.sync="page.currentPage"
+              :limit.sync="page.pageSize"
+              @pagination="getList"
+            />
+          </div>
         </div>
-        <el-table
-          v-loading="loading"
-          :data="devices"
-          element-loading-text="Loading"
-          fit
-          highlight-current-row
-          style="width: 100%"
-          max-height="610px"
-        >
-          <el-table-column type="expand">
-            <template slot-scope="props">
-              <el-form label-position="left" inline class="table-expand">
-                <el-form-item label="物理CPU个数">
-                  <span>{{ props.row.facter_processors.physicalcount }}</span>
-                </el-form-item>
-                <el-form-item label="CPU信息">
-                  <span>{{ props.row.facter_processors.models[0] }}</span>
-                </el-form-item>
-                <el-form-item label="平台">
-                  <span>{{ props.row.ansible_system }}</span>
-                </el-form-item>
-                <el-form-item label="操作系统">
-                  <span>{{ props.row.ansible_distribution }}</span>
-                </el-form-item>
-                <el-form-item label="系统版本">
-                  <span>{{ props.row.ansible_distribution_version }}</span>
-                </el-form-item>
-                <el-form-item label="标签">
-                  <span><el-tag v-for="(tag, index) in props.row.Tags" :key="index">{{ tag }}</el-tag></span>
-                </el-form-item>
-                <el-form-item label="描述" class="form-item-finish">
-                  <span>{{ props.row.Desc }}</span>
-                </el-form-item>
-              </el-form>
-            </template>
-          </el-table-column>
-          <el-table-column label="节点名称" width="120">
-            <template v-slot="{row}">
-              <template v-if="row.edit">
-                <el-input v-model="row.HostName" class="edit-input" size="small" />
+        <div class="table-info">
+          <el-table
+            v-loading="loading"
+            :data="devices"
+            element-loading-text="Loading"
+            fit
+            highlight-current-row
+            style="width: 100%"
+            max-height="750px"
+          >
+            <el-table-column type="expand">
+              <template slot-scope="props">
+                <el-form label-position="left" inline class="table-expand">
+                  <el-form-item label="物理CPU个数">
+                    <span>{{ props.row.facter_processors.physicalcount }}</span>
+                  </el-form-item>
+                  <el-form-item label="CPU信息">
+                    <span>{{ props.row.facter_processors.models[0] }}</span>
+                  </el-form-item>
+                  <el-form-item label="平台">
+                    <span>{{ props.row.ansible_system }}</span>
+                  </el-form-item>
+                  <el-form-item label="操作系统">
+                    <span>{{ props.row.ansible_distribution }}</span>
+                  </el-form-item>
+                  <el-form-item label="系统版本">
+                    <span>{{ props.row.ansible_distribution_version }}</span>
+                  </el-form-item>
+                  <el-form-item label="标签">
+                    <span><el-tag v-for="(tag, index) in props.row.Tags" :key="index">{{ tag }}</el-tag></span>
+                  </el-form-item>
+                  <el-form-item label="描述" class="form-item-finish">
+                    <span>{{ props.row.Desc }}</span>
+                  </el-form-item>
+                </el-form>
               </template>
-              <span v-else>{{ row.HostName }}</span>
-            </template>
-          </el-table-column>
-          <!-- <el-table-column label="标签">
+            </el-table-column>
+            <el-table-column label="节点名称" width="120">
+              <template v-slot="{row}">
+                <template v-if="row.edit">
+                  <el-input v-model="row.HostName" class="edit-input" size="small" />
+                </template>
+                <span v-else class="hostName" @click="showSidepage(row)">{{ row.HostName }}</span>
+              </template>
+            </el-table-column>
+            <!-- <el-table-column label="标签">
             <template v-slot="{row}">
               <template v-if="row.edit">
                 <tags :tags="row.Tags" size="mini" />
@@ -65,30 +75,30 @@
               </span>
             </template>
           </el-table-column> -->
-          <el-table-column label="状态" width="100" align="center">
-            <template v-slot="{row}">
-              <el-tag size="mini" :type="statusMap[row.Status].type">{{ row.Status | Status }}</el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column label="IP" width="140" align="center">
-            <template v-slot="{row}">
-              <template v-if="row.edit">
-                <el-input v-model="row.HostIP" class="edit-input" size="small" />
+            <el-table-column label="状态" width="100" align="center">
+              <template v-slot="{row}">
+                <el-tag size="mini" :type="statusMap[row.Status].type">{{ row.Status | Status }}</el-tag>
               </template>
-              <span v-else>{{ row.HostIP }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="硬件配置" align="center">
-            <template v-slot="{row}">
-              <span>{{ row.HostInfo }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="产品名/系统供应商" align="center">
-            <template v-slot="{row}">
-              <span>{{ row.ansible_product_name }} / {{ row.ansible_system_vendor }}</span>
-            </template>
-          </el-table-column>
-          <!-- <el-table-column label="描述">
+            </el-table-column>
+            <el-table-column label="IP" width="140" align="center">
+              <template v-slot="{row}">
+                <template v-if="row.edit">
+                  <el-input v-model="row.HostIP" class="edit-input" size="small" />
+                </template>
+                <span v-else>{{ row.HostIP }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="硬件配置" align="center">
+              <template v-slot="{row}">
+                <span>{{ row.HostInfo }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="产品名/系统供应商" align="center">
+              <template v-slot="{row}">
+                <span>{{ row.ansible_product_name }} / {{ row.ansible_system_vendor }}</span>
+              </template>
+            </el-table-column>
+            <!-- <el-table-column label="描述">
             <template v-slot="{row}">
               <template v-if="row.edit">
                 <el-input v-model="row.Desc" class="edit-input" size="small" />
@@ -96,36 +106,36 @@
               <span v-else>{{ row.Desc }}</span>
             </template>
           </el-table-column> -->
-          <el-table-column fixed="right" label="操作" width="120" align="center">
-            <template v-slot="{row}">
-              <el-button-group>
-                <!-- 编辑模式：确定 -->
-                <el-button
-                  v-if="row.edit"
-                  type="warning"
-                  size="mini"
-                  icon="el-icon-circle-check-outline"
-                  @click="confirmEdit(row)"
-                >确定</el-button>
-                <!-- 编辑模式：取消 -->
-                <el-button
-                  v-if="row.edit"
-                  type="success"
-                  size="mini"
-                  icon="el-icon-circle-check-outline"
-                  @click="cancelEdit(row)"
-                >取消</el-button>
-
-                <!-- 查看详情 -->
-                <el-tooltip class="item" effect="dark" content="查看" placement="top-end">
+            <el-table-column fixed="right" label="操作" width="120" align="center">
+              <template v-slot="{row}">
+                <el-button-group>
+                  <!-- 编辑模式：确定 -->
                   <el-button
-                    v-if="!row.edit"
-                    type="success"
-                    icon="el-icon-view"
+                    v-if="row.edit"
+                    type="warning"
                     size="mini"
-                    @click="info(row)"
-                  />
-                </el-tooltip>
+                    icon="el-icon-circle-check-outline"
+                    @click="confirmEdit(row)"
+                  >确定</el-button>
+                  <!-- 编辑模式：取消 -->
+                  <el-button
+                    v-if="row.edit"
+                    type="success"
+                    size="mini"
+                    icon="el-icon-circle-check-outline"
+                    @click="cancelEdit(row)"
+                  >取消</el-button>
+
+                  <!-- 查看详情 -->
+                  <el-tooltip class="item" effect="dark" content="查看" placement="top-end">
+                    <el-button
+                      v-if="!row.edit"
+                      type="success"
+                      icon="el-icon-view"
+                      size="mini"
+                      @click="info(row)"
+                    />
+                  </el-tooltip>
                 <!-- <el-tooltip class="item" effect="dark" content="编辑" placement="top-end">
                   <el-button
                     v-if="!row.edit"
@@ -144,10 +154,12 @@
                     @click="deleteItem(row)"
                   />
                 </el-tooltip> -->
-              </el-button-group>
-            </template>
-          </el-table-column>
-        </el-table>
+                </el-button-group>
+              </template>
+            </el-table-column>
+          </el-table>
+          <sidepage :sidepagedata.sync="sidepagedata" />
+        </div>
         <el-dialog :title="titleHead" :visible.sync="dialogCreating" width="50%">
           <el-form
             ref="create"
@@ -185,15 +197,6 @@
           </el-form>
         </el-dialog>
       </el-main>
-      <el-footer class="pagination">
-        <pagination
-          v-show="page.total>0"
-          :total="page.total"
-          :page.sync="page.currentPage"
-          :limit.sync="page.pageSize"
-          @pagination="getList"
-        />
-      </el-footer>
     </el-container>
   </div>
 </template>
@@ -201,7 +204,6 @@
 <script>
 import {
   GetList,
-  GetNodeList,
   GetNodeInfo,
   SaveNodeEntity,
   UpdateEntityOne,
@@ -211,6 +213,8 @@ import {
 import Pagination from '@/components/Pagination'
 import Search from '@/components/Search'
 import Tags from '@/components/Tags'
+
+import Sidepage from './components/Sidepage'
 
 const statusMap = {
   OFF: {
@@ -240,7 +244,8 @@ export default {
   components: {
     Pagination,
     Search,
-    Tags
+    Tags,
+    Sidepage
   },
   filters: {
     Status(Status) {
@@ -314,6 +319,11 @@ export default {
             trigger: 'blur'
           }
         ]
+      },
+      // Sidepage
+      sidepagedata: {
+        devices: {},
+        sidepageShow: false
       }
     }
   },
@@ -321,14 +331,25 @@ export default {
     this.getList()
   },
   methods: {
-    getList() {
+    getList(query) {
       const _this = this
       _this.loading = true
-      // const params = {}
-      GetList()
+      const obj = {}
+      if (query) {
+        if (query.select === 'name') {
+          obj.HostName = query.value
+        } else if (query.select === 'UUID') {
+          obj.UUID = query.value
+        }
+      }
+      const params = {
+        page: { 'PageSize': _this.page.pageSize, 'PageNumber': _this.page.currentPage },
+        query: obj
+      }
+      GetList(params)
         .then(res => {
           _this.devices = []
-          res.Inventory.map(function(item, index) {
+          res.Inventory.ResultData.map(function(item, index) {
             if (item.Tags) {
               item.Tags = item.Tags.split('|')
             }
@@ -390,18 +411,20 @@ export default {
               _this.devices.push(item)
             }
           })
-          _this.page.total = _this.devices.length
+          _this.page.total = res.Inventory.TotalNumber
           _this.loading = false
         })
         .catch(res => {
           console.log(res)
+          _this.loading = false
         })
     },
 
     // 搜索
     searchChanged(data) {
       const _this = this
-      if (data.select === 'name') {
+      _this.getList(data)
+      /* if (data.select === 'name') {
         _this.$message({
           message: '名称暂时无法查询',
           type: 'warning',
@@ -421,14 +444,19 @@ export default {
               return item
             })
             _this.page.total = _this.devices.length
-            /* _this.page.total = res.data.pageResultData.totalDataNumber;
-          _this.page.pageCount = res.data.pageResultData.totalCount; */
             _this.loading = false
           })
           .catch(res => {
             console.log(res)
           })
-      }
+      } */
+    },
+
+    // 显示Sidepage
+    showSidepage(row) {
+      const _this = this
+      _this.sidepagedata.devices = row
+      _this.sidepagedata.sidepageShow = true
     },
 
     saveEntity() {
@@ -567,7 +595,17 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.app-container {
+  height: 100%;
+  .el-container {
+    height: 100%;
+  }
+  .el-main {
+    overflow: hidden;
+  }
+}
+
 .hasten {
   width: 100%;
   height: 40px;
@@ -579,10 +617,11 @@ export default {
 	}*/
 
 .hasten .el-button {
-  margin-right: 2%;
+  margin-right: 10px;
+  margin-left: 0px;
   height: 36px;
   line-height: 0;
-  float: right;
+  float: left;
 }
 
 .hasten .headBut {
@@ -590,7 +629,13 @@ export default {
   float: left;
 }
 .pagination {
-  text-align: right;
+  float: right;
+}
+
+.table-info {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
 }
 
 .table-expand {
@@ -619,6 +664,24 @@ export default {
 .el-table .table-expand .form-item-finish {
   width: 100%;
 }
+
+.hostName {
+  color: #3c73b9;
+  cursor: pointer;
+}
+
+/* .tableInfo {
+  left: 170px;
+    position: absolute;
+    top: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    height: 100%;
+    border-right: 1px solid #fff;
+    z-index: 3000;
+    background: #fff;
+} */
 
 .app-container .el-dialog .el-row .size {
   line-height: 40px;

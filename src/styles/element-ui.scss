@@ -45,6 +45,15 @@
   }
 }
 
+.el-container .el-main {
+  padding: 0;
+}
+
+// table
+.el-table th {
+  background-color: #eff9ff;
+}
+
 //tab
 .el-tabs {
   height: 100%;
@@ -54,8 +63,13 @@
   height: 100%;
 }
 
-.el-container .el-main {
-  padding: 0;
+.el-tabs__item {
+  height: 44px;
+  line-height: 44px;
+}
+
+.tableInfo .el-tabs__header {
+  margin: 0;
 }
 
 // to fixed https://github.com/ElemeFE/element/issues/2461
@@ -87,7 +101,7 @@
 
 //Search
 .el-input-group__prepend {
-  width: 87px;
+  width: 90px;
   color: #333333;
   background-color: #FFF;
 }
