@@ -21,7 +21,7 @@ export function GetUserList(params) {
 }
 
 /**
- * 根据ID查询用户
+ * 根据ID查询用户(无用)
  * @id {*} id 查询ID
  */
 export function GetIDUser(id) {
@@ -37,7 +37,7 @@ export function GetIDUser(id) {
  */
 export function GetIDUserGroup(id) {
   return request({
-    url: `/api/${v}/users/${id}/group`,
+    url: `/api/${v}/users/${id}/groups`,
     method: 'get'
   })
 }
@@ -78,12 +78,14 @@ export function ChangeUser(data) {
 }
 
 /**
- * 获取计费信息
+ * 获取计费组信息
+ * @param {*} params 查询参数
  */
-export function GetBillList() {
+export function GetBillList(params) {
   return request({
-    url: `/api/${v}/users`,
-    method: 'get'
+    url: `/api/${v}/chargedGroups`,
+    method: 'get',
+    params
   })
 }
 
@@ -93,7 +95,31 @@ export function GetBillList() {
  */
 export function CreateBill(data) {
   return request({
-    url: `/api/${v}/hosts`,
+    url: `/api/${v}/chargedGroups`,
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 根据计费组UUID查询其所有的用户
+ * @param {*} params 计费组参数
+ */
+export function GetBillUser(params) {
+  return request({
+    url: `/api/${v}/chargedGroups/${params.UUID}/users`,
+    method: 'get',
+    params
+  })
+}
+
+/**
+ * 修改用户所在计费组
+ * @param {*} data 修改参数
+ */
+export function ChangeBillUser(data) {
+  return request({
+    url: `/api/${v}/chargedGroups/user`,
     method: 'post',
     data
   })
@@ -101,24 +127,12 @@ export function CreateBill(data) {
 
 /**
  * 删除计费组
- * @param {*} uuid 计费组id
+ * @param {*} uuid 计费组uuid
  */
-export function DeleteBill(uuid) {
+export function DeleteBillGroup(uuid) {
   return request({
-    url: `/api/${v}/hosts/${uuid}`,
+    url: `/api/${v}/chargedGroups/${uuid}`,
     method: 'delete'
-  })
-}
-
-/**
- * 修改计费组
- * @param {*} data 计费组参数
- */
-export function ChangeBill(data) {
-  return request({
-    url: `/api/${v}/hosts`,
-    method: 'post',
-    data
   })
 }
 
@@ -135,7 +149,7 @@ export function GetUserGroupList(params) {
 }
 
 /**
- * 根据ID获取用户组信息
+ * 根据ID获取用户组信息(无用)
  * @id {*} id 用户组id
  */
 export function GetGroupIDList(id) {
@@ -151,7 +165,7 @@ export function GetGroupIDList(id) {
  */
 export function GetGroupIDUser(id) {
   return request({
-    url: `/api/${v}/groups/${id}/user`,
+    url: `/api/${v}/groups/${id}/users`,
     method: 'get'
   })
 }

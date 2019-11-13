@@ -9,6 +9,9 @@
           <el-button type="primary" size="mini" @click="getList">
             <i class="el-icon-refresh-right" /> 刷新
           </el-button>
+          <el-button type="primary" size="mini" @click="sync">
+            <i class="el-icon-refresh" /> 同步
+          </el-button>
           <search :items="selected.items" @change="searchChanged" />
           <div class="pagination">
             <pagination
@@ -20,7 +23,7 @@
             />
           </div>
         </div>
-        <div class="table-info">
+        <div class="table-info el-scrollbar">
           <el-table
             v-loading="loading"
             :data="devices"
@@ -28,7 +31,8 @@
             fit
             highlight-current-row
             style="width: 100%"
-            max-height="750px"
+            height="100%"
+            max-height="807px"
           >
             <el-table-column type="expand">
               <template slot-scope="props">
@@ -49,7 +53,10 @@
                     <span>{{ props.row.ansible_distribution_version }}</span>
                   </el-form-item>
                   <el-form-item label="标签">
-                    <span><el-tag v-for="(tag, index) in props.row.Tags" :key="index">{{ tag }}</el-tag></span>
+                    <template v-if="props.row.edit">
+                      <tags :tags="props.row.Tags" size="mini" />
+                    </template>
+                    <span v-else><el-tag v-for="(tag, index) in props.row.Tags" :key="index">{{ tag.LabelName }}:{{ tag.LabelValue }}</el-tag></span>
                   </el-form-item>
                   <el-form-item label="描述" class="form-item-finish">
                     <span>{{ props.row.Desc }}</span>
@@ -88,12 +95,12 @@
                 <span v-else>{{ row.HostIP }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="硬件配置" align="center">
+            <el-table-column label="硬件配置" align="center" show-overflow-tooltip>
               <template v-slot="{row}">
                 <span>{{ row.HostInfo }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="产品名/系统供应商" align="center">
+            <el-table-column label="产品名/系统供应商" align="center" show-overflow-tooltip>
               <template v-slot="{row}">
                 <span>{{ row.ansible_product_name }} / {{ row.ansible_system_vendor }}</span>
               </template>
@@ -135,6 +142,17 @@
                       size="mini"
                       @click="info(row)"
                     />
+                  </el-tooltip>
+                  <!-- SSH -->
+                  <el-tooltip class="item" effect="dark" content="SSH" placement="top-end">
+                    <el-button
+                      v-if="!row.edit"
+                      type="info"
+                      size="mini"
+                      @click="SSHShow(row)"
+                    >
+                      SSH
+                    </el-button>
                   </el-tooltip>
                 <!-- <el-tooltip class="item" effect="dark" content="编辑" placement="top-end">
                   <el-button
@@ -184,9 +202,9 @@
             <el-form-item label="节点IP" prop="hostIp">
               <el-input v-model="create.hostIp" class="formInp" />
             </el-form-item>
-            <el-form-item label="标签" prop="tags">
+            <!-- <el-form-item label="标签" prop="tags">
               <tags :tags="create.dynamicTags" size="mini" />
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item label="描述" prop="desc">
               <el-input v-model="create.desc" type="textarea" :rows="2" class="formInp" />
             </el-form-item>
@@ -209,6 +227,8 @@ import {
   UpdateEntityOne,
   DeleteEntityOne
 } from '@/api/device'
+import { GetTags } from '@/api/tags'
+import { syncDevices } from '@/api/sync'
 
 import Pagination from '@/components/Pagination'
 import Search from '@/components/Search'
@@ -350,9 +370,11 @@ export default {
         .then(res => {
           _this.devices = []
           res.Inventory.ResultData.map(function(item, index) {
-            if (item.Tags) {
+            /* if (item.Tags !== '') {
               item.Tags = item.Tags.split('|')
-            }
+            } else {
+              item.Tags = []
+            } */
             if (item.HostIP) {
               const httpRequest = new XMLHttpRequest()
               httpRequest.open('GET', `http://16.16.18.61:9090/api/v1/query?query=up{job="node",instance="${item.HostIP}:9100"}`, true)
@@ -395,7 +417,18 @@ export default {
                 console.log(e)
                 _this.$message({
                   type: 'info',
-                  message: '详细信息展示失败'
+                  message: '详细信息获取失败'
+                })
+              })
+            GetTags(item.UUID)
+              .then(data => {
+                item.Tags = data.Inventory
+              })
+              .catch(e => {
+                console.log(e)
+                _this.$message({
+                  type: 'info',
+                  message: '标签信息获取失败'
                 })
               })
             // 保存一份原始数据，便于取消编辑的时候还原数据
@@ -408,6 +441,7 @@ export default {
               item.Status = 'ON'
               item.HostInfo = ''
               item.ansible_system_vendor = ''
+              item.Tags = []
               _this.devices.push(item)
             }
           })
@@ -452,6 +486,32 @@ export default {
       } */
     },
 
+    // 同步
+    sync() {
+      const _this = this
+      syncDevices()
+        .then(res => {
+          if (res.Success) {
+            _this.getList()
+            _this.$message({
+              type: 'success',
+              message: '同步成功!'
+            })
+          } else {
+            _this.$message({
+              type: 'error',
+              message: '同步失败!'
+            })
+          }
+        })
+        .catch(res => {
+          _this.$message({
+            type: 'error',
+            message: '同步失败'
+          })
+        })
+    },
+
     // 显示Sidepage
     showSidepage(row) {
       const _this = this
@@ -460,6 +520,7 @@ export default {
     },
 
     saveEntity() {
+      this.sidepagedata.sidepageShow = false
       this.dialogCreating = true
       this.titleHead = '添加节点'
     },
@@ -520,6 +581,11 @@ export default {
           device: device
         }
       })
+    },
+
+    // 打开SSH
+    SSHShow(row) {
+      window.open(`http://${row.HostIP}:7681`)
     },
 
     // 删除
@@ -634,8 +700,8 @@ export default {
 
 .table-info {
   position: relative;
-  height: 100%;
-  overflow: hidden;
+  height: calc(100vh - 140px);
+  overflow: auto;
 }
 
 .table-expand {

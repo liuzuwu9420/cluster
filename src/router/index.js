@@ -81,49 +81,6 @@ export const constantRoutes = [{
       affix: true
     }
   }]
-},
-/**
- * {
-	path: '/documentation',
-	component: Layout,
-	children: [
-		{
-			path: 'index',
-			component: () => import('@/views/documentation/index'),
-			name: 'Documentation',
-			meta: { title: 'documentation', icon: 'documentation', affix: true }
-		}
-	]
-},
-{
-	path: '/guide',
-	component: Layout,
-	redirect: '/guide/index',
-	children: [
-		{
-			path: 'index',
-			component: () => import('@/views/guide/index'),
-			name: 'Guide',
-			meta: { title: 'guide', icon: 'guide', noCache: true }
-		}
-	]
-},*/
-{
-  path: '/profile',
-  component: Layout,
-  redirect: '/profile/index',
-  hidden: true,
-  children: [{
-    path: 'index',
-    component: () =>
-			import('@/views/profile/index'),
-    name: 'Profile',
-    meta: {
-      title: 'profile',
-      icon: 'user',
-      noCache: true
-    }
-  }]
 }
 ]
 
@@ -167,7 +124,6 @@ export const asyncRoutes = [
       name: 'role.billing',
       component: () =>
 				import('@/views/users/billing'),
-      hidden: true,
       meta: {
         title: '计费组',
         icon: 'money'

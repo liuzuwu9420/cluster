@@ -21,10 +21,12 @@ service.interceptors.request.use(
 
     if (store.getters.token) {
       // { utf8: '12345678' } 和 { b64: 'MTIzNDU2Nzg=' }两种验证格式
-      var isValid = Jsrsasign.KJUR.jws.JWS.verifyJWT(getToken(), { b64: 'MTIzNDU2Nzg=' }, { alg: ['HS256'] })
+      var isValid = Jsrsasign.KJUR.jws.JWS.verifyJWT(getToken(), { b64: 'MTIzNDU2Nzg=' }, { alg: ['HS256'], gracePeriod: 20 })
       if (isValid) {
         config.headers.Authorization = 'Bearer' + getToken()
       } else {
+        var jwt = Jsrsasign.KJUR.jws.JWS.parse(getToken())
+        console.log(jwt)
         store.dispatch('user/logout')
         router.push(`/login?redirect=/dashboard`)
       }

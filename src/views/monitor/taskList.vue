@@ -5,8 +5,8 @@
         <span slot="label" class="tab-label">
           <i class="el-icon-document-copy" /> 运行中
         </span>
-        <el-container>
-          <el-main>
+        <el-container class="el-container-run el-scrollbar">
+          <el-main class="el-main-run">
             <div class="hasten">
               <div class="refreshBut">
                 <el-tooltip class="item" effect="dark" content="自动刷新" placement="top">
@@ -34,107 +34,110 @@
                 />
               </div>
             </div>
-            <el-table
-              v-loading="loading"
-              element-loading-text="作业同步中，请稍后..."
-              :data="devices"
-              fit
-              highlight-current-row
-              style="width: 100%"
-              max-height="750px"
-            >
-              <el-table-column type="expand">
-                <template slot-scope="props">
-                  <el-form label-position="left" inline class="table-expand">
-                    <el-form-item label="作业名">
-                      <span>{{ props.row.JobName }}</span>
-                    </el-form-item>
-                    <el-form-item label="作业id">
-                      <span>{{ props.row.JobID }}</span>
-                    </el-form-item>
-                    <el-form-item label="UUID">
-                      <span>{{ props.row.UUID }}</span>
-                    </el-form-item>
-                    <el-form-item label="作业组">
-                      <span>{{ props.row.JobGroup }}</span>
-                    </el-form-item>
-                    <el-form-item label="队列名">
-                      <span>{{ props.row.QueueName }}</span>
-                    </el-form-item>
-                    <el-form-item label="项目名">
-                      <span>{{ props.row.ProjectName }}</span>
-                    </el-form-item>
-                    <el-form-item label="用户名">
-                      <span>{{ props.row.UserName }}</span>
-                    </el-form-item>
-                    <el-form-item label="作业状态">
-                      <span>
-                        <el-tag size="mini" :type="statusMap[props.row.JobStatus].type">
-                          <i :class="statusMap[props.row.JobStatus].icon" />
-                          {{ props.row.JobStatus | JobStatus }}
-                        </el-tag>
-                      </span>
-                    </el-form-item>
-                    <el-form-item label="作业提交主机">
-                      <span>{{ props.row.SubmissionHostName }}</span>
-                    </el-form-item>
-                    <el-form-item label="开始时间">
-                      <span>{{ props.row.ExecuteTime }}</span>
-                    </el-form-item>
-                    <el-form-item label="运行时长">
-                      <span>{{ props.row.time }}</span>
-                    </el-form-item>
-                    <el-form-item label="描述">
-                      <span>{{ props.row.JobDescription }}</span>
-                    </el-form-item>
-                  </el-form>
-                </template>
-              </el-table-column>
-              <el-table-column label="ID" width="100">
-                <template v-slot="{row}">
-                  <span>{{ row.JobID }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="作业名" show-overflow-tooltip>
-                <template v-slot="{row}">
-                  <span>{{ row.JobName }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="作业状态" width="120">
-                <template v-slot="{row}">
-                  <el-tag size="mini" :type="statusMap[row.JobStatus].type">
-                    <i :class="statusMap[row.JobStatus].icon" />
-                    {{ row.JobStatus | JobStatus }}
-                  </el-tag>
-                </template>
-              </el-table-column>
-              <el-table-column label="队列">
-                <template v-slot="{row}">
-                  <span>{{ row.QueueName }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="开始时间" show-overflow-tooltip>
-                <template v-slot="{row}">
-                  <span>{{ row.ExecuteTime }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="运行时长">
-                <template v-slot="{row}">
-                  <span>{{ row.time }}</span>
-                </template>
-              </el-table-column>
+            <div class="table-info el-scrollbar">
+              <el-table
+                v-loading="loading"
+                element-loading-text="作业同步中，请稍后..."
+                :data="devices"
+                fit
+                highlight-current-row
+                style="width: 100%"
+                height="100%"
+                max-height="750px"
+              >
+                <el-table-column type="expand">
+                  <template slot-scope="props">
+                    <el-form label-position="left" inline class="table-expand">
+                      <el-form-item label="作业名">
+                        <span>{{ props.row.JobName }}</span>
+                      </el-form-item>
+                      <el-form-item label="作业id">
+                        <span>{{ props.row.JobID }}</span>
+                      </el-form-item>
+                      <el-form-item label="UUID">
+                        <span>{{ props.row.UUID }}</span>
+                      </el-form-item>
+                      <el-form-item label="作业组">
+                        <span>{{ props.row.JobGroup }}</span>
+                      </el-form-item>
+                      <el-form-item label="队列名">
+                        <span>{{ props.row.QueueName }}</span>
+                      </el-form-item>
+                      <el-form-item label="项目名">
+                        <span>{{ props.row.ProjectName }}</span>
+                      </el-form-item>
+                      <el-form-item label="用户名">
+                        <span>{{ props.row.UserName }}</span>
+                      </el-form-item>
+                      <el-form-item label="作业状态">
+                        <span>
+                          <el-tag size="mini" :type="statusMap[props.row.JobStatus].type">
+                            <i :class="statusMap[props.row.JobStatus].icon" />
+                            {{ props.row.JobStatus | JobStatus }}
+                          </el-tag>
+                        </span>
+                      </el-form-item>
+                      <el-form-item label="作业提交主机">
+                        <span>{{ props.row.SubmissionHostName }}</span>
+                      </el-form-item>
+                      <el-form-item label="开始时间">
+                        <span>{{ props.row.ExecuteTime }}</span>
+                      </el-form-item>
+                      <el-form-item label="运行时长">
+                        <span>{{ props.row.time }}</span>
+                      </el-form-item>
+                      <el-form-item label="描述">
+                        <span>{{ props.row.JobDescription }}</span>
+                      </el-form-item>
+                    </el-form>
+                  </template>
+                </el-table-column>
+                <el-table-column label="ID" width="100">
+                  <template v-slot="{row}">
+                    <span>{{ row.JobID }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="作业名" show-overflow-tooltip>
+                  <template v-slot="{row}">
+                    <span>{{ row.JobName }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="作业状态" width="120">
+                  <template v-slot="{row}">
+                    <el-tag size="mini" :type="statusMap[row.JobStatus].type">
+                      <i :class="statusMap[row.JobStatus].icon" />
+                      {{ row.JobStatus | JobStatus }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column label="队列">
+                  <template v-slot="{row}">
+                    <span>{{ row.QueueName }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="开始时间" show-overflow-tooltip>
+                  <template v-slot="{row}">
+                    <span>{{ row.ExecuteTime }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="运行时长">
+                  <template v-slot="{row}">
+                    <span>{{ row.time }}</span>
+                  </template>
+                </el-table-column>
 
-              <el-table-column label="运行节点">
-                <template v-slot="{row}">
-                  <span v-for="(item, index) in row.Host" :key="index">{{ item.NumSlots }} * {{ item.HostName }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="提交用户" width="140">
-                <template v-slot="{row}">
-                  <span>{{ row.UserName }}</span>
-                </template>
-              </el-table-column>
-            </el-table>
+                <el-table-column label="运行节点">
+                  <template v-slot="{row}">
+                    <span v-for="(item, index) in row.Host" :key="index">{{ item.NumSlots }} * {{ item.HostName }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="提交用户" width="140">
+                  <template v-slot="{row}">
+                    <span>{{ row.UserName }}</span>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
           </el-main>
         </el-container>
       </el-tab-pane>
@@ -150,7 +153,7 @@
                 :items="dropdown.items"
                 @change="dropdownChanged"
               />-->
-              <el-button type="primary" size="mini" @click="getFinishList">
+              <el-button type="primary" size="mini" @click="getPendList">
                 <i class="el-icon-refresh-right" /> 刷新
               </el-button>
               <search :items="selected.items" @change="searchChanged" />
@@ -164,97 +167,100 @@
                 />
               </div>
             </div>
-            <el-table
-              v-loading="loading"
-              element-loading-text="作业同步中，请稍后..."
-              :data="devices"
-              fit
-              highlight-current-row
-              style="width: 100%"
-              max-height="750px"
-            >
-              <el-table-column type="expand">
-                <template slot-scope="props">
-                  <el-form label-position="left" inline class="table-expand">
-                    <el-form-item label="作业名">
-                      <span>{{ props.row.JobName }}</span>
-                    </el-form-item>
-                    <el-form-item label="作业id">
-                      <span>{{ props.row.JobID }}</span>
-                    </el-form-item>
-                    <el-form-item label="UUID">
-                      <span>{{ props.row.UUID }}</span>
-                    </el-form-item>
-                    <el-form-item label="作业组">
-                      <span>{{ props.row.JobGroup }}</span>
-                    </el-form-item>
-                    <el-form-item label="队列名">
-                      <span>{{ props.row.QueueName }}</span>
-                    </el-form-item>
-                    <el-form-item label="项目名">
-                      <span>{{ props.row.ProjectName }}</span>
-                    </el-form-item>
-                    <el-form-item label="用户名">
-                      <span>{{ props.row.UserName }}</span>
-                    </el-form-item>
-                    <el-form-item label="作业状态">
-                      <span>
-                        <el-tag size="mini" :type="statusMap[props.row.JobStatus].type">
-                          <i :class="statusMap[props.row.JobStatus].icon" />
-                          {{ props.row.JobStatus | JobStatus }}
-                        </el-tag>
-                      </span>
-                    </el-form-item>
-                    <el-form-item label="作业提交主机">
-                      <span>{{ props.row.SubmissionHostName }}</span>
-                    </el-form-item>
-                    <el-form-item label="作业提交时间">
-                      <span>{{ props.row.SubmitTime }}</span>
-                    </el-form-item>
-                    <el-form-item label="等待时长">
-                      <span>{{ props.row.time }}</span>
-                    </el-form-item>
-                    <el-form-item label="描述">
-                      <span>{{ props.row.JobDescription }}</span>
-                    </el-form-item>
-                  </el-form>
-                </template>
-              </el-table-column>
-              <el-table-column label="ID" width="120">
-                <template v-slot="{row}">
-                  <span>{{ row.JobID }}</span>
-                </template>
-              </el-table-column>
+            <div class="table-info el-scrollbar">
+              <el-table
+                v-loading="loading"
+                element-loading-text="作业同步中，请稍后..."
+                :data="devices"
+                fit
+                highlight-current-row
+                style="width: 100%"
+                height="100%"
+                max-height="750px"
+              >
+                <el-table-column type="expand">
+                  <template slot-scope="props">
+                    <el-form label-position="left" inline class="table-expand">
+                      <el-form-item label="作业名">
+                        <span>{{ props.row.JobName }}</span>
+                      </el-form-item>
+                      <el-form-item label="作业id">
+                        <span>{{ props.row.JobID }}</span>
+                      </el-form-item>
+                      <el-form-item label="UUID">
+                        <span>{{ props.row.UUID }}</span>
+                      </el-form-item>
+                      <el-form-item label="作业组">
+                        <span>{{ props.row.JobGroup }}</span>
+                      </el-form-item>
+                      <el-form-item label="队列名">
+                        <span>{{ props.row.QueueName }}</span>
+                      </el-form-item>
+                      <el-form-item label="项目名">
+                        <span>{{ props.row.ProjectName }}</span>
+                      </el-form-item>
+                      <el-form-item label="用户名">
+                        <span>{{ props.row.UserName }}</span>
+                      </el-form-item>
+                      <el-form-item label="作业状态">
+                        <span>
+                          <el-tag size="mini" :type="statusMap[props.row.JobStatus].type">
+                            <i :class="statusMap[props.row.JobStatus].icon" />
+                            {{ props.row.JobStatus | JobStatus }}
+                          </el-tag>
+                        </span>
+                      </el-form-item>
+                      <el-form-item label="作业提交主机">
+                        <span>{{ props.row.SubmissionHostName }}</span>
+                      </el-form-item>
+                      <el-form-item label="作业提交时间">
+                        <span>{{ props.row.SubmitTime }}</span>
+                      </el-form-item>
+                      <el-form-item label="等待时长">
+                        <span>{{ props.row.time }}</span>
+                      </el-form-item>
+                      <el-form-item label="描述">
+                        <span>{{ props.row.JobDescription }}</span>
+                      </el-form-item>
+                    </el-form>
+                  </template>
+                </el-table-column>
+                <el-table-column label="ID" width="120">
+                  <template v-slot="{row}">
+                    <span>{{ row.JobID }}</span>
+                  </template>
+                </el-table-column>
 
-              <el-table-column label="作业名" show-overflow-tooltip>
-                <template v-slot="{row}">
-                  <span>{{ row.JobName }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="作业状态">
-                <template v-slot="{row}">
-                  <el-tag size="mini" :type="statusMap[row.JobStatus].type">
-                    <i :class="statusMap[row.JobStatus].icon" />
-                    {{ row.JobStatus | JobStatus }}
-                  </el-tag>
-                </template>
-              </el-table-column>
-              <el-table-column label="队列">
-                <template v-slot="{row}">
-                  <span>{{ row.QueueName }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="等待时长">
-                <template v-slot="{row}">
-                  <span>{{ row.time }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="提交用户" width="140">
-                <template v-slot="{row}">
-                  <span>{{ row.UserName }}</span>
-                </template>
-              </el-table-column>
-            </el-table>
+                <el-table-column label="作业名" show-overflow-tooltip>
+                  <template v-slot="{row}">
+                    <span>{{ row.JobName }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="作业状态">
+                  <template v-slot="{row}">
+                    <el-tag size="mini" :type="statusMap[row.JobStatus].type">
+                      <i :class="statusMap[row.JobStatus].icon" />
+                      {{ row.JobStatus | JobStatus }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column label="队列">
+                  <template v-slot="{row}">
+                    <span>{{ row.QueueName }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="等待时长">
+                  <template v-slot="{row}">
+                    <span>{{ row.time }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="提交用户" width="140">
+                  <template v-slot="{row}">
+                    <span>{{ row.UserName }}</span>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
           </el-main>
         </el-container>
       </el-tab-pane>
@@ -279,6 +285,7 @@
                 />
               </div>
             </div>
+            <div class="table-info el-scrollbar">
             <el-table
               v-loading="loading"
               element-loading-text="作业同步中，请稍后..."
@@ -286,6 +293,7 @@
               fit
               highlight-current-row
               style="width: 100%"
+                height="100%"
               max-height="750px"
             >
               <el-table-column type="expand">
@@ -381,6 +389,7 @@
                 </template>
               </el-table-column>
             </el-table>
+            </div>
           </el-main>
         </el-container>
       </el-tab-pane> -->
@@ -388,8 +397,8 @@
         <span slot="label" class="tab-label">
           <i class="el-icon-finished" /> 已完成
         </span>
-        <el-container>
-          <el-main>
+        <el-container class="el-container-finish el-scrollbar">
+          <el-main class="el-main-finish">
             <div class="hasten">
               <div class="headBut">
                 <el-date-picker
@@ -416,110 +425,114 @@
                 />
               </div>
             </div>
-            <el-table
-              v-loading="loading"
-              element-loading-text="作业同步中，请稍后..."
-              :data="devices"
-              fit
-              highlight-current-row
-              style="width: 100%"
-              max-height="750px"
-            >
-              <el-table-column type="expand">
-                <template slot-scope="props">
-                  <el-form label-position="left" inline class="table-expand">
-                    <el-form-item label="作业名">
-                      <span>{{ props.row.JobName }}</span>
-                    </el-form-item>
-                    <el-form-item label="作业id">
-                      <span>{{ props.row.JobID }}</span>
-                    </el-form-item>
-                    <el-form-item label="UUID">
-                      <span>{{ props.row.UUID }}</span>
-                    </el-form-item>
-                    <el-form-item label="作业组">
-                      <span>{{ props.row.JobGroup }}</span>
-                    </el-form-item>
-                    <el-form-item label="队列名">
-                      <span>{{ props.row.QueueName }}</span>
-                    </el-form-item>
-                    <el-form-item label="项目名">
-                      <span>{{ props.row.ProjectName }}</span>
-                    </el-form-item>
-                    <el-form-item label="用户名">
-                      <span>{{ props.row.UserName }}</span>
-                    </el-form-item>
-                    <el-form-item label="作业状态">
-                      <span>
-                        <el-tag size="mini" :type="statusMap[props.row.JobStatus].type">
-                          <i :class="statusMap[props.row.JobStatus].icon" />
-                          {{ props.row.JobStatus | JobStatus }}
-                        </el-tag>
-                      </span>
-                    </el-form-item>
-                    <el-form-item label="作业提交主机">
-                      <span>{{ props.row.SubmissionHostName }}</span>
-                    </el-form-item>
-                    <el-form-item label="开始时间">
-                      <span>{{ props.row.ExecuteTime }}</span>
-                    </el-form-item>
-                    <el-form-item label="运行时长">
-                      <span>{{ props.row.time }}</span>
-                    </el-form-item>
-                    <el-form-item label="结束时间">
-                      <span>{{ props.row.EndTime }}</span>
-                    </el-form-item>
-                    <el-form-item label="描述" class="form-item-finish">
-                      <span>{{ props.row.JobDescription }}</span>
-                    </el-form-item>
-                  </el-form>
-                </template>
-              </el-table-column>
-              <el-table-column label="ID" width="120">
-                <template v-slot="{row}">
-                  <span>{{ row.JobID }}</span>
-                </template>
-              </el-table-column>
+            <div class="table-info el-scrollbar">
+              <el-table
+                v-loading="loading"
+                element-loading-text="作业同步中，请稍后..."
+                :data="devices"
+                fit
+                highlight-current-row
+                style="width: 100%"
+                height="100%"
+                max-height="750px"
+              >
+                <el-table-column type="expand">
+                  <template slot-scope="props">
+                    <el-form label-position="left" inline class="table-expand">
+                      <el-form-item label="作业名">
+                        <span>{{ props.row.JobName }}</span>
+                      </el-form-item>
+                      <el-form-item label="作业id">
+                        <span>{{ props.row.JobID }}</span>
+                      </el-form-item>
+                      <el-form-item label="UUID">
+                        <span>{{ props.row.UUID }}</span>
+                      </el-form-item>
+                      <el-form-item label="作业组">
+                        <span>{{ props.row.JobGroup }}</span>
+                      </el-form-item>
+                      <el-form-item label="队列名">
+                        <span>{{ props.row.QueueName }}</span>
+                      </el-form-item>
+                      <el-form-item label="项目名">
+                        <span>{{ props.row.ProjectName }}</span>
+                      </el-form-item>
+                      <el-form-item label="用户名">
+                        <span>{{ props.row.UserName }}</span>
+                      </el-form-item>
+                      <el-form-item label="作业状态">
+                        <span>
+                          <el-tag size="mini" :type="statusMap[props.row.JobStatus].type">
+                            <i :class="statusMap[props.row.JobStatus].icon" />
+                            {{ props.row.JobStatus | JobStatus }}
+                          </el-tag>
+                        </span>
+                      </el-form-item>
+                      <el-form-item label="作业提交主机">
+                        <span>{{ props.row.SubmissionHostName }}</span>
+                      </el-form-item>
+                      <el-form-item label="开始时间">
+                        <span>{{ props.row.ExecuteTime }}</span>
+                      </el-form-item>
+                      <el-form-item label="运行时长">
+                        <span>{{ props.row.time }}</span>
+                      </el-form-item>
+                      <el-form-item label="结束时间">
+                        <span>{{ props.row.EndTime }}</span>
+                      </el-form-item>
+                      <el-form-item label="描述" class="form-item-finish">
+                        <span>{{ props.row.JobDescription }}</span>
+                      </el-form-item>
+                    </el-form>
+                  </template>
+                </el-table-column>
+                <el-table-column label="ID" width="120">
+                  <template v-slot="{row}">
+                    <span @click="showSidepage(row)">{{ row.JobID }}</span>
+                  </template>
+                </el-table-column>
 
-              <el-table-column label="作业名" show-overflow-tooltip>
-                <template v-slot="{row}">
-                  <span>{{ row.JobName }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="作业状态">
-                <template v-slot="{row}">
-                  <el-tag size="mini" :type="statusMap[row.JobStatus].type">
-                    <i :class="statusMap[row.JobStatus].icon" />
-                    {{ row.JobStatus | JobStatus }}
-                  </el-tag>
-                </template>
-              </el-table-column>
-              <el-table-column label="队列">
-                <template v-slot="{row}">
-                  <span>{{ row.QueueName }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="开始时间" show-overflow-tooltip>
-                <template v-slot="{row}">
-                  <span>{{ row.ExecuteTime }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="运行时长">
-                <template v-slot="{row}">
-                  <span>{{ row.time }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="费用">
-                <template v-slot="{row}">
-                  <span>{{ row.TotalCost }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="提交用户" width="140">
-                <template v-slot="{row}">
-                  <span>{{ row.UserName }}</span>
-                </template>
-              </el-table-column>
-            </el-table>
+                <el-table-column label="作业名" show-overflow-tooltip>
+                  <template v-slot="{row}">
+                    <span>{{ row.JobName }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="作业状态">
+                  <template v-slot="{row}">
+                    <el-tag size="mini" :type="statusMap[row.JobStatus].type">
+                      <i :class="statusMap[row.JobStatus].icon" />
+                      {{ row.JobStatus | JobStatus }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column label="队列">
+                  <template v-slot="{row}">
+                    <span>{{ row.QueueName }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="开始时间" show-overflow-tooltip>
+                  <template v-slot="{row}">
+                    <span>{{ row.ExecuteTime }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="运行时长">
+                  <template v-slot="{row}">
+                    <span>{{ row.time }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="费用">
+                  <template v-slot="{row}">
+                    <span>{{ row.TotalCost }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="提交用户" width="140">
+                  <template v-slot="{row}">
+                    <span>{{ row.UserName }}</span>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <sidepage :sidepagedata.sync="sidepagedata" />
+            </div>
           </el-main>
         </el-container>
       </el-tab-pane>
@@ -546,6 +559,8 @@ import { initFirst, connection, disconnect } from "@/utils/sockJS"; */
 import Pagination from '@/components/Pagination'
 import Search from '@/components/Search'
 import Dropdown from '@/components/Dropdown'
+
+import Sidepage from './components/Sidepage'
 
 const statusMap = {
   RUN: {
@@ -583,7 +598,8 @@ export default {
   components: {
     Pagination,
     Search,
-    Dropdown
+    Dropdown,
+    Sidepage
   },
   filters: {
     JobStatus(JobStatus) {
@@ -700,7 +716,12 @@ export default {
       devices: [],
       loading: false,
       ID: '',
-      stompClient: ''
+      stompClient: '',
+      // Sidepage
+      sidepagedata: {
+        jobs: {},
+        sidepageShow: false
+      }
     }
   },
   watch: {
@@ -719,11 +740,11 @@ export default {
       this.getList()
     }
   },
-  beforeDestroy() {
+  /*  beforeDestroy() {
     if (this.stompClient) {
       this.disconnect()
     }
-  },
+  }, */
   methods: {
     getList() {
       const _this = this
@@ -765,6 +786,7 @@ export default {
         })
         .catch(res => {
           console.log(res)
+          _this.devices = []
           _this.loading = false
         })
       /* let herfUrl = window.location.hostname;
@@ -820,6 +842,7 @@ export default {
         })
         .catch(res => {
           console.log(res)
+          _this.devices = []
           _this.loading = false
         })
     },
@@ -865,8 +888,16 @@ export default {
         })
         .catch(res => {
           console.log(res)
+          _this.devices = []
           _this.loading = false
         })
+    },
+
+    // 显示Sidepage
+    showSidepage(row) {
+      const _this = this
+      _this.sidepagedata.jobs = row
+      _this.sidepagedata.sidepageShow = true
     },
 
     // tab点击事件
@@ -999,6 +1030,11 @@ export default {
   float: right;
 }
 
+.table-info {
+  height: calc(100vh - 200px);
+  overflow: auto;
+}
+
 .table-expand {
   font-size: 0;
 }
@@ -1028,5 +1064,23 @@ export default {
 
 .el-table .table-expand .form-item-finish {
   width: 100%;
+}
+
+.el-container-run {
+  overflow-x: auto;
+}
+
+.el-main-run {
+  min-width: 1110px;
+  overflow-x: auto;
+}
+
+.el-container-finish {
+  overflow-x: auto;
+}
+
+.el-main-finish {
+  min-width: 1557px;
+  overflow-x: auto;
 }
 </style>

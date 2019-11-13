@@ -109,10 +109,14 @@ export default {
   },
   data() {
     return {
+      // 计时器
+      setTime: null,
+      // 引入grafana
       CPUAllSrc: '',
       CPUUseSrc: '',
       RAMAllSrc: '',
       RAMUseSrc: '',
+      // 作业
       runTask: 0,
       pendTask: 0,
       Total: 0,
@@ -124,7 +128,10 @@ export default {
   created() {
     this.iframeTime()
     this.getList()
-    this.polling()
+    this.start()
+  },
+  beforeDestroy() {
+    this.stop()
   },
   methods: {
     getList() {
@@ -142,12 +149,25 @@ export default {
           console.log(res)
         })
     },
-    polling() {
+
+    // 定时获取作业
+    start() {
       const _this = this
-      setInterval(() => {
+      if (_this.setTime != null) {
+        clearInterval(_this.setTime)
+        _this.setTime = null
+      }
+      _this.setTime = setInterval(function() {
         _this.getList()
       }, 1000)
     },
+
+    stop() {
+      const _this = this
+      clearInterval(_this.setTime)
+      _this.setTime = null
+    },
+
     handleSetLineChartData(Status) {
       this.$router.push({
         name: 'monitor.taskList',

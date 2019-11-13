@@ -6,10 +6,19 @@
           <el-button class="headBut" type="primary" size="mini" @click="saveEntity">
             <i class="el-icon-plus" /> 创建计费组
           </el-button>
-          <search :items="selected.items" @change="searchChanged" />
           <el-button type="primary" size="mini" @click="getList">
             <i class="el-icon-refresh-right" /> 刷新
           </el-button>
+          <search :items="selected.items" @change="searchChanged" />
+          <div class="pagination">
+            <pagination
+              v-show="page.total>0"
+              :total="page.total"
+              :page.sync="page.currentPage"
+              :limit.sync="page.pageSize"
+              @pagination="getList"
+            />
+          </div>
         </div>
         <el-table
           v-loading="loading"
@@ -18,43 +27,45 @@
           fit
           highlight-current-row
           style="width: 100%"
+          height="100%"
+          max-height="807px"
         >
-          <el-table-column label="ID" width="120">
+          <el-table-column label="UUID" width="140" show-overflow-tooltip>
             <template v-slot="{row}">
-              <span>{{ row.ID }}</span>
+              <span>{{ row.UUID }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column label="名称" width="110">
+          <el-table-column label="名称" width="160">
             <template v-slot="{row}">
               <template v-if="row.edit">
-                <el-input v-model="row.name" class="edit-input" size="small" />
+                <el-input v-model="row.GroupName" class="edit-input" size="small" />
               </template>
-              <span v-else>{{ row.name }}</span>
+              <span v-else>{{ row.GroupName }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="收费比率" width="140">
+          <el-table-column label="收费比率">
             <template v-slot="{row}">
               <template v-if="row.edit">
-                <el-input v-model="row.ratio" class="edit-input" size="small" />
+                <el-input v-model="row.CostRate" class="edit-input" size="small" />
               </template>
-              <span v-else>{{ row.ratio }}</span>
+              <span v-else>{{ row.CostRate }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="已使用金额" width="140">
+          <!-- <el-table-column label="已使用金额" width="140">
             <template v-slot="{row}">
               <template v-if="row.edit">
                 <el-input v-model="row.useMoney" class="edit-input" size="small" />
               </template>
               <span v-else>{{ row.useMoney }}</span>
             </template>
-          </el-table-column>
-          <el-table-column label="描述" width="140">
+          </el-table-column> -->
+          <el-table-column label="描述">
             <template v-slot="{row}">
               <template v-if="row.edit">
-                <el-input v-model="row.description" class="edit-input" size="small" />
+                <el-input v-model="row.Desc" class="edit-input" size="small" />
               </template>
-              <span v-else>{{ row.description }}</span>
+              <span v-else>{{ row.Desc }}</span>
             </template>
           </el-table-column>
           <el-table-column fixed="right" label="操作" width="200">
@@ -125,11 +136,11 @@
                 <template slot="append">元每CPU&times;小时</template>
               </el-input>
             </el-form-item>
-            <el-form-item label="初始金额" prop="money">
+            <!-- <el-form-item label="初始金额" prop="money">
               <el-input v-model="create.money" class="formInp">
                 <template slot="append">￥</template>
               </el-input>
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item class="formInp" label="描述" prop="description">
               <el-input
                 v-model="create.description"
@@ -144,21 +155,12 @@
           </el-form>
         </el-dialog>
       </el-main>
-      <el-footer class="pagination">
-        <pagination
-          v-show="page.total>0"
-          :total="page.total"
-          :page.sync="page.currentPage"
-          :limit.sync="page.pageSize"
-          @pagination="getList"
-        />
-      </el-footer>
     </el-container>
   </div>
 </template>
 
 <script>
-import { GetBillList, CreateBill, ChangeBill, DeleteBill } from '@/api/role'
+import { GetBillList, CreateBill, DeleteBillGroup } from '@/api/role'
 
 import Pagination from '@/components/Pagination'
 import Search from '@/components/Search'
@@ -176,6 +178,10 @@ export default {
           {
             value: 'name',
             label: '名称'
+          },
+          {
+            value: 'UUID',
+            label: 'UUID'
           }
         ]
       },
@@ -183,7 +189,7 @@ export default {
       page: {
         currentPage: 1,
         pageCount: 1,
-        pageSize: 5,
+        pageSize: 10,
         total: 1
       },
       devices: [],
@@ -211,45 +217,43 @@ export default {
             message: '请输入收费比率',
             trigger: 'blur'
           }
-        ],
-        money: [
-          {
-            required: true,
-            message: '请输入初始金额',
-            trigger: 'blur'
-          }
         ]
       }
     }
   },
   created() {
-    // this.getList();
+    this.getList()
   },
   methods: {
-    getList() {
+    getList(query) {
       const _this = this
-      const params = {
-        pageOption: {
-          pageNumber: _this.page.currentPage, // 当前页数
-          pageSize: _this.page.pageSize // 每一页显示条数
-        },
-        selectOption: {}
+      const obj = {}
+      if (query) {
+        if (query.select === 'name') {
+          obj.GroupName = query.value
+        } else if (query.select === 'UUID') {
+          obj.UUID = query.value
+        }
       }
-      if (_this.searchValue !== '') {
-        params.selectOption.name = _this.searchValue
+      const params = {
+        page: {
+          PageNumber: _this.page.currentPage, // 当前页数
+          PageSize: _this.page.pageSize // 每一页显示条数
+        },
+        query: obj
       }
       GetBillList(params)
         .then(res => {
           // _this.devices = []
-          _this.devices = res.data.result.nodeData.map(function(item, index) {
+          _this.devices = res.Inventory.ResultData.map(function(item, index) {
             // 保存一份原始数据，便于取消编辑的时候还原数据
             const original = _this._.cloneDeep(item)
             item.original = original
             _this.$set(item, 'edit', false)
             return item
           })
-          _this.page.total = res.data.pageResultData.totalDataNumber
-          _this.page.pageCount = res.data.pageResultData.totalCount
+          _this.page.total = res.Inventory.TotalNumber
+          _this.page.pageCount = res.Inventory.PageNumber
         })
         .catch(res => {
           console.log(res)
@@ -266,10 +270,9 @@ export default {
         if (valid) {
           const _this = this
           const params = {
-            name: _this.create.name,
-            ratio: _this.create.ratio,
-            money: _this.create.money,
-            description: _this.create.description
+            GroupName: _this.create.name,
+            CostRate: +_this.create.ratio,
+            Desc: _this.create.description
           }
           CreateBill(params)
             .then(res => {
@@ -299,6 +302,8 @@ export default {
     // 搜索
     searchChanged(data) {
       console.log(data)
+      const _this = this
+      _this.getList(data)
     },
 
     // 查看详情
@@ -315,16 +320,13 @@ export default {
     async deleteItem(row) {
       const _this = this
       _this
-        .$confirm('此操作将删除该节点, 是否继续?', '提示', {
+        .$confirm('此操作将删除该计费组, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         })
         .then(() => {
-          const params = {
-            _id: row._id
-          }
-          DeleteBill(params)
+          DeleteBillGroup(row.UUID)
             .then(res => {
               _this.getList()
               _this.$message({
@@ -351,15 +353,14 @@ export default {
     cancelEdit(row) {
       row.edit = false
       // 还原数据
-      row.name = row.original.name
-      row.ratio = row.original.ratio
-      row.usemoney = row.original.usemoney
-      row.description = row.original.description
+      row.GroupName = row.original.GroupName
+      row.CostRate = row.original.CostRate
+      row.Desc = row.original.Desc
     },
 
     // 确认编辑
     async confirmEdit(row) {
-      const params = {
+      /* const params = {
         oldOption: {
           _id: row._id
         },
@@ -383,7 +384,7 @@ export default {
       row.original.ratio = row.ratio
       row.original.usemoney = row.usemoney
       row.original.description = row.description
-      row.edit = false
+      row.edit = false */
     }
   }
 }
@@ -400,19 +401,19 @@ export default {
 .hasten .el-button {
   height: 36px;
   line-height: 0;
-  float: right;
-}
-
-.hasten .el-input-group {
-  float: right;
+  float: left;
+  margin-right: 10px;
+  margin-left: 0px;
 }
 
 .hasten .headBut {
   margin-right: 10px;
+  margin-left: 0px;
   float: left;
 }
+
 .pagination {
-  text-align: right;
+  float: right;
 }
 
 .table-expand {

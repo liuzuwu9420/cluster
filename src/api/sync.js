@@ -16,18 +16,18 @@ export function syncUser() {
   })
 }
 
-// 同步用户组数据
-export function syncGroup() {
+// 同步作业
+export function syncHost() {
   return request({
-    url: `/api/${v}/groups/sync`,
+    url: `/api/${v}/jobs/sync/10`,
     method: 'post'
   })
 }
 
 // 同步作业
-export function syncHost() {
+export function syncDevices() {
   return request({
-    url: `/api/${v}/jobs/sync/10`,
+    url: `/api/${v}/hosts/sync`,
     method: 'post'
   })
 }

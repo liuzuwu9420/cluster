@@ -1,5 +1,6 @@
-@host=http://16.16.18.61:80
-//@host=http://192.168.3.87:80
+//@host=http://16.16.18.61:80
+@host=http://192.168.3.87:80
+//@host=http://192.168.2.170:80
 @json=Content-Type: application/json
 
 ###
@@ -78,9 +79,6 @@ POST {{host}}/api/v1/users/login
 }
 
 ###
-GET {{host}}/api/v1/jobs?PageSize=200&PageNumber=1
-
-###
 GET {{host}}/api/v1/jobs/103
 
 ###
@@ -93,10 +91,7 @@ GET {{host}}/api/v1/jobs/status/run?PageSize=5&PageNumber=1
 GET {{host}}/api/v1/jobs?page={"PageSize":5,"PageNumber":1}&query={}&time={"StartTime":"2019-09-23 16:17:17","EndTime":"2019-11-25 10:43:03"}
 
 ###
-GET {{host}}/api/v1/jobs/history?page={"PageSize":5,"PageNumber":3}
-
-###
-GET {{host}}/api/v1/jobs/history/114
+GET {{host}}/api/v1/jobs/149/events
 
 ###
 GET {{host}}/api/v1/jobs/101/host
@@ -106,3 +101,52 @@ GET  {{host}}/api/v1/jobs/top/10?status=pend
 
 ###
 POST {{host}}/api/v1/jobs/sync/10
+
+###
+POST {{host}}/api/v1/hosts/sync
+
+### 查询对应资源的标签
+GET {{host}}/api/v1/labels/410c6983-6458-4581-822d-39a03b0cc57a
+### 添加标签
+POST {{host}}/api/v1/labels
+Content-Type: application/json
+
+{
+    "ResourcesUUID":"0c5e6f42-1b5e-48e0-b797-8b0074eadf12"
+    ,"ResourcesType":"host"
+    ,"LabelName":"test1"
+    ,"LabelValue":"test1"
+    ,"Colour": "#000000"
+    ,"LabelType": "hosts"
+}
+
+### 查询计费组列表
+GET  {{host}}/api/v1/chargedGroups?page={"PageSize":5,"PageNumber":1}&query={}
+
+### 添加计费组
+POST   {{host}}/api/v1/chargedGroups
+Content-Type: application/json
+
+{
+    "GroupName":"AddAPITest2"
+    ,"CostRate":2.0
+    ,"Desc":"这是一条测试信息"
+}
+
+### 根据UUID查询计费组中的用户
+GET {{host}}/api/v1/chargedGroups/61a122fd-24fc-4cbe-95f7-1363ce4e380a/users?page={"PageSize":5,"PageNumber":1}&query={}
+
+### 添加计费组中的用户
+POST {{host}}/api/v1/chargedGroups/user
+Content-Type: application/json
+
+{
+    "userID":1028
+    ,"groupUUID":"61a122fd-24fc-4cbe-95f7-1363ce4e380a"
+}
+
+### 删除计费组
+DELETE {{host}}/api/v1/chargedGroups/uuid
+
+### 把用户从计费组中删除
+DELETE {{host}}/api/v1/chargedGroups/user/1026

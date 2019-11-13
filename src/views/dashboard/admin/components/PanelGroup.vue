@@ -98,11 +98,15 @@ import { formatDate, formatDiff } from '@/utils/format'
 export default {
   data() {
     return {
+      // 计时器
+      setTime: null,
+      // 引入grafana
       CPUSrc: '',
       RAMSrc: '',
       storageSrc: '',
       netSrc: '',
       nodeSrc: '',
+      // 作业
       pendTOPList: [],
       runTOPList: []
     }
@@ -111,7 +115,10 @@ export default {
     this.iframeTime()
     this.getPend()
     this.getRun()
-    this.polling()
+    this.start()
+  },
+  beforeDestroy() {
+    this.stop()
   },
   methods: {
     getPend() {
@@ -144,13 +151,26 @@ export default {
           }
         })
     },
-    polling() {
+
+    // 定时获取作业
+    start() {
       const _this = this
-      setInterval(() => {
+      if (_this.setTime != null) {
+        clearInterval(_this.setTime)
+        _this.setTime = null
+      }
+      _this.setTime = setInterval(function() {
         _this.getPend()
         _this.getRun()
       }, 1000)
     },
+
+    stop() {
+      const _this = this
+      clearInterval(_this.setTime)
+      _this.setTime = null
+    },
+
     handleSetLineChartData(Status) {
       this.$router.push({
         name: 'monitor.taskList',

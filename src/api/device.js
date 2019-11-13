@@ -20,7 +20,7 @@ export function GetList(params) {
   })
 }
 /**
- * 根据uuid获取单个节点
+ * 根据uuid获取单个节点(无用)
  * @param {*} uuid 节点uuid
  */
 export function GetNodeList(uuid) {

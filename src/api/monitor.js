@@ -95,7 +95,18 @@ export function GetJobIDList(jobID) {
  */
 export function GetJobIDHost(jobID) {
   return request({
-    url: `/api/${v}/jobs/${jobID}/host`,
+    url: `/api/${v}/jobs/${jobID}/hosts`,
+    method: 'get'
+  })
+}
+
+/**
+ * 根据jobID获取作业历史信息
+ * @param {*} jobID 作业ID
+ */
+export function GetJobIDEvents(jobID) {
+  return request({
+    url: `/api/${v}/jobs/${jobID}/events`,
     method: 'get'
   })
 }

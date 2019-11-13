@@ -23,45 +23,47 @@
             />
           </div>
         </div>
-        <el-table
-          v-loading="loading"
-          :data="devices"
-          element-loading-text="Loading"
-          fit
-          highlight-current-row
-          style="width: 100%"
-          max-height="750px"
-        >
-          <el-table-column label="ID" width="120">
-            <template v-slot="{row}">
-              <span>{{ row.uid }}</span>
-            </template>
-          </el-table-column>
+        <div class="table-info el-scrollbar">
+          <el-table
+            v-loading="loading"
+            :data="devices"
+            element-loading-text="Loading"
+            fit
+            highlight-current-row
+            style="width: 100%"
+            height="100%"
+            max-height="807px"
+          >
+            <el-table-column label="ID" width="120">
+              <template v-slot="{row}">
+                <span>{{ row.uid }}</span>
+              </template>
+            </el-table-column>
 
-          <el-table-column label="用户">
-            <template v-slot="{row}">
-              <template v-if="row.edit">
-                <el-input v-model="row.username" class="edit-input" size="small" />
+            <el-table-column label="用户">
+              <template v-slot="{row}">
+                <template v-if="row.edit">
+                  <el-input v-model="row.username" class="edit-input" size="small" />
+                </template>
+                <span v-else>{{ row.username }}</span>
               </template>
-              <span v-else>{{ row.username }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="角色" width="110">
-            <template v-slot="{row}">
-              <template v-if="row.edit">
-                <el-input v-model="row.role" class="edit-input" size="small" />
+            </el-table-column>
+            <el-table-column label="角色" width="110">
+              <template v-slot="{row}">
+                <template v-if="row.edit">
+                  <el-input v-model="row.role" class="edit-input" size="small" />
+                </template>
+                <span v-else>{{ row.role }}</span>
               </template>
-              <span v-else>{{ row.role }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="用户组">
-            <template v-slot="{row}">
-              <span v-for="(item, index) in row.group" :key="index" class="GroupLink">
-                <span @click="getGroupID(item)">&nbsp;{{ item.GroupName }}</span>
-              </span>
-            </template>
-          </el-table-column>
-          <!-- <el-table-column label="登录时间" width="110">
+            </el-table-column>
+            <el-table-column label="用户组">
+              <template v-slot="{row}">
+                <span v-for="(item, index) in row.group" :key="index" class="GroupLink">
+                  <span @click="getGroupID(item)">&nbsp;{{ item.GroupName }}</span>
+                </span>
+              </template>
+            </el-table-column>
+            <!-- <el-table-column label="登录时间" width="110">
             <template v-slot="{row}">
               <template v-if="row.edit">
                 <el-input v-model="row.logTime" class="edit-input" size="small" />
@@ -82,58 +84,59 @@
               <el-switch v-model="row.type" active-color="#13ce66"></el-switch>
             </template>
           </el-table-column>-->
-          <el-table-column fixed="right" label="操作" width="200">
-            <template v-slot="{row}">
-              <el-button-group>
-                <!-- 编辑模式：确定 -->
-                <el-button
-                  v-if="row.edit"
-                  type="warning"
-                  size="mini"
-                  icon="el-icon-circle-check-outline"
-                  @click="confirmEdit(row)"
-                >确定</el-button>
-                <!-- 编辑模式：取消 -->
-                <el-button
-                  v-if="row.edit"
-                  type="success"
-                  size="mini"
-                  icon="el-icon-circle-check-outline"
-                  @click="cancelEdit(row)"
-                >取消</el-button>
-
-                <!-- 查看详情 -->
-                <el-tooltip class="item" effect="dark" content="查看" placement="top-end">
+            <el-table-column fixed="right" label="操作" width="200">
+              <template v-slot="{row}">
+                <el-button-group>
+                  <!-- 编辑模式：确定 -->
                   <el-button
-                    v-if="!row.edit"
-                    type="success"
-                    icon="el-icon-view"
-                    size="mini"
-                    @click="info(row)"
-                  />
-                </el-tooltip>
-                <el-tooltip class="item" effect="dark" content="编辑" placement="top-end">
-                  <el-button
-                    v-if="!row.edit"
+                    v-if="row.edit"
                     type="warning"
                     size="mini"
-                    icon="el-icon-edit"
-                    @click="row.edit=!row.edit"
-                  />
-                </el-tooltip>
-                <el-tooltip class="item" effect="dark" content="删除" placement="top-end">
+                    icon="el-icon-circle-check-outline"
+                    @click="confirmEdit(row)"
+                  >确定</el-button>
+                  <!-- 编辑模式：取消 -->
                   <el-button
-                    v-if="!row.edit"
-                    type="danger"
+                    v-if="row.edit"
+                    type="success"
                     size="mini"
-                    icon="el-icon-delete"
-                    @click="deleteItem(row)"
-                  />
-                </el-tooltip>
-              </el-button-group>
-            </template>
-          </el-table-column>
-        </el-table>
+                    icon="el-icon-circle-check-outline"
+                    @click="cancelEdit(row)"
+                  >取消</el-button>
+
+                  <!-- 查看详情 -->
+                  <el-tooltip class="item" effect="dark" content="查看" placement="top-end">
+                    <el-button
+                      v-if="!row.edit"
+                      type="success"
+                      icon="el-icon-view"
+                      size="mini"
+                      @click="info(row)"
+                    />
+                  </el-tooltip>
+                  <el-tooltip class="item" effect="dark" content="编辑" placement="top-end">
+                    <el-button
+                      v-if="!row.edit"
+                      type="warning"
+                      size="mini"
+                      icon="el-icon-edit"
+                      @click="row.edit=!row.edit"
+                    />
+                  </el-tooltip>
+                  <el-tooltip class="item" effect="dark" content="删除" placement="top-end">
+                    <el-button
+                      v-if="!row.edit"
+                      type="danger"
+                      size="mini"
+                      icon="el-icon-delete"
+                      @click="deleteItem(row)"
+                    />
+                  </el-tooltip>
+                </el-button-group>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
         <el-dialog :title="titleHead" :visible.sync="dialogCreating" width="50%">
           <el-form
             ref="create"
@@ -599,6 +602,7 @@ export default {
   line-height: 0;
   float: left;
   margin-right: 10px;
+  margin-left: 0px;
 }
 
 .hasten .headBut {
@@ -609,6 +613,11 @@ export default {
 
 .pagination {
   float: right;
+}
+
+.table-info {
+  height: calc(100vh - 140px);
+  overflow: auto;
 }
 
 .app-container .el-table .GroupLink {

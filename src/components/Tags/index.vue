@@ -1,40 +1,55 @@
 <template>
   <span :class="{'hidden':hidden}" class="tags-container">
-    <el-tag
-      :key="tag"
-      v-for="tag in tags"
-      closable
-      :size="size"
-      :disable-transitions="false"
-      effect="dark"
-      @close="handleCloseTag(tags,tag)"
-    >{{tag}}</el-tag>
-    <el-input
-      class="input-new-tag"
-      v-if="tagInputVisible"
-      v-model="tagInputValue"
-      ref="saveTagInput"
-      :size="size"
-      @keyup.enter.native="handleTagInputConfirm(tags)"
-      @blur="handleTagInputConfirm(tags)"
-    ></el-input>
+    <span v-for="(tag, index) in tags" :key="index" class="tag-value">
+      <el-tag
+        closable
+        :disable-transitions="false"
+        @close="handleCloseTag(tag)"
+      >
+        {{ tag.LabelName }}:{{ tag.LabelValue }}
+      </el-tag>
+    </span>
+    <span v-if="tagInputVisible">
+      <el-input
+        ref="saveTagInput"
+        v-model="tagInputValue.LabelName"
+        class="input-new-tag"
+        size="small"
+      />
+      <span>-</span>
+      <el-input
+        v-model="tagInputValue.LabelValue"
+        class="input-new-tag"
+        size="small"
+        @keyup.enter.native="handleTagInputConfirm"
+        @blur="handleTagInputConfirm"
+      />
+    </span>
     <el-button v-else class="button-new-tag" :size="size" @click="showTagInput">+</el-button>
   </span>
 </template>
 
 <script>
+import { CreateTags, DeleteTags } from '../../api/tags'
 export default {
-  name: "Tags",
+  name: 'Tags',
   props: {
     tags: {
       required: true,
       type: Array,
-      default: []
+      default() {
+        return []
+      }
+    },
+    uuid: {
+      required: true,
+      type: String,
+      default: ''
     },
     size: {
       required: false,
       type: String,
-      default: ""
+      default: ''
     },
     hidden: {
       required: false,
@@ -45,34 +60,61 @@ export default {
   data() {
     return {
       tagInputVisible: false,
-      tagInputValue: ""
-    };
+      tagInputValue: {}
+    }
   },
   methods: {
     // 处理关闭 tag
-    handleCloseTag(tags, tag) {
-      tags.splice(tags.indexOf(tag), 1);
+    handleCloseTag(tag) {
+      const _this = this
+      DeleteTags(tag.UUID)
+        .then(res => {
+          _this.tags.splice(_this.tags.indexOf(tag), 1)
+        }).catch(res => {
+          console.log(res)
+          _this.$message({
+            type: 'info',
+            message: '标签删除失败'
+          })
+        })
     },
     // 显示tag输入框
     showTagInput() {
-      this.tagInputVisible = true;
+      this.tagInputVisible = true
       this.$nextTick(_ => {
-        this.$refs.saveTagInput.$refs.input.focus();
-      });
+        this.$refs.saveTagInput.$refs.input.focus()
+      })
     },
     // 处理tag确认 输入
-    handleTagInputConfirm(tags) {
-      let tagInputValue = this.tagInputValue;
-      if (tagInputValue) {
-        tags.push(tagInputValue);
+    handleTagInputConfirm() {
+      const _this = this
+      const tagInputValue = _this.tagInputValue
+      if (tagInputValue.LabelName && tagInputValue.LabelValue) {
+        const data = {
+          ResourcesUUID: _this.uuid,
+          ResourcesType: 'Hosts',
+          LabelName: tagInputValue.LabelName,
+          LabelValue: tagInputValue.LabelValue,
+          Colour: '#000000',
+          LabelType: 'Hosts'
+        }
+        CreateTags(data)
+          .then(res => {
+            _this.tags.push(tagInputValue)
+          }).catch(res => {
+            console.log(res)
+            _this.$message({
+              type: 'info',
+              message: '标签添加失败'
+            })
+          })
       }
-      this.tagInputVisible = false;
-      this.tagInputValue = "";
+      _this.tagInputVisible = false
+      _this.tagInputValue = {}
     }
   }
-};
+}
 </script>
-
 
 <style scoped>
 .tags-container.hidden {
@@ -83,13 +125,14 @@ export default {
 }
 .button-new-tag {
   margin-left: 10px;
-  height: 32px;
-  line-height: 30px;
+  height: 28px;
+  line-height: 26px;
   padding-top: 0;
   padding-bottom: 0;
+  font-size: 12px;
 }
 .input-new-tag {
-  width: 90px;
+  width: 80px;
   margin-left: 10px;
   vertical-align: bottom;
 }

@@ -162,22 +162,23 @@ export default {
       })
     },
     handleLogin() {
-      this.$refs.loginForm.validate(valid => {
+      const _this = this
+      _this.$refs.loginForm.validate(valid => {
         if (valid) {
-          this.loading = true
-          this.$store.dispatch('user/login', this.loginForm)
+          _this.loading = true
+          _this.$store.dispatch('user/login', _this.loginForm)
             .then((res) => {
               if (res) {
-                this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
-                this.loading = false
+                _this.$router.push({ path: _this.redirect || '/', query: _this.otherQuery })
+                _this.loading = false
               } else {
-                this.$message.error('用户名或密码输入错误！！！')
-                this.loading = false
+                _this.$message.error('用户名或密码输入错误！！！')
+                _this.loading = false
               }
             })
             .catch((err) => {
               console.log(err)
-              this.loading = false
+              _this.loading = false
             })
         } else {
           console.log('error submit!!')
