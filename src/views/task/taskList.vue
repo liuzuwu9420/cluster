@@ -414,6 +414,7 @@
               <el-button type="primary" size="mini" @click="getFinishList">
                 <i class="el-icon-refresh-right" /> 刷新
               </el-button>
+              <export-excel :list.sync="ExportList.list" :filter-val="ExportList.filterVal" :t-header="ExportList.tHeader" :items="ExportList.items" :selected="ExportList.selected" @change="ExportChanged" />
               <search :items="DoneSelected.items" @change="searchChanged" />
               <div class="pagination">
                 <pagination
@@ -488,7 +489,7 @@
                 </el-table-column>
                 <el-table-column label="ID" width="120">
                   <template v-slot="{row}">
-                    <span @click="showSidepage(row)">{{ row.JobID }}</span>
+                    <span class="JobInfoSidepage" @click="showSidepage(row)">{{ row.JobID }}</span>
                   </template>
                 </el-table-column>
 
@@ -547,7 +548,7 @@ import {
   GetTaskList,
   GetJobIDList,
   GetJobIDHost
-} from '@/api/monitor'
+} from '@/api/task'
 import { syncHost } from '@/api/sync'
 
 import { formatDate, formatDiff } from '@/utils/format'
@@ -559,6 +560,7 @@ import { initFirst, connection, disconnect } from "@/utils/sockJS"; */
 import Pagination from '@/components/Pagination'
 import Search from '@/components/Search'
 import Dropdown from '@/components/Dropdown'
+import ExportExcel from '@/components/ExportExcel'
 
 import Sidepage from './components/Sidepage'
 
@@ -599,7 +601,8 @@ export default {
     Pagination,
     Search,
     Dropdown,
-    Sidepage
+    Sidepage,
+    ExportExcel
   },
   filters: {
     JobStatus(JobStatus) {
@@ -682,6 +685,19 @@ export default {
           600000: '1m',
           3000000: '5m'
         }
+      },
+      // 导出报表数据
+      ExportList: {
+        selected: {
+          key: 'current',
+          value: '当前页'
+        },
+        items: {
+          current: '当前页'
+        },
+        list: [],
+        filterVal: ['JobID', 'JobName', 'UUID', 'JobStatus', 'UserName', 'TotalCost', 'time', 'QueueName', 'ProjectName', 'JobGroup', 'SubmissionHostName', 'SubmitTime', 'ExecuteTime', 'EndTime', 'JobDescription'],
+        tHeader: ['Id', '作业名', 'UUID', '作业状态', '用户名', '费用', '运行时长', '队列名', '项目名', '作业组', '作业提交主机', '作业提交时间', '作业开始执行时间', '作业结束时间', '描述']
       },
       // 计时器
       setTime: null,
@@ -856,7 +872,7 @@ export default {
         EndTime: formatDate(new Date(), 'yyyy-MM-dd hh:mm:ss')
       }
       if (query) {
-        queryObj.HostName = query.value
+        queryObj.JobName = query.value
       }
       if (_this.dateTime) {
         timeObj.StartTime = formatDate(_this.dateTime[0], 'yyyy-MM-dd hh:mm:ss')
@@ -873,6 +889,7 @@ export default {
       GetTaskList(params)
         .then(res => {
           _this.devices = res.Inventory.ResultData.map(function(item, index) {
+            item.SubmitTime = formatDate(item.SubmitTime, 'yyyy-MM-dd hh:mm:ss')
             item.EndTime = formatDate(item.EndTime, 'yyyy-MM-dd hh:mm:ss')
             if (item.ExecuteTime) {
               item.ExecuteTime = formatDate(item.ExecuteTime, 'yyyy-MM-dd hh:mm:ss')
@@ -884,6 +901,7 @@ export default {
           })
           _this.page.total = res.Inventory.TotalNumber
           // _this.page.pageCount = res.Inventory.totalCount;
+          _this.ExportList.list = _this.devices
           _this.loading = false
         })
         .catch(res => {
@@ -949,6 +967,14 @@ export default {
       _this.setTime = null
     },
 
+    // 导出报表
+    ExportChanged(data) {
+      const _this = this
+      if (data.key === 'current') {
+        _this.ExportList.list = _this.devices
+      }
+    },
+
     // 搜索
     searchChanged(data) {
       const _this = this
@@ -972,14 +998,18 @@ export default {
               _this.devices = []
               _this.devices.push(res.Inventory)
               _this.devices = _this.devices.map(function(item, index) {
-              // 保存一份原始数据，便于取消编辑的时候还原数据
+                if (item.ExecuteTime) {
+                  item.ExecuteTime = formatDate(item.ExecuteTime, 'yyyy-MM-dd hh:mm:ss')
+                }
+                item.SubmitTime = formatDate(item.SubmitTime, 'yyyy-MM-dd hh:mm:ss')
+                // 保存一份原始数据，便于取消编辑的时候还原数据
                 const original = _this._.cloneDeep(item)
                 item.original = original
                 _this.$set(item, 'edit', false)
                 return item
               })
-              /* _this.page.total = res.data.pageResultData.totalDataNumber;
-          _this.page.pageCount = res.data.pageResultData.totalCount; */
+              _this.page.total = res.Inventory.TotalNumber
+              _this.page.pageCount = res.Inventory.PageNumber
               _this.loading = false
             })
             .catch(res => {
@@ -1082,5 +1112,15 @@ export default {
 .el-main-finish {
   min-width: 1557px;
   overflow-x: auto;
+}
+
+.JobInfoSidepage {
+  color: #3c73b9;
+  cursor: pointer;
+}
+
+.JobInfoSidepage:hover {
+  color: #1890ff;
+  text-decoration:underline;
 }
 </style>

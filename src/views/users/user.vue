@@ -36,16 +36,16 @@
           >
             <el-table-column label="ID" width="120">
               <template v-slot="{row}">
-                <span>{{ row.uid }}</span>
+                <span>{{ row.UserID }}</span>
               </template>
             </el-table-column>
 
             <el-table-column label="用户">
               <template v-slot="{row}">
                 <template v-if="row.edit">
-                  <el-input v-model="row.username" class="edit-input" size="small" />
+                  <el-input v-model="row.UserName" class="edit-input" size="small" />
                 </template>
-                <span v-else>{{ row.username }}</span>
+                <span v-else>{{ row.UserName }}</span>
               </template>
             </el-table-column>
             <el-table-column label="角色" width="110">
@@ -346,9 +346,9 @@ export default {
       const obj = {}
       if (query) {
         if (query.select === 'name') {
-          obj.username = query.value
+          obj.UserName = query.value
         } else if (query.select === 'ID') {
-          obj.uid = query.value
+          obj.UserID = query.value
         }
       }
       const params = {
@@ -361,21 +361,23 @@ export default {
       GetUserList(params)
         .then(res => {
           _this.devices = []
-          res.Inventory.ResultData.map(async function(item, index) {
-            try {
-              const data = await GetIDUserGroup(item.uid)
-              item.group = data.Inventory
-              // 保存一份原始数据，便于取消编辑的时候还原数据
-              const original = _this._.cloneDeep(item)
-              item.original = original
-              _this.$set(item, 'role', '用户')
-              _this.$set(item, 'edit', false)
-              _this.devices.push(item)
-            } catch (e) {
-              _this.$message({
-                type: 'error',
-                message: '获取失败'
+          res.Inventory.ResultData.map(function(item, index) {
+            GetIDUserGroup(item.UserID)
+              .then(data => {
+                item.group = data.Inventory
+              }).catch(res => {
+                console.log(res)
               })
+            // 保存一份原始数据，便于取消编辑的时候还原数据
+            const original = _this._.cloneDeep(item)
+            item.original = original
+            _this.$set(item, 'role', '用户')
+            _this.$set(item, 'edit', false)
+            if (item.group) {
+              _this.devices.push(item)
+            } else {
+              item.group = []
+              _this.devices.push(item)
             }
           })
           _this.page.total = res.Inventory.TotalNumber
@@ -390,7 +392,11 @@ export default {
     // 搜索
     searchChanged(data) {
       const _this = this
-      _this.getList(data)
+      if (data.value === '') {
+        _this.getList()
+      } else {
+        _this.getList(data)
+      }
       /* if (data.select === 'name') {
         _this.$message({
           message: '名称暂时无法查询',

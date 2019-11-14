@@ -301,9 +301,12 @@ export default {
 
     // 搜索
     searchChanged(data) {
-      console.log(data)
       const _this = this
-      _this.getList(data)
+      if (data.value === '') {
+        _this.getList()
+      } else {
+        _this.getList(data)
+      }
     },
 
     // 查看详情

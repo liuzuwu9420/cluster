@@ -25,8 +25,8 @@ service.interceptors.request.use(
       if (isValid) {
         config.headers.Authorization = 'Bearer' + getToken()
       } else {
-        var jwt = Jsrsasign.KJUR.jws.JWS.parse(getToken())
-        console.log(jwt)
+        /* var jwt = Jsrsasign.KJUR.jws.JWS.parse(getToken())
+        console.log(jwt) */
         store.dispatch('user/logout')
         router.push(`/login?redirect=/dashboard`)
       }

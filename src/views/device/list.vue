@@ -457,7 +457,11 @@ export default {
     // 搜索
     searchChanged(data) {
       const _this = this
-      _this.getList(data)
+      if (data.value === '') {
+        _this.getList()
+      } else {
+        _this.getList(data)
+      }
       /* if (data.select === 'name') {
         _this.$message({
           message: '名称暂时无法查询',
@@ -736,6 +740,11 @@ export default {
   cursor: pointer;
 }
 
+.hostName:hover {
+  color: #1890ff;
+  text-decoration:underline;
+}
+
 /* .tableInfo {
   left: 170px;
     position: absolute;
@@ -748,11 +757,6 @@ export default {
     z-index: 3000;
     background: #fff;
 } */
-
-.app-container .el-dialog .el-row .size {
-  line-height: 40px;
-  padding-left: 12px;
-}
 
 .app-container .el-dialog__wrapper:nth-child(4) .el-dialog {
   background: red;

@@ -72,6 +72,10 @@
   height: calc(100vh - 184px);
 }
 
+.tableInfoEvents  .el-tabs__content {
+  height: calc(100vh - 245px);
+}
+
 // to fixed https://github.com/ElemeFE/element/issues/2461
 .el-dialog {
   transform: none;
@@ -106,6 +110,11 @@
   background-color: #FFF;
 }
 
+// radio
+.ExportExcel .el-radio-button__inner {
+  font-size: 35px;
+}
+
 //icon 时间选择器
 .el-date-editor {
   .el-input__icon {
@@ -113,6 +122,11 @@
     color: #1890ff;
     width: 40px;
   }
+}
+
+// el-steps步骤条
+.el-step__icon {
+  background-color: #e8f4ff;
 }
 
 // fix date-picker ui bug in filter-item

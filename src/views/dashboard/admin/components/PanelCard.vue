@@ -102,7 +102,7 @@
 
 <script>
 import CountTo from 'vue-count-to'
-import { GetTaskNum } from '@/api/monitor'
+import { GetTaskNum } from '@/api/task'
 export default {
   components: {
     CountTo

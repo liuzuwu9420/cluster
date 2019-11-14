@@ -4,7 +4,7 @@
       <el-main>
         <div class="hasten">
           <el-button class="headBut" type="primary" size="mini" @click="saveEntity">
-            <i class="el-icon-plus" /> 创建用户组
+            <i class="el-icon-plus" /> 创建队列
           </el-button>
           <el-button type="primary" size="mini" @click="getList">
             <i class="el-icon-refresh-right" /> 刷新
@@ -26,42 +26,19 @@
         <div class="table-info el-scrollbar">
           <el-table
             v-loading="loading"
-            :data="devices"
+            :data="queues"
             element-loading-text="Loading"
             fit
             highlight-current-row
             style="width: 100%"
-            max-height="807px"
             height="100%"
+            max-height="807px"
           >
-            <el-table-column label="ID" width="150">
+            <el-table-column label="队列">
               <template v-slot="{row}">
-                <span>{{ row.GroupID }}</span>
+                <span>{{ row.QUEUE_NAME }}</span>
               </template>
             </el-table-column>
-
-            <el-table-column label="名称">
-              <template v-slot="{row}">
-                <template v-if="row.edit">
-                  <el-input v-model="row.GroupName" class="edit-input" size="small" />
-                </template>
-                <span v-else>{{ row.GroupName }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="用户">
-              <template v-slot="{row}">
-                <span v-for="(item, index) in row.users" :key="index" class="userLink" @click="getUserID(item)">&nbsp;{{ item.UserName?item.UserName:'' }}
-                </span>
-              </template>
-            </el-table-column>
-            <!-- <el-table-column label="描述">
-            <template v-slot="{row}">
-              <template v-if="row.edit">
-                <el-input v-model="row.description" class="edit-input" size="small" />
-              </template>
-              <span v-else>{{ row.description }}</span>
-            </template>
-          </el-table-column>-->
             <el-table-column fixed="right" label="操作" width="200">
               <template v-slot="{row}">
                 <el-button-group>
@@ -115,7 +92,7 @@
             </el-table-column>
           </el-table>
         </div>
-        <el-dialog :title="titleHead" :visible.sync="dialogCreating" width="50%">
+        <el-dialog :title="titleHead" :visible.sync="dialogCreating" width="40%">
           <el-form
             ref="create"
             :model="create"
@@ -123,15 +100,8 @@
             label-width="100px"
             class="demo-ruleForm"
           >
-            <el-form-item label="名称" prop="name">
+            <el-form-item label="队列名" prop="name">
               <el-input v-model="create.name" class="formInp" />
-            </el-form-item>
-            <el-form-item class="formInp" label="描述" prop="description">
-              <el-input
-                v-model="create.description"
-                type="textarea"
-                :autosize="{ minRows: 2, maxRows: 4}"
-              />
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="submitForm('create')">立即创建</el-button>
@@ -146,13 +116,8 @@
 
 <script>
 import {
-  GetUserGroupList,
-  GetGroupIDUser,
-  CreateUserGroup,
-  ChangeUserGroup,
-  DeleteUserGroup
-} from '@/api/role'
-import { syncUser } from '@/api/sync'
+  GetQueueList
+} from '@/api/task'
 
 import Pagination from '@/components/Pagination'
 import Search from '@/components/Search'
@@ -170,10 +135,6 @@ export default {
           {
             value: 'name',
             label: '名称'
-          },
-          {
-            value: 'ID',
-            label: 'ID'
           }
         ]
       },
@@ -184,20 +145,19 @@ export default {
         pageSize: 10,
         total: 1
       },
-      devices: [],
+      queues: [],
       loading: false,
       dialogCreating: false,
       titleHead: '',
       // 节点添加信息
       create: {
-        name: '',
-        description: ''
+        name: ''
       },
       rules: {
         name: [
           {
             required: true,
-            message: '请输入名称',
+            message: '请输入队列名',
             trigger: 'blur'
           }
         ]
@@ -206,11 +166,6 @@ export default {
   },
   created() {
     this.getList()
-    if (this.$route.params.data) {
-      this.getList(this.$route.params.data)
-    } else {
-      this.getList()
-    }
   },
   methods: {
     getList(query) {
@@ -219,37 +174,24 @@ export default {
       const obj = {}
       if (query) {
         if (query.select === 'name') {
-          obj.GroupName = query.value
-        } else if (query.select === 'ID') {
-          obj.GroupID = query.value
+          obj.QUEUE_NAME = query.value
         }
       }
       const params = {
         page: {
           PageNumber: _this.page.currentPage, // 当前页数
           PageSize: _this.page.pageSize // 每一页显示条数
-        },
-        query: obj
+        }
       }
-      GetUserGroupList(params)
-        .then(async res => {
-          _this.devices = []
+      GetQueueList(params)
+        .then(res => {
+          _this.queues = []
           res.Inventory.ResultData.map(function(item, index) {
-            GetGroupIDUser(item.GroupID).then(data => {
-              item.users = data.Inventory
-            }).catch(res => {
-              console.log('err ' + res + ' end')
-            })
             // 保存一份原始数据，便于取消编辑的时候还原数据
             const original = _this._.cloneDeep(item)
             item.original = original
             _this.$set(item, 'edit', false)
-            if (item.users) {
-              _this.devices.push(item)
-            } else {
-              item.users = []
-              _this.devices.push(item)
-            }
+            _this.queues.push(item)
           })
           _this.page.total = res.Inventory.TotalNumber
           _this.loading = false
@@ -260,9 +202,19 @@ export default {
         })
     },
 
+    // 搜索
+    searchChanged(data) {
+      const _this = this
+      if (data.value === '') {
+        _this.getList()
+      } else {
+        _this.getList(data)
+      }
+    },
+
     saveEntity() {
       this.dialogCreating = true
-      this.titleHead = '新建用户组'
+      this.titleHead = '添加队列'
     },
     // 添加节点
     submitForm(formName) {
@@ -270,10 +222,9 @@ export default {
         if (valid) {
           const _this = this
           const params = {
-            name: _this.create.name,
-            description: _this.create.description
+            QUEUE_NAME: _this.create.name
           }
-          CreateUserGroup(params)
+          /* CreateUser(params)
             .then(res => {
               _this.getList()
               _this.dialogCreating = false
@@ -287,7 +238,7 @@ export default {
                 type: 'error',
                 message: '添加失败'
               })
-            })
+            }) */
         } else {
           console.log('error submit!!')
           return false
@@ -301,7 +252,7 @@ export default {
     // 同步
     sync() {
       const _this = this
-      syncUser()
+      /* syncUser()
         .then(res => {
           if (res.Success) {
             _this.getList()
@@ -321,63 +272,10 @@ export default {
             type: 'error',
             message: '同步失败'
           })
-        })
+        }) */
     },
 
-    // 搜索
-    searchChanged(data) {
-      const _this = this
-      if (data.value === '') {
-        _this.getList()
-      } else {
-        _this.getList(data)
-      }
-      /* if (data.select === 'name') {
-        _this.$message({
-          message: '名称暂时无法查询',
-          type: 'warning',
-          duration: 1000
-        })
-      } else if (data.select === 'ID') {
-        _this.loading = true
-        GetGroupIDList(data.value)
-          .then(async res => {
-            _this.devices = []
-            const Inv = res.Inventory
-            try {
-              const data = await GetGroupIDUser(Inv.GroupID)
-              Inv.users = data.Inventory
-              // 保存一份原始数据，便于取消编辑的时候还原数据
-              const original = _this._.cloneDeep(Inv)
-              Inv.original = original
-              _this.$set(Inv, 'edit', false)
-              _this.devices.push(Inv)
-            } catch (e) {
-              _this.$message({
-                type: 'error',
-                message: '获取失败'
-              })
-            }
-            _this.loading = false
-          })
-          .catch(res => {
-            console.log(res)
-          })
-      } */
-    },
-
-    // 跳转用户
-    getUserID(data) {
-      /* const _this = this
-      _this.$router.push({
-        name: 'role.user',
-        params: {
-          data: data
-        }
-      }) */
-    },
-
-    // 查看详情
+    // 查看用户详情
     info(device) {
       /* this.$router.push({
         name: "device.info",
@@ -391,16 +289,16 @@ export default {
     async deleteItem(row) {
       const _this = this
       _this
-        .$confirm('此操作将删除该用户组, 是否继续?', '提示', {
+        .$confirm('此操作将删除该用户, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         })
         .then(() => {
           const params = {
-            _id: row._id
+
           }
-          DeleteUserGroup(params)
+          /* DeleteUser(params)
             .then(res => {
               _this.getList()
               _this.$message({
@@ -413,7 +311,7 @@ export default {
                 type: 'error',
                 message: '删除失败'
               })
-            })
+            }) */
         })
         .catch(() => {
           _this.$message({
@@ -427,30 +325,20 @@ export default {
     cancelEdit(row) {
       row.edit = false
       // 还原数据
-      row.GroupName = row.original.GroupName
-      row.users = row.original.users
-      row.description = row.original.description
+      row.QUEUE_NAME = row.original.QUEUE_NAME
     },
 
     // 确认编辑
     async confirmEdit(row) {
       const params = {
-        oldOption: {
-          _id: row._id
-        },
-        newOption: {}
+
       }
-      if (row.GroupName !== '') {
-        params.newOption.GroupName = row.GroupName
-      }
-      if (row.description !== '') {
-        params.newOption.description = row.description
+      if (row.name !== '') {
+        params.newOption.QUEUE_NAME = row.QUEUE_NAME
       }
 
-      await ChangeUserGroup(params)
-      row.original.GroupName = row.GroupName
-      row.original.users = row.users
-      row.original.description = row.description
+      /* await ChangeUser(params) */
+      row.original.QUEUE_NAME = row.QUEUE_NAME
       row.edit = false
     }
   }
@@ -464,6 +352,9 @@ export default {
   margin-bottom: 10px;
   padding: 5px 10px;
 }
+/*.hasten .el-form-item__content {
+		width: 300px;
+	}*/
 
 .hasten .el-button {
   height: 36px;
@@ -488,7 +379,7 @@ export default {
   overflow: auto;
 }
 
-.app-container .el-table .userLink {
+.app-container .el-table .GroupLink {
   cursor: pointer;
   color: #49b0f9;
 }

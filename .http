@@ -150,3 +150,6 @@ DELETE {{host}}/api/v1/chargedGroups/uuid
 
 ### 把用户从计费组中删除
 DELETE {{host}}/api/v1/chargedGroups/user/1026
+
+###
+GET  {{host}}/api/v1/queue?page={"PageSize":5,"PageNumber":1}

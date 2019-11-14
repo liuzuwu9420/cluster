@@ -93,7 +93,7 @@
 import {
   GetPendTaskTOPList,
   GetRunTaskTOPList
-} from '@/api/monitor'
+} from '@/api/task'
 import { formatDate, formatDiff } from '@/utils/format'
 export default {
   data() {

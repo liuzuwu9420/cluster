@@ -1,5 +1,5 @@
 <template>
-  <div v-if="sidepagedata.sidepageShow" class="tableInfo">
+  <div v-if="sidepagedata.sidepageShow" class="tableInfo tableInfoEvents">
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane name="close">
         <span slot="label" @click="sidepagedata.sidepageShow=false">
@@ -36,6 +36,10 @@
                   <div class="right-content">{{ sidepagedata.jobs.TotalCost }}</div>
                 </div>
                 <div class="detail-row">
+                  <div class="left-title">运行时长:</div>
+                  <div class="right-content">{{ sidepagedata.jobs.time }}</div>
+                </div>
+                <div class="detail-row">
                   <div class="left-title">队列名:</div>
                   <div class="right-content">{{ sidepagedata.jobs.QueueName }}</div>
                 </div>
@@ -48,20 +52,16 @@
                   <div class="right-content">{{ sidepagedata.jobs.JobGroup }}</div>
                 </div>
                 <div class="detail-row">
-                  <div class="left-title">作业提交时间:</div>
-                  <div class="right-content">{{ sidepagedata.jobs.SubmitTime }}</div>
-                </div>
-                <div class="detail-row">
                   <div class="left-title">作业提交主机:</div>
                   <div class="right-content">{{ sidepagedata.jobs.SubmissionHostName }}</div>
                 </div>
                 <div class="detail-row">
-                  <div class="left-title">作业开始执行时间:</div>
-                  <div class="right-content">{{ sidepagedata.jobs.ExecuteTime }}</div>
+                  <div class="left-title">作业提交时间:</div>
+                  <div class="right-content">{{ sidepagedata.jobs.SubmitTime }}</div>
                 </div>
                 <div class="detail-row">
-                  <div class="left-title">运行时长:</div>
-                  <div class="right-content">{{ sidepagedata.jobs.time }}</div>
+                  <div class="left-title">作业开始执行时间:</div>
+                  <div class="right-content">{{ sidepagedata.jobs.ExecuteTime }}</div>
                 </div>
                 <div class="detail-row">
                   <div class="left-title">作业结束时间:</div>
@@ -78,9 +78,15 @@
                 <div class="right-head-title">
                   <i class="el-icon-notebook-2" /><span class="head-title">历史信息</span>
                 </div>
-                <div style="height: 300px;">
+                <div style="height: 300px; max-height: 690px; padding-top: 20px;">
                   <el-steps direction="vertical" :active="activeEvents">
-                    <el-step v-for="(item, index) in events" :key="index" :title="item.CurrentStatus" :description="item.description" />
+                    <el-step
+                      v-for="(item, index) in events"
+                      :key="index"
+                      :title="item.CurrentStatus"
+                      :description="item.description"
+                      :icon="item.Icon"
+                    />
                   </el-steps>
                 </div>
               </div>
@@ -164,6 +170,11 @@ export default {
         if (val.sidepageShow) {
           this.getEvents()
         }
+
+        [...document.querySelectorAll('.el-steps .el-step__icon div')].forEach((el, index, arr) => {
+          console.log(el, arr.length - index) // 3,2,1
+          el.innerHTML = arr.length - index
+        })
       },
       deep: true
     }
@@ -182,11 +193,23 @@ export default {
         .then(res => {
           _this.events = res.Inventory.map(item => {
             item.ChangeTime = formatDate(item.ChangeTime, 'yyyy-MM-dd hh:mm:ss')
-            item.description = item.ChangeReason + ' ' + item.ChangeTime
+            item.description = item.ChangeTime + ' ' + item.ChangeReason
+            if (item.CurrentStatus === 'PEND') {
+              _this.$set(item, 'Icon', 'el-icon-video-play')
+            } else if (item.CurrentStatus === 'RUN') {
+              _this.$set(item, 'Icon', 'el-icon-refresh')
+            } else if (item.CurrentStatus === 'EXIT') {
+              _this.$set(item, 'Icon', 'el-icon-circle-close')
+            } else if (item.CurrentStatus === 'DONE') {
+              _this.$set(item, 'Icon', 'el-icon-circle-check')
+            } else if (item.CurrentStatus === 'DONE+PDONE') {
+              _this.$set(item, 'Icon', 'el-icon-success')
+            } else {
+              _this.$set(item, 'Icon', 'el-icon-remove')
+            }
             return item
           })
           _this.activeEvents = _this.events.length
-          console.log(_this.events)
         }).catch(res => {
           console.log(res)
         })
@@ -195,7 +218,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.tableInfo {
+.tableInfoEvents {
   left: 170px;
   position: absolute;
   top: 0;
