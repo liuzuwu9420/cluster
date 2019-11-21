@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" @click="closeSidepage($event)">
     <el-container>
       <el-main>
         <div class="hasten">
@@ -25,8 +25,9 @@
         </div>
         <div class="table-info el-scrollbar">
           <el-table
+            ref="tableSidepage"
             v-loading="loading"
-            :data="devices"
+            :data="userGroupsData"
             element-loading-text="Loading"
             fit
             highlight-current-row
@@ -36,7 +37,7 @@
           >
             <el-table-column label="ID" width="150">
               <template v-slot="{row}">
-                <span>{{ row.GroupID }}</span>
+                <span id="SidepageGroupName" class="groupName" @click.stop="showSidepage(row)">{{ row.GroupID }}</span>
               </template>
             </el-table-column>
 
@@ -48,9 +49,9 @@
                 <span v-else>{{ row.GroupName }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="用户">
+            <el-table-column label="创建时间">
               <template v-slot="{row}">
-                <span v-for="(item, index) in row.users" :key="index" class="userLink" @click="getUserID(item)">&nbsp;{{ item.UserName?item.UserName:'' }}
+                <span>{{ row.CreatedAt }}
                 </span>
               </template>
             </el-table-column>
@@ -114,6 +115,7 @@
               </template>
             </el-table-column>
           </el-table>
+          <sidepage id="SidepageName" :sidepagedata.sync="sidepagedata" />
         </div>
         <el-dialog :title="titleHead" :visible.sync="dialogCreating" width="50%">
           <el-form
@@ -147,20 +149,24 @@
 <script>
 import {
   GetUserGroupList,
-  GetGroupIDUser,
   CreateUserGroup,
   ChangeUserGroup,
   DeleteUserGroup
 } from '@/api/role'
 import { syncUser } from '@/api/sync'
 
+import { formatDate } from '@/utils/format'
+
 import Pagination from '@/components/Pagination'
 import Search from '@/components/Search'
+
+import Sidepage from './components/Sidepage'
 
 export default {
   components: {
     Pagination,
-    Search
+    Search,
+    Sidepage
   },
   data() {
     return {
@@ -182,9 +188,9 @@ export default {
         currentPage: 1,
         pageCount: 1,
         pageSize: 10,
-        total: 1
+        total: 0
       },
-      devices: [],
+      userGroupsData: [],
       loading: false,
       dialogCreating: false,
       titleHead: '',
@@ -201,13 +207,18 @@ export default {
             trigger: 'blur'
           }
         ]
+      },
+      // Sidepage
+      sidepagedata: {
+        groups: {},
+        sidepageShow: false,
+        group: 'userGroup'
       }
     }
   },
   created() {
-    this.getList()
-    if (this.$route.params.data) {
-      this.getList(this.$route.params.data)
+    if (this.$route.params.select) {
+      this.getList(this.$route.params)
     } else {
       this.getList()
     }
@@ -233,23 +244,15 @@ export default {
       }
       GetUserGroupList(params)
         .then(async res => {
-          _this.devices = []
+          _this.userGroupsData = []
           res.Inventory.ResultData.map(function(item, index) {
-            GetGroupIDUser(item.GroupID).then(data => {
-              item.users = data.Inventory
-            }).catch(res => {
-              console.log('err ' + res + ' end')
-            })
+            item.CreatedAt = formatDate(item.CreatedAt, 'yyyy-MM-dd hh:mm:ss')
+            item.UpdatedAt = formatDate(item.UpdatedAt, 'yyyy-MM-dd hh:mm:ss')
             // 保存一份原始数据，便于取消编辑的时候还原数据
             const original = _this._.cloneDeep(item)
             item.original = original
             _this.$set(item, 'edit', false)
-            if (item.users) {
-              _this.devices.push(item)
-            } else {
-              item.users = []
-              _this.devices.push(item)
-            }
+            _this.userGroupsData.push(item)
           })
           _this.page.total = res.Inventory.TotalNumber
           _this.loading = false
@@ -342,7 +345,7 @@ export default {
         _this.loading = true
         GetGroupIDList(data.value)
           .then(async res => {
-            _this.devices = []
+            _this.userGroupsData = []
             const Inv = res.Inventory
             try {
               const data = await GetGroupIDUser(Inv.GroupID)
@@ -351,7 +354,7 @@ export default {
               const original = _this._.cloneDeep(Inv)
               Inv.original = original
               _this.$set(Inv, 'edit', false)
-              _this.devices.push(Inv)
+              _this.userGroupsData.push(Inv)
             } catch (e) {
               _this.$message({
                 type: 'error',
@@ -366,15 +369,23 @@ export default {
       } */
     },
 
-    // 跳转用户
-    getUserID(data) {
-      /* const _this = this
-      _this.$router.push({
-        name: 'role.user',
-        params: {
-          data: data
+    // 显示Sidepage
+    showSidepage(row) {
+      const _this = this
+      _this.$refs.tableSidepage.setCurrentRow(row)
+      _this.sidepagedata.groups = row
+      _this.sidepagedata.sidepageShow = true
+    },
+
+    // 点击其它区域边页隐藏
+    closeSidepage(event) {
+      var currentCli1 = document.getElementById('SidepageGroupName')
+      var currentCli2 = document.getElementById('SidepageName')
+      if (currentCli1 || currentCli2) {
+        if (!currentCli1.contains(event.target) && !currentCli2.contains(event.target)) { // 点击到了id为sellineName以外的区域，隐藏下拉框
+          this.sidepagedata.sidepageShow = false
         }
-      }) */
+      }
     },
 
     // 查看详情
@@ -491,6 +502,16 @@ export default {
 .app-container .el-table .userLink {
   cursor: pointer;
   color: #49b0f9;
+}
+
+.groupName {
+  color: #3c73b9;
+  cursor: pointer;
+}
+
+.groupName:hover {
+  color: #1890ff;
+  text-decoration:underline;
 }
 
 .app-container .el-dialog .el-row .size {

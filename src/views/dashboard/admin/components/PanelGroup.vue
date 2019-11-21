@@ -173,7 +173,7 @@ export default {
 
     handleSetLineChartData(Status) {
       this.$router.push({
-        name: 'monitor.taskList',
+        name: 'task.taskList',
         params: {
           Status: Status
         }

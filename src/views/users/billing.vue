@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" @click="closeSidepage($event)">
     <el-container>
       <el-main>
         <div class="hasten">
@@ -20,106 +20,110 @@
             />
           </div>
         </div>
-        <el-table
-          v-loading="loading"
-          :data="devices"
-          element-loading-text="Loading"
-          fit
-          highlight-current-row
-          style="width: 100%"
-          height="100%"
-          max-height="807px"
-        >
-          <el-table-column label="UUID" width="140" show-overflow-tooltip>
-            <template v-slot="{row}">
-              <span>{{ row.UUID }}</span>
-            </template>
-          </el-table-column>
-
-          <el-table-column label="名称" width="160">
-            <template v-slot="{row}">
-              <template v-if="row.edit">
-                <el-input v-model="row.GroupName" class="edit-input" size="small" />
+        <div class="table-info el-scrollbar">
+          <el-table
+            ref="tableSidepage"
+            v-loading="loading"
+            :data="billGroupData"
+            element-loading-text="Loading"
+            fit
+            highlight-current-row
+            style="width: 100%"
+            height="100%"
+            max-height="807px"
+          >
+            <el-table-column label="名称" width="160">
+              <template v-slot="{row}">
+                <template v-if="row.edit">
+                  <el-input v-model="row.GroupName" class="edit-input" size="small" />
+                </template>
+                <span v-else id="SidepageGroupName" class="groupName" @click.stop="showSidepage(row)">{{ row.GroupName }}</span>
               </template>
-              <span v-else>{{ row.GroupName }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="收费比率">
-            <template v-slot="{row}">
-              <template v-if="row.edit">
-                <el-input v-model="row.CostRate" class="edit-input" size="small" />
+            </el-table-column>
+            <el-table-column label="收费比率">
+              <template v-slot="{row}">
+                <template v-if="row.edit">
+                  <el-input v-model="row.CostRate" class="edit-input" size="small" />
+                </template>
+                <span v-else>{{ row.CostRate }}</span>
               </template>
-              <span v-else>{{ row.CostRate }}</span>
-            </template>
-          </el-table-column>
-          <!-- <el-table-column label="已使用金额" width="140">
+            </el-table-column>
+            <el-table-column label="创建时间">
+              <template v-slot="{row}">
+                <span>{{ row.CreatedAt }}
+                </span>
+              </template>
+            </el-table-column>
+            <!-- <el-table-column label="已使用金额" width="140">
             <template v-slot="{row}">
               <template v-if="row.edit">
                 <el-input v-model="row.useMoney" class="edit-input" size="small" />
               </template>
               <span v-else>{{ row.useMoney }}</span>
             </template>
-          </el-table-column> -->
-          <el-table-column label="描述">
-            <template v-slot="{row}">
-              <template v-if="row.edit">
-                <el-input v-model="row.Desc" class="edit-input" size="small" />
+          </el-table-column>-->
+            <el-table-column label="描述">
+              <template v-slot="{row}">
+                <template v-if="row.edit">
+                  <el-input v-model="row.Desc" class="edit-input" size="small" />
+                </template>
+                <span v-else>{{ row.Desc }}</span>
               </template>
-              <span v-else>{{ row.Desc }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column fixed="right" label="操作" width="200">
-            <template v-slot="{row}">
-              <el-button-group>
-                <!-- 编辑模式：确定 -->
-                <el-button
-                  v-if="row.edit"
-                  type="warning"
-                  size="mini"
-                  icon="el-icon-circle-check-outline"
-                  @click="confirmEdit(row)"
-                >确定</el-button>
-                <!-- 编辑模式：取消 -->
-                <el-button
-                  v-if="row.edit"
-                  type="success"
-                  size="mini"
-                  icon="el-icon-circle-check-outline"
-                  @click="cancelEdit(row)"
-                >取消</el-button>
-
-                <!-- 查看详情 -->
-                <el-tooltip class="item" effect="dark" content="查看" placement="top-end">
+            </el-table-column>
+            <el-table-column fixed="right" label="操作" width="200">
+              <template v-slot="{row}">
+                <el-button-group>
+                  <!-- 编辑模式：确定 -->
                   <el-button
-                    v-if="!row.edit"
-                    type="success"
-                    icon="el-icon-view"
-                    size="mini"
-                    @click="info(row)"
-                  />
-                </el-tooltip>
-                <el-tooltip class="item" effect="dark" content="编辑" placement="top-end">
-                  <el-button
-                    v-if="!row.edit"
+                    v-if="row.edit"
                     type="warning"
                     size="mini"
-                    icon="el-icon-edit"
-                    @click="row.edit=!row.edit"
-                  />
-                </el-tooltip>
-                <el-tooltip class="item" effect="dark" content="删除" placement="top-end">
+                    icon="el-icon-circle-check-outline"
+                    @click="confirmEdit(row)"
+                  >确定</el-button>
+                  <!-- 编辑模式：取消 -->
                   <el-button
-                    v-if="!row.edit"
-                    type="danger"
+                    v-if="row.edit"
+                    type="success"
                     size="mini"
-                    icon="el-icon-delete"
-                    @click="deleteItem(row)"
-                  />
-                </el-tooltip>
-              </el-button-group>
-            </template>
-          </el-table-column>
-        </el-table>
+                    icon="el-icon-circle-check-outline"
+                    @click="cancelEdit(row)"
+                  >取消</el-button>
+
+                  <!-- 查看详情 -->
+                  <el-tooltip class="item" effect="dark" content="查看" placement="top-end">
+                    <el-button
+                      v-if="!row.edit"
+                      type="success"
+                      icon="el-icon-view"
+                      size="mini"
+                      @click="info(row)"
+                    />
+                  </el-tooltip>
+                  <el-tooltip class="item" effect="dark" content="编辑" placement="top-end">
+                    <el-button
+                      v-if="!row.edit"
+                      type="warning"
+                      size="mini"
+                      icon="el-icon-edit"
+                      @click="row.edit=!row.edit"
+                    />
+                  </el-tooltip>
+                  <el-tooltip class="item" effect="dark" content="删除" placement="top-end">
+                    <el-button
+                      v-if="!row.edit"
+                      type="danger"
+                      size="mini"
+                      icon="el-icon-delete"
+                      @click="deleteItem(row)"
+                    />
+                  </el-tooltip>
+                </el-button-group>
+              </template>
+            </el-table-column>
+          </el-table>
+          <sidepage id="SidepageName" :sidepagedata.sync="sidepagedata" />
+        </div>
         <el-dialog :title="titleHead" :visible.sync="dialogCreating" width="50%">
           <el-form
             ref="create"
@@ -140,7 +144,7 @@
               <el-input v-model="create.money" class="formInp">
                 <template slot="append">￥</template>
               </el-input>
-            </el-form-item> -->
+            </el-form-item>-->
             <el-form-item class="formInp" label="描述" prop="description">
               <el-input
                 v-model="create.description"
@@ -162,13 +166,18 @@
 <script>
 import { GetBillList, CreateBill, DeleteBillGroup } from '@/api/role'
 
+import { formatDate } from '@/utils/format'
+
 import Pagination from '@/components/Pagination'
 import Search from '@/components/Search'
+
+import Sidepage from './components/Sidepage'
 
 export default {
   components: {
     Pagination,
-    Search
+    Search,
+    Sidepage
   },
   data() {
     return {
@@ -190,9 +199,9 @@ export default {
         currentPage: 1,
         pageCount: 1,
         pageSize: 10,
-        total: 1
+        total: 0
       },
-      devices: [],
+      billGroupData: [],
       loading: false,
       dialogCreating: false,
       titleHead: '',
@@ -218,11 +227,21 @@ export default {
             trigger: 'blur'
           }
         ]
+      },
+      // Sidepage
+      sidepagedata: {
+        groups: {},
+        sidepageShow: false,
+        group: 'billGroup'
       }
     }
   },
   created() {
-    this.getList()
+    if (this.$route.params.select) {
+      this.getList(this.$route.params)
+    } else {
+      this.getList()
+    }
   },
   methods: {
     getList(query) {
@@ -244,8 +263,10 @@ export default {
       }
       GetBillList(params)
         .then(res => {
-          // _this.devices = []
-          _this.devices = res.Inventory.ResultData.map(function(item, index) {
+          // _this.billGroupData = []
+          _this.billGroupData = res.Inventory.ResultData.map(function(item, index) {
+            item.CreatedAt = formatDate(item.CreatedAt, 'yyyy-MM-dd hh:mm:ss')
+            item.UpdatedAt = formatDate(item.UpdatedAt, 'yyyy-MM-dd hh:mm:ss')
             // 保存一份原始数据，便于取消编辑的时候还原数据
             const original = _this._.cloneDeep(item)
             item.original = original
@@ -306,6 +327,25 @@ export default {
         _this.getList()
       } else {
         _this.getList(data)
+      }
+    },
+
+    // 显示Sidepage
+    showSidepage(row) {
+      const _this = this
+      _this.$refs.tableSidepage.setCurrentRow(row)
+      _this.sidepagedata.groups = row
+      _this.sidepagedata.sidepageShow = true
+    },
+
+    // 点击其它区域边页隐藏
+    closeSidepage(event) {
+      var currentCli1 = document.getElementById('SidepageGroupName')
+      var currentCli2 = document.getElementById('SidepageName')
+      if (currentCli1 || currentCli2) {
+        if (!currentCli1.contains(event.target) && !currentCli2.contains(event.target)) { // 点击到了id为sellineName以外的区域，隐藏下拉框
+          this.sidepagedata.sidepageShow = false
+        }
       }
     },
 
@@ -394,6 +434,17 @@ export default {
 </script>
 
 <style scoped>
+.app-container {
+  height: 100%;
+}
+
+.app-container .el-container {
+  height: 100%;
+}
+.app-container .el-main {
+  overflow: hidden;
+}
+
 .hasten {
   width: 100%;
   height: 40px;
@@ -419,6 +470,10 @@ export default {
   float: right;
 }
 
+.table-info {
+  height: calc(100vh - 140px);
+  overflow: auto;
+}
 .table-expand {
   font-size: 0;
 }
@@ -432,6 +487,16 @@ export default {
   margin-right: 0;
   margin-bottom: 0;
   width: 50%;
+}
+
+.groupName {
+  color: #3c73b9;
+  cursor: pointer;
+}
+
+.groupName:hover {
+  color: #1890ff;
+  text-decoration:underline;
 }
 
 .app-container .el-dialog .el-row .size {

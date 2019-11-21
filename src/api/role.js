@@ -6,7 +6,6 @@ import request from '@/utils/request'
  * @type {string}
  * @default
  * */
-const v = 'v1'
 
 /**
  * 获取用户信息
@@ -14,7 +13,7 @@ const v = 'v1'
  */
 export function GetUserList(params) {
   return request({
-    url: `/api/${v}/users`,
+    url: `/users`,
     method: 'get',
     params
   })
@@ -26,7 +25,7 @@ export function GetUserList(params) {
  */
 export function GetIDUser(id) {
   return request({
-    url: `/api/${v}/users/${id}`,
+    url: `/users/${id}`,
     method: 'get'
   })
 }
@@ -37,7 +36,18 @@ export function GetIDUser(id) {
  */
 export function GetIDUserGroup(id) {
   return request({
-    url: `/api/${v}/users/${id}/groups`,
+    url: `/users/${id}/groups`,
+    method: 'get'
+  })
+}
+
+/**
+ * 根据ID查询用户所属计费组
+ * @id {*} id 查询ID
+ */
+export function GetIDUserBill(id) {
+  return request({
+    url: `/users/${id}/chargedgroups`,
     method: 'get'
   })
 }
@@ -48,7 +58,7 @@ export function GetIDUserGroup(id) {
  */
 export function CreateUser(data) {
   return request({
-    url: `/api/${v}/hosts`,
+    url: `/hosts`,
     method: 'post',
     data
   })
@@ -60,7 +70,7 @@ export function CreateUser(data) {
  */
 export function DeleteUser(uuid) {
   return request({
-    url: `/api/${v}/hosts/${uuid}`,
+    url: `/hosts/${uuid}`,
     method: 'delete'
   })
 }
@@ -71,7 +81,7 @@ export function DeleteUser(uuid) {
  */
 export function ChangeUser(data) {
   return request({
-    url: `/api/${v}/hosts`,
+    url: `/hosts`,
     method: 'post',
     data
   })
@@ -83,7 +93,7 @@ export function ChangeUser(data) {
  */
 export function GetBillList(params) {
   return request({
-    url: `/api/${v}/chargedGroups`,
+    url: `/chargedgroups`,
     method: 'get',
     params
   })
@@ -95,7 +105,7 @@ export function GetBillList(params) {
  */
 export function CreateBill(data) {
   return request({
-    url: `/api/${v}/chargedGroups`,
+    url: `/chargedgroups`,
     method: 'post',
     data
   })
@@ -103,11 +113,12 @@ export function CreateBill(data) {
 
 /**
  * 根据计费组UUID查询其所有的用户
- * @param {*} params 计费组参数
+ * @param {*} uuid 计费组uuid
+ * @param {*} params 用户参数
  */
-export function GetBillUser(params) {
+export function GetBillUser(uuid, params) {
   return request({
-    url: `/api/${v}/chargedGroups/${params.UUID}/users`,
+    url: `/chargedgroups/${uuid}/users`,
     method: 'get',
     params
   })
@@ -119,7 +130,7 @@ export function GetBillUser(params) {
  */
 export function ChangeBillUser(data) {
   return request({
-    url: `/api/${v}/chargedGroups/user`,
+    url: `/chargedgroups/user`,
     method: 'post',
     data
   })
@@ -131,7 +142,18 @@ export function ChangeBillUser(data) {
  */
 export function DeleteBillGroup(uuid) {
   return request({
-    url: `/api/${v}/chargedGroups/${uuid}`,
+    url: `/chargedgroups/${uuid}`,
+    method: 'delete'
+  })
+}
+
+/**
+ * 删除计费组中的用户
+ * @param {*} id 用户ID
+ */
+export function DeleteBillGroupUser(id) {
+  return request({
+    url: `/chargedgroups/user/${id}`,
     method: 'delete'
   })
 }
@@ -142,7 +164,7 @@ export function DeleteBillGroup(uuid) {
  */
 export function GetUserGroupList(params) {
   return request({
-    url: `/api/${v}/groups`,
+    url: `/groups`,
     method: 'get',
     params
   })
@@ -154,7 +176,7 @@ export function GetUserGroupList(params) {
  */
 export function GetGroupIDList(id) {
   return request({
-    url: `/api/${v}/groups/${id}`,
+    url: `/groups/${id}`,
     method: 'get'
   })
 }
@@ -162,11 +184,13 @@ export function GetGroupIDList(id) {
 /**
  * 根据ID获取用户信息
  * @id {*} id 用户组id
+ * @param {*} params 用户参数
  */
-export function GetGroupIDUser(id) {
+export function GetGroupIDUser(id, params) {
   return request({
-    url: `/api/${v}/groups/${id}/users`,
-    method: 'get'
+    url: `/groups/${id}/users`,
+    method: 'get',
+    params
   })
 }
 
@@ -176,7 +200,7 @@ export function GetGroupIDUser(id) {
  */
 export function CreateUserGroup(data) {
   return request({
-    url: `/api/${v}/hosts`,
+    url: `/hosts`,
     method: 'post',
     data
   })
@@ -188,7 +212,7 @@ export function CreateUserGroup(data) {
  */
 export function DeleteUserGroup(uuid) {
   return request({
-    url: `/api/${v}/hosts/${uuid}`,
+    url: `/hosts/${uuid}`,
     method: 'delete'
   })
 }
@@ -199,7 +223,7 @@ export function DeleteUserGroup(uuid) {
  */
 export function ChangeUserGroup(data) {
   return request({
-    url: `/api/${v}/hosts`,
+    url: `/hosts`,
     method: 'post',
     data
   })

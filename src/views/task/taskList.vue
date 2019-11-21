@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" @click="sidepagedata.sidepageShow = false">
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane name="RUN">
         <span slot="label" class="tab-label">
@@ -38,7 +38,7 @@
               <el-table
                 v-loading="loading"
                 element-loading-text="作业同步中，请稍后..."
-                :data="devices"
+                :data="taskData"
                 fit
                 highlight-current-row
                 style="width: 100%"
@@ -86,6 +86,9 @@
                       <el-form-item label="运行时长">
                         <span>{{ props.row.time }}</span>
                       </el-form-item>
+                      <el-form-item label="运行节点">
+                        <span v-for="(item, index) in props.row.Host" :key="index">&nbsp;&nbsp;&nbsp;&nbsp;{{ item.NumSlots }} * {{ item.HostName }}</span>
+                      </el-form-item>
                       <el-form-item label="描述">
                         <span>{{ props.row.JobDescription }}</span>
                       </el-form-item>
@@ -123,12 +126,6 @@
                 <el-table-column label="运行时长">
                   <template v-slot="{row}">
                     <span>{{ row.time }}</span>
-                  </template>
-                </el-table-column>
-
-                <el-table-column label="运行节点">
-                  <template v-slot="{row}">
-                    <span v-for="(item, index) in row.Host" :key="index">{{ item.NumSlots }} * {{ item.HostName }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="提交用户" width="140">
@@ -171,7 +168,7 @@
               <el-table
                 v-loading="loading"
                 element-loading-text="作业同步中，请稍后..."
-                :data="devices"
+                :data="taskData"
                 fit
                 highlight-current-row
                 style="width: 100%"
@@ -289,7 +286,7 @@
             <el-table
               v-loading="loading"
               element-loading-text="作业同步中，请稍后..."
-              :data="devices"
+              :data="taskData"
               fit
               highlight-current-row
               style="width: 100%"
@@ -428,9 +425,10 @@
             </div>
             <div class="table-info el-scrollbar">
               <el-table
+                ref="tableSidepage"
                 v-loading="loading"
                 element-loading-text="作业同步中，请稍后..."
-                :data="devices"
+                :data="taskData"
                 fit
                 highlight-current-row
                 style="width: 100%"
@@ -481,6 +479,9 @@
                       <el-form-item label="结束时间">
                         <span>{{ props.row.EndTime }}</span>
                       </el-form-item>
+                      <el-form-item label="运行节点" class="form-item-finish">
+                        <span v-for="(item, index) in props.row.Host" :key="index">&nbsp;&nbsp;&nbsp;&nbsp;{{ item.NumSlots }} * {{ item.HostName }}</span>
+                      </el-form-item>
                       <el-form-item label="描述" class="form-item-finish">
                         <span>{{ props.row.JobDescription }}</span>
                       </el-form-item>
@@ -489,7 +490,7 @@
                 </el-table-column>
                 <el-table-column label="ID" width="120">
                   <template v-slot="{row}">
-                    <span class="JobInfoSidepage" @click="showSidepage(row)">{{ row.JobID }}</span>
+                    <span class="JobInfoSidepage" @click.stop="showSidepage(row)">{{ row.JobID }}</span>
                   </template>
                 </el-table-column>
 
@@ -729,13 +730,13 @@ export default {
         pageSize: 10,
         total: 0
       },
-      devices: [],
+      taskData: [],
       loading: false,
       ID: '',
       stompClient: '',
       // Sidepage
       sidepagedata: {
-        jobs: {},
+        list: {},
         sidepageShow: false
       }
     }
@@ -773,7 +774,7 @@ export default {
       }
       GetRunTaskList(params)
         .then(res => {
-          _this.devices = res.Inventory.ResultData.map(function(item, index) {
+          _this.taskData = res.Inventory.ResultData.map(function(item, index) {
             item.ExecuteTime = formatDate(item.ExecuteTime, 'yyyy-MM-dd hh:mm:ss')
             item.time = formatDiff(item.ExecuteTime)
             if (item.JobStatus === '') {
@@ -802,7 +803,7 @@ export default {
         })
         .catch(res => {
           console.log(res)
-          _this.devices = []
+          _this.taskData = []
           _this.loading = false
         })
       /* let herfUrl = window.location.hostname;
@@ -814,9 +815,9 @@ export default {
       ws.onmessage = function(result) {
         let data = JSON.parse(result.data);
         console.log(data);
-        _this.devices = [];
+        _this.taskData = [];
         if (data.message == "noData") {
-          _this.devices = [];
+          _this.taskData = [];
           _this.loading = false;
         } else {
           data.dataList.map(function(item, index) {
@@ -828,7 +829,7 @@ export default {
             obj.startTime = item.START_TIME;
             obj.runTime = item.CPU_USED;
             obj.userName = item.USER;
-            _this.devices.push(obj);
+            _this.taskData.push(obj);
           });
           _this.loading = false;
         }
@@ -847,7 +848,7 @@ export default {
       }
       GetPendTaskList(params)
         .then(res => {
-          _this.devices = res.Inventory.ResultData.map(function(item, index) {
+          _this.taskData = res.Inventory.ResultData.map(function(item, index) {
             item.SubmitTime = formatDate(item.SubmitTime, 'yyyy-MM-dd hh:mm:ss')
             item.time = formatDiff(item.SubmitTime)
             return item
@@ -858,7 +859,7 @@ export default {
         })
         .catch(res => {
           console.log(res)
-          _this.devices = []
+          _this.taskData = []
           _this.loading = false
         })
     },
@@ -888,7 +889,7 @@ export default {
       }
       GetTaskList(params)
         .then(res => {
-          _this.devices = res.Inventory.ResultData.map(function(item, index) {
+          _this.taskData = res.Inventory.ResultData.map(function(item, index) {
             item.SubmitTime = formatDate(item.SubmitTime, 'yyyy-MM-dd hh:mm:ss')
             item.EndTime = formatDate(item.EndTime, 'yyyy-MM-dd hh:mm:ss')
             if (item.ExecuteTime) {
@@ -897,16 +898,31 @@ export default {
             } else {
               item.time = '0秒'
             }
-            return item
+            GetJobIDHost(item.JobID)
+              .then(data => {
+                item.Host = data.Inventory
+              })
+              .catch(e => {
+                _this.$message({
+                  type: 'error',
+                  message: '同步失败'
+                })
+              })
+            if (item.Host) {
+              return item
+            } else {
+              item.Host = []
+              return item
+            }
           })
           _this.page.total = res.Inventory.TotalNumber
           // _this.page.pageCount = res.Inventory.totalCount;
-          _this.ExportList.list = _this.devices
+          _this.ExportList.list = _this.taskData
           _this.loading = false
         })
         .catch(res => {
           console.log(res)
-          _this.devices = []
+          _this.taskData = []
           _this.loading = false
         })
     },
@@ -914,7 +930,8 @@ export default {
     // 显示Sidepage
     showSidepage(row) {
       const _this = this
-      _this.sidepagedata.jobs = row
+      _this.$refs.tableSidepage.setCurrentRow(row)
+      _this.sidepagedata.list = row
       _this.sidepagedata.sidepageShow = true
     },
 
@@ -971,7 +988,7 @@ export default {
     ExportChanged(data) {
       const _this = this
       if (data.key === 'current') {
-        _this.ExportList.list = _this.devices
+        _this.ExportList.list = _this.taskData
       }
     },
 
@@ -995,9 +1012,9 @@ export default {
           _this.loading = true
           GetJobIDList(data.value)
             .then(res => {
-              _this.devices = []
-              _this.devices.push(res.Inventory)
-              _this.devices = _this.devices.map(function(item, index) {
+              _this.taskData = []
+              _this.taskData.push(res.Inventory)
+              _this.taskData = _this.taskData.map(function(item, index) {
                 if (item.ExecuteTime) {
                   item.ExecuteTime = formatDate(item.ExecuteTime, 'yyyy-MM-dd hh:mm:ss')
                 }
@@ -1101,7 +1118,6 @@ export default {
 }
 
 .el-main-run {
-  min-width: 1110px;
   overflow-x: auto;
 }
 
@@ -1110,7 +1126,7 @@ export default {
 }
 
 .el-main-finish {
-  min-width: 1557px;
+  min-width: 1176px;
   overflow-x: auto;
 }
 

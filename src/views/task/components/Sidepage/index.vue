@@ -40,6 +40,12 @@
                   <div class="right-content">{{ sidepagedata.jobs.time }}</div>
                 </div>
                 <div class="detail-row">
+                  <div class="left-title">运行节点:</div>
+                  <div class="right-content">
+                    <span v-for="(item, index) in sidepagedata.jobs.Host" :key="index">&nbsp;&nbsp;{{ item.NumSlots }}*{{ item.HostName }}</span>
+                  </div>
+                </div>
+                <div class="detail-row">
                   <div class="left-title">队列名:</div>
                   <div class="right-content">{{ sidepagedata.jobs.QueueName }}</div>
                 </div>
@@ -98,9 +104,9 @@
   </div>
 </template>
 <script>
-import { GetJobIDEvents } from '../../../../api/monitor'
+import { GetJobIDEvents } from '../../../../api/task'
 import { formatDate } from '../../../../utils/format'
-import Tags from '@/components/Tags'
+// import Tags from '@/components/Tags'
 
 const statusMap = {
   RUN: {
@@ -135,9 +141,9 @@ const statusMap = {
   }
 }
 export default {
-  name: 'EvnetsSidepage',
+  name: 'TasksSidepage',
   components: {
-    Tags
+    // Tags
   },
   filters: {
     Status(Status) {
@@ -170,11 +176,6 @@ export default {
         if (val.sidepageShow) {
           this.getEvents()
         }
-
-        [...document.querySelectorAll('.el-steps .el-step__icon div')].forEach((el, index, arr) => {
-          console.log(el, arr.length - index) // 3,2,1
-          el.innerHTML = arr.length - index
-        })
       },
       deep: true
     }

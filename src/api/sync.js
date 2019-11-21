@@ -6,12 +6,11 @@ import request from '@/utils/request'
  * @type {string}
  * @default
  * */
-const v = 'v1'
 
 // 同步用户数据
 export function syncUser() {
   return request({
-    url: `/api/${v}/users/sync`,
+    url: `/users/sync`,
     method: 'post'
   })
 }
@@ -19,7 +18,7 @@ export function syncUser() {
 // 同步作业
 export function syncHost() {
   return request({
-    url: `/api/${v}/jobs/sync/10`,
+    url: `/jobs/sync/10`,
     method: 'post'
   })
 }
@@ -27,7 +26,23 @@ export function syncHost() {
 // 同步作业
 export function syncDevices() {
   return request({
-    url: `/api/${v}/hosts/sync`,
+    url: `/hosts/sync`,
+    method: 'post'
+  })
+}
+
+// 同步命令行的队列信息
+export function syncCmd() {
+  return request({
+    url: `/queue/cmd/sync`,
+    method: 'post'
+  })
+}
+
+// 同步配置的队列信息
+export function syncConf() {
+  return request({
+    url: `/queue/conf/sync`,
     method: 'post'
   })
 }

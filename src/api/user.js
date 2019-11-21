@@ -6,7 +6,6 @@ import request from '@/utils/request'
  * @type {string}
  * @default
  * */
-const v = 'v1'
 
 /**
  * 登录
@@ -14,7 +13,7 @@ const v = 'v1'
  */
 export function login(data) {
   return request({
-    url: `/api/${v}/users/login`,
+    url: `/users/login`,
     method: 'post',
     data
   })
@@ -31,6 +30,13 @@ export function getInfo(token) {
 export function logout() {
   return request({
     url: '/user/logout',
+    method: 'post'
+  })
+}
+
+export function centrifugeToken() {
+  return request({
+    url: '/centrifuge/token',
     method: 'post'
   })
 }

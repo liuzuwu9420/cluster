@@ -3,14 +3,14 @@
     <el-container>
       <el-main>
         <div class="hasten">
-          <el-button class="headBut" type="primary" size="mini" @click="saveEntity">
-            <i class="el-icon-plus" /> 创建队列
-          </el-button>
           <el-button type="primary" size="mini" @click="getList">
             <i class="el-icon-refresh-right" /> 刷新
           </el-button>
-          <el-button type="primary" size="mini" @click="sync">
-            <i class="el-icon-refresh" /> 同步
+          <el-button type="primary" size="mini" @click="sync('cmd')">
+            <i class="el-icon-refresh" /> 同步命令
+          </el-button>
+          <el-button type="primary" size="mini" @click="sync('conf')">
+            <i class="el-icon-refresh" /> 同步配置
           </el-button>
           <search :items="selected.items" @change="searchChanged" />
           <div class="pagination">
@@ -34,9 +34,38 @@
             height="100%"
             max-height="807px"
           >
+            <el-table-column type="expand">
+              <template slot-scope="props">
+                <el-form label-position="left" inline class="table-expand">
+                  <el-form-item v-for="(item, index) in props.row.conf" :key="index" :label="item.label">
+                    <span>{{ item.value }}</span>
+                  </el-form-item>
+                </el-form>
+              </template>
+            </el-table-column>
             <el-table-column label="队列">
               <template v-slot="{row}">
                 <span>{{ row.QUEUE_NAME }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="RUN">
+              <template v-slot="{row}">
+                <span>{{ row.RUN }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="PEND">
+              <template v-slot="{row}">
+                <span>{{ row.PEND }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="SUSP">
+              <template v-slot="{row}">
+                <span>{{ row.SUSP }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="NJOBS">
+              <template v-slot="{row}">
+                <span>{{ row.NJOBS }}</span>
               </template>
             </el-table-column>
             <el-table-column fixed="right" label="操作" width="200">
@@ -59,16 +88,6 @@
                     @click="cancelEdit(row)"
                   >取消</el-button>
 
-                  <!-- 查看详情 -->
-                  <el-tooltip class="item" effect="dark" content="查看" placement="top-end">
-                    <el-button
-                      v-if="!row.edit"
-                      type="success"
-                      icon="el-icon-view"
-                      size="mini"
-                      @click="info(row)"
-                    />
-                  </el-tooltip>
                   <el-tooltip class="item" effect="dark" content="编辑" placement="top-end">
                     <el-button
                       v-if="!row.edit"
@@ -92,23 +111,6 @@
             </el-table-column>
           </el-table>
         </div>
-        <el-dialog :title="titleHead" :visible.sync="dialogCreating" width="40%">
-          <el-form
-            ref="create"
-            :model="create"
-            :rules="rules"
-            label-width="100px"
-            class="demo-ruleForm"
-          >
-            <el-form-item label="队列名" prop="name">
-              <el-input v-model="create.name" class="formInp" />
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="submitForm('create')">立即创建</el-button>
-              <el-button @click="resetForm('create')">重置</el-button>
-            </el-form-item>
-          </el-form>
-        </el-dialog>
       </el-main>
     </el-container>
   </div>
@@ -116,8 +118,11 @@
 
 <script>
 import {
-  GetQueueList
+  GetCmdQueueList,
+  GetCmdQueueName,
+  GetConfQueueName
 } from '@/api/task'
+import { syncCmd, syncConf } from '@/api/sync'
 
 import Pagination from '@/components/Pagination'
 import Search from '@/components/Search'
@@ -143,55 +148,49 @@ export default {
         currentPage: 1,
         pageCount: 1,
         pageSize: 10,
-        total: 1
+        total: 0
       },
       queues: [],
-      loading: false,
-      dialogCreating: false,
-      titleHead: '',
-      // 节点添加信息
-      create: {
-        name: ''
-      },
-      rules: {
-        name: [
-          {
-            required: true,
-            message: '请输入队列名',
-            trigger: 'blur'
-          }
-        ]
-      }
+      loading: false
     }
   },
   created() {
     this.getList()
   },
   methods: {
-    getList(query) {
+    getList() {
       const _this = this
       _this.loading = true
-      const obj = {}
-      if (query) {
-        if (query.select === 'name') {
-          obj.QUEUE_NAME = query.value
-        }
-      }
       const params = {
         page: {
           PageNumber: _this.page.currentPage, // 当前页数
           PageSize: _this.page.pageSize // 每一页显示条数
         }
       }
-      GetQueueList(params)
+      GetCmdQueueList(params)
         .then(res => {
           _this.queues = []
           res.Inventory.ResultData.map(function(item, index) {
+            GetConfQueueName(item.QUEUE_NAME)
+              .then(data => {
+                Object.getOwnPropertyNames(data.Inventory).forEach(function(key) {
+                  const conf = {
+                    label: key,
+                    value: data.Inventory[key]
+                  }
+                  item.conf.push(conf)
+                })
+              })
             // 保存一份原始数据，便于取消编辑的时候还原数据
             const original = _this._.cloneDeep(item)
             item.original = original
             _this.$set(item, 'edit', false)
-            _this.queues.push(item)
+            if (item.conf) {
+              _this.queues.push(item)
+            } else {
+              item.conf = []
+              _this.queues.push(item)
+            }
           })
           _this.page.total = res.Inventory.TotalNumber
           _this.loading = false
@@ -208,83 +207,89 @@ export default {
       if (data.value === '') {
         _this.getList()
       } else {
-        _this.getList(data)
+        _this.loading = true
+        GetCmdQueueName(data.value)
+          .then(res => {
+            _this.queues = []
+            GetConfQueueName(res.Inventory.QUEUE_NAME)
+              .then(data => {
+                Object.getOwnPropertyNames(data.Inventory).forEach(function(key) {
+                  const conf = {
+                    label: key,
+                    value: data.Inventory[key]
+                  }
+                  res.Inventory.conf.push(conf)
+                })
+              })
+              // 保存一份原始数据，便于取消编辑的时候还原数据
+            const original = _this._.cloneDeep(res.Inventory)
+            res.Inventory.original = original
+            _this.$set(res.Inventory, 'edit', false)
+            if (res.Inventory.conf) {
+              _this.queues.push(res.Inventory)
+            } else {
+              res.Inventory.conf = []
+              _this.queues.push(res.Inventory)
+            }
+            _this.page.total = _this.queues.length
+            _this.loading = false
+          })
+          .catch(res => {
+            console.log(res)
+            _this.loading = false
+          })
       }
     },
 
-    saveEntity() {
-      this.dialogCreating = true
-      this.titleHead = '添加队列'
-    },
-    // 添加节点
-    submitForm(formName) {
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          const _this = this
-          const params = {
-            QUEUE_NAME: _this.create.name
-          }
-          /* CreateUser(params)
-            .then(res => {
+    // 同步
+    sync(data) {
+      const _this = this
+      if (data === 'cmd') {
+        syncCmd()
+          .then(res => {
+            if (res.Success) {
               _this.getList()
-              _this.dialogCreating = false
               _this.$message({
                 type: 'success',
-                message: '添加成功!'
+                message: '同步成功!'
               })
-            })
-            .catch(res => {
+            } else {
               _this.$message({
                 type: 'error',
-                message: '添加失败'
+                message: '同步失败!'
               })
-            }) */
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
-    },
-    resetForm(formName) {
-      this.$refs[formName].resetFields()
-    },
-
-    // 同步
-    sync() {
-      const _this = this
-      /* syncUser()
-        .then(res => {
-          if (res.Success) {
-            _this.getList()
-            _this.$message({
-              type: 'success',
-              message: '同步成功!'
-            })
-          } else {
+            }
+          })
+          .catch(res => {
             _this.$message({
               type: 'error',
-              message: '同步失败!'
+              message: '同步失败'
             })
-          }
-        })
-        .catch(res => {
-          _this.$message({
-            type: 'error',
-            message: '同步失败'
           })
-        }) */
+      } else if (data === 'conf') {
+        syncConf()
+          .then(res => {
+            if (res.Success) {
+              _this.getList()
+              _this.$message({
+                type: 'success',
+                message: '同步成功!'
+              })
+            } else {
+              _this.$message({
+                type: 'error',
+                message: '同步失败!'
+              })
+            }
+          })
+          .catch(res => {
+            _this.$message({
+              type: 'error',
+              message: '同步失败'
+            })
+          })
+      }
     },
-
-    // 查看用户详情
-    info(device) {
-      /* this.$router.push({
-        name: "device.info",
-        params: {
-          device: device
-        }
-      }); */
-    },
-
     // 删除
     async deleteItem(row) {
       const _this = this
@@ -295,10 +300,9 @@ export default {
           type: 'warning'
         })
         .then(() => {
-          const params = {
+          /* const params = {
 
-          }
-          /* DeleteUser(params)
+          }DeleteUser(params)
             .then(res => {
               _this.getList()
               _this.$message({
@@ -377,6 +381,21 @@ export default {
 .table-info {
   height: calc(100vh - 140px);
   overflow: auto;
+}
+
+.table-expand {
+  font-size: 0;
+}
+
+.table-expand label {
+  width: 90px;
+  color: #99a9bf;
+}
+
+.table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 30%;
 }
 
 .app-container .el-table .GroupLink {

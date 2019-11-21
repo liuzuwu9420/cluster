@@ -41,7 +41,7 @@ export default {
     },
     layout: {
       type: String,
-      default: 'total, sizes, prev, pager, next, jumper'
+      default: 'total, sizes, jumper'
     },
     background: {
       type: Boolean,
@@ -93,9 +93,7 @@ export default {
 
 <style scoped>
 .pagination-container {
-  background: #fff;
   margin: 0;
-  /* padding: 32px 16px; */
 }
 .pagination-container.hidden {
   display: none;

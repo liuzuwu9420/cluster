@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" @click="closeSidepage($event)">
     <el-container>
       <el-main>
         <div class="hasten">
@@ -25,6 +25,7 @@
         </div>
         <div class="table-info el-scrollbar">
           <el-table
+            ref="tableSidepage"
             v-loading="loading"
             :data="devices"
             element-loading-text="Loading"
@@ -69,7 +70,7 @@
                 <template v-if="row.edit">
                   <el-input v-model="row.HostName" class="edit-input" size="small" />
                 </template>
-                <span v-else class="hostName" @click="showSidepage(row)">{{ row.HostName }}</span>
+                <span v-else id="SidepageGroupName" class="hostName" @click.stop="showSidepage(row)">{{ row.HostName }}</span>
               </template>
             </el-table-column>
             <!-- <el-table-column label="标签">
@@ -176,7 +177,7 @@
               </template>
             </el-table-column>
           </el-table>
-          <sidepage :sidepagedata.sync="sidepagedata" />
+          <sidepage id="SidepageName" :sidepagedata.sync="sidepagedata" />
         </div>
         <el-dialog :title="titleHead" :visible.sync="dialogCreating" width="50%">
           <el-form
@@ -297,7 +298,7 @@ export default {
         currentPage: 1,
         pageCount: 1,
         pageSize: 10,
-        total: 1
+        total: 0
       },
       devices: [],
       loading: false,
@@ -519,12 +520,23 @@ export default {
     // 显示Sidepage
     showSidepage(row) {
       const _this = this
+      _this.$refs.tableSidepage.setCurrentRow(row)
       _this.sidepagedata.devices = row
       _this.sidepagedata.sidepageShow = true
     },
 
+    // 点击其它区域边页隐藏
+    closeSidepage(event) {
+      var currentCli1 = document.getElementById('SidepageGroupName')
+      var currentCli2 = document.getElementById('SidepageName')
+      if (currentCli1 || currentCli2) {
+        if (!currentCli1.contains(event.target) && !currentCli2.contains(event.target)) { // 点击到了id为sellineName以外的区域，隐藏下拉框
+          this.sidepagedata.sidepageShow = false
+        }
+      }
+    },
+
     saveEntity() {
-      this.sidepagedata.sidepageShow = false
       this.dialogCreating = true
       this.titleHead = '添加节点'
     },

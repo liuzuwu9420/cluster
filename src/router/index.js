@@ -196,6 +196,28 @@ export const asyncRoutes = [
     ]
   },
 
+  // 消息列表
+  {
+    path: '/monitor',
+    component: Layout,
+    redirect: '/monitor/alarmList',
+    name: 'monitor',
+    meta: {
+      title: '消息',
+      icon: 'message'
+    },
+    children: [{
+      path: 'taskList',
+      component: () => import('@/views/monitor/alarmList'),
+      name: 'monitor.alarmList',
+      meta: {
+        title: '操作信息',
+        icon: 'list'
+      }
+    }
+    ]
+  },
+
   {
     path: '*',
     redirect: '/404',

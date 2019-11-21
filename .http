@@ -87,14 +87,14 @@ POST {{host}}/api/v1/jobs/sync
 ###
 GET {{host}}/api/v1/jobs/status/run?PageSize=5&PageNumber=1
 
-###
+### 获取已完成作业
 GET {{host}}/api/v1/jobs?page={"PageSize":5,"PageNumber":1}&query={}&time={"StartTime":"2019-09-23 16:17:17","EndTime":"2019-11-25 10:43:03"}
 
-###
+### 获取作业历史信息
 GET {{host}}/api/v1/jobs/149/events
 
-###
-GET {{host}}/api/v1/jobs/101/host
+### 获取作业所在节点
+GET {{host}}/api/v1/jobs/275/hosts
 
 ###
 GET  {{host}}/api/v1/jobs/top/10?status=pend
@@ -102,7 +102,7 @@ GET  {{host}}/api/v1/jobs/top/10?status=pend
 ###
 POST {{host}}/api/v1/jobs/sync/10
 
-###
+### 同步主机
 POST {{host}}/api/v1/hosts/sync
 
 ### 查询对应资源的标签
@@ -119,6 +119,8 @@ Content-Type: application/json
     ,"Colour": "#000000"
     ,"LabelType": "hosts"
 }
+### 删除标签
+DELETE  {{host}}/api/v1/labels/
 
 ### 查询计费组列表
 GET  {{host}}/api/v1/chargedGroups?page={"PageSize":5,"PageNumber":1}&query={}
@@ -151,5 +153,8 @@ DELETE {{host}}/api/v1/chargedGroups/uuid
 ### 把用户从计费组中删除
 DELETE {{host}}/api/v1/chargedGroups/user/1026
 
-###
+###根据用户ID查询计费组
+GET {{host}}/api/v1/users/1027/chargedGroups
+
+### 队列查询
 GET  {{host}}/api/v1/queue?page={"PageSize":5,"PageNumber":1}

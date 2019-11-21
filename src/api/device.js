@@ -6,7 +6,6 @@ import request from '@/utils/request'
  * @type {string}
  * @default
  * */
-const v = 'v1'
 
 /**
  * 获取所有节点简单信息
@@ -14,7 +13,7 @@ const v = 'v1'
  */
 export function GetList(params) {
   return request({
-    url: `/api/${v}/hosts`,
+    url: `/hosts`,
     method: 'get',
     params
   })
@@ -25,7 +24,7 @@ export function GetList(params) {
  */
 export function GetNodeList(uuid) {
   return request({
-    url: `/api/${v}/hosts/${uuid}`,
+    url: `/hosts/${uuid}`,
     method: 'get'
   })
 }
@@ -36,7 +35,7 @@ export function GetNodeList(uuid) {
  */
 export function GetNodeInfo(uuid) {
   return request({
-    url: `/api/${v}/hosts/${uuid}/info`,
+    url: `/hosts/${uuid}/info`,
     method: 'get'
   })
 }
@@ -47,7 +46,7 @@ export function GetNodeInfo(uuid) {
  */
 export function SaveNodeEntity(data) {
   return request({
-    url: `/api/${v}/hosts`,
+    url: `/hosts`,
     method: 'post',
     data
   })
@@ -59,7 +58,7 @@ export function SaveNodeEntity(data) {
  */
 export function DeleteEntityOne(uuid) {
   return request({
-    url: `/api/${v}/hosts/${uuid}`,
+    url: `/hosts/${uuid}`,
     method: 'delete'
   })
 }

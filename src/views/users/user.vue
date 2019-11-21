@@ -26,7 +26,7 @@
         <div class="table-info el-scrollbar">
           <el-table
             v-loading="loading"
-            :data="devices"
+            :data="usersData"
             element-loading-text="Loading"
             fit
             highlight-current-row
@@ -58,8 +58,15 @@
             </el-table-column>
             <el-table-column label="用户组">
               <template v-slot="{row}">
-                <span v-for="(item, index) in row.group" :key="index" class="GroupLink">
-                  <span @click="getGroupID(item)">&nbsp;{{ item.GroupName }}</span>
+                <span v-for="(item, index) in row.userGroup" :key="index" class="GroupLink">
+                  <span @click="jumpUserGroup(item)">&nbsp;{{ item.GroupName }}</span>
+                </span>
+              </template>
+            </el-table-column>
+            <el-table-column label="计费组">
+              <template v-slot="{row}">
+                <span v-for="(item, index) in row.billGroup" :key="index" class="GroupLink">
+                  <span @click="jumpBillGroup(item)">&nbsp;{{ item.GroupName }}</span>
                 </span>
               </template>
             </el-table-column>
@@ -204,6 +211,7 @@
 import {
   GetUserList,
   GetIDUserGroup,
+  GetIDUserBill,
   CreateUser,
   DeleteUser,
   ChangeUser
@@ -257,9 +265,9 @@ export default {
         currentPage: 1,
         pageCount: 1,
         pageSize: 10,
-        total: 1
+        total: 0
       },
-      devices: [],
+      usersData: [],
       loading: false,
       dialogCreating: false,
       titleHead: '',
@@ -337,7 +345,11 @@ export default {
     }
   },
   created() {
-    this.getList()
+    if (this.$route.params.select) {
+      this.getList(this.$route.params)
+    } else {
+      this.getList()
+    }
   },
   methods: {
     getList(query) {
@@ -360,11 +372,17 @@ export default {
       }
       GetUserList(params)
         .then(res => {
-          _this.devices = []
+          _this.usersData = []
           res.Inventory.ResultData.map(function(item, index) {
             GetIDUserGroup(item.UserID)
               .then(data => {
-                item.group = data.Inventory
+                item.userGroup = data.Inventory
+              }).catch(res => {
+                console.log(res)
+              })
+            GetIDUserBill(item.UserID)
+              .then(data => {
+                item.billGroup.push(data.Inventory)
               }).catch(res => {
                 console.log(res)
               })
@@ -373,11 +391,12 @@ export default {
             item.original = original
             _this.$set(item, 'role', '用户')
             _this.$set(item, 'edit', false)
-            if (item.group) {
-              _this.devices.push(item)
+            if (item.userGroup && item.billGroup) {
+              _this.usersData.push(item)
             } else {
-              item.group = []
-              _this.devices.push(item)
+              item.userGroup = []
+              item.billGroup = []
+              _this.usersData.push(item)
             }
           })
           _this.page.total = res.Inventory.TotalNumber
@@ -407,9 +426,9 @@ export default {
         _this.loading = true
         GetIDUser(data.value)
           .then(res => {
-            _this.devices = []
-            _this.devices.push(res.Inventory)
-            _this.devices = _this.devices.map(function(item, index) {
+            _this.usersData = []
+            _this.usersData.push(res.Inventory)
+            _this.usersData = _this.usersData.map(function(item, index) {
               // 保存一份原始数据，便于取消编辑的时候还原数据
               const original = _this._.cloneDeep(item)
               item.original = original
@@ -494,9 +513,27 @@ export default {
     },
 
     // 跳转用户组
-    getGroupID(data) {
-      // const _this = this
-      console.log(data)
+    jumpUserGroup(data) {
+      const _this = this
+      _this.$router.push({
+        name: 'role.userGroup',
+        params: {
+          select: 'ID',
+          value: data.GroupID
+        }
+      })
+    },
+
+    // 跳转计费组
+    jumpBillGroup(data) {
+      const _this = this
+      _this.$router.push({
+        name: 'role.billing',
+        params: {
+          select: 'UUID',
+          value: data.UUID
+        }
+      })
     },
 
     // 查看用户详情

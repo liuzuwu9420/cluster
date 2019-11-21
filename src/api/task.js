@@ -6,14 +6,13 @@ import request from '@/utils/request'
  * @type {string}
  * @default
  * */
-const v = 'v1'
 
 /**
  * 获取作业状态数目
  */
 export function GetTaskNum() {
   return request({
-    url: `/api/${v}/jobs/statistics`,
+    url: `/jobs/statistics`,
     method: 'get'
   })
 }
@@ -24,7 +23,7 @@ export function GetTaskNum() {
  */
 export function GetRunTaskList(params) {
   return request({
-    url: `/api/${v}/jobs/status/run`,
+    url: `/jobs/status/run`,
     method: 'get',
     params
   })
@@ -36,7 +35,7 @@ export function GetRunTaskList(params) {
  */
 export function GetPendTaskList(params) {
   return request({
-    url: `/api/${v}/jobs/status/pend`,
+    url: `/jobs/status/pend`,
     method: 'get',
     params
   })
@@ -48,7 +47,7 @@ export function GetPendTaskList(params) {
  */
 export function GetTaskList(params) {
   return request({
-    url: `/api/${v}/jobs`,
+    url: `/jobs`,
     method: 'get',
     params
   })
@@ -60,7 +59,7 @@ export function GetTaskList(params) {
  */
 export function GetPendTaskTOPList(params) {
   return request({
-    url: `/api/${v}/jobs/top/15?status=pend`,
+    url: `/jobs/top/15?status=pend`,
     method: 'get',
     params
   })
@@ -72,7 +71,7 @@ export function GetPendTaskTOPList(params) {
  */
 export function GetRunTaskTOPList(params) {
   return request({
-    url: `/api/${v}/jobs/top/15?status=run`,
+    url: `/jobs/top/15?status=run`,
     method: 'get',
     params
   })
@@ -84,7 +83,7 @@ export function GetRunTaskTOPList(params) {
  */
 export function GetJobIDList(jobID) {
   return request({
-    url: `/api/${v}/jobs/${jobID}`,
+    url: `/jobs/${jobID}`,
     method: 'get'
   })
 }
@@ -95,7 +94,7 @@ export function GetJobIDList(jobID) {
  */
 export function GetJobIDHost(jobID) {
   return request({
-    url: `/api/${v}/jobs/${jobID}/hosts`,
+    url: `/jobs/${jobID}/hosts`,
     method: 'get'
   })
 }
@@ -106,19 +105,53 @@ export function GetJobIDHost(jobID) {
  */
 export function GetJobIDEvents(jobID) {
   return request({
-    url: `/api/${v}/jobs/${jobID}/events`,
+    url: `/jobs/${jobID}/events`,
     method: 'get'
   })
 }
 
 /**
- * 获取队列信息
+ * 获取命令行的队列信息
  * @param {*} params 查询参数
  */
-export function GetQueueList(params) {
+export function GetCmdQueueList(params) {
   return request({
-    url: `/api/${v}/queue`,
+    url: `/queue/cmd`,
     method: 'get',
     params
+  })
+}
+
+/**
+ * 根据名字查询命令行的队列信息
+ * @param {*} name 队列名
+ */
+export function GetCmdQueueName(name) {
+  return request({
+    url: `/queue/cmd/${name}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 获取配置的队列信息
+ * @param {*} params 查询参数
+ */
+export function GetConfQueueList(params) {
+  return request({
+    url: `/queue/conf`,
+    method: 'get',
+    params
+  })
+}
+
+/**
+ * 根据名字查询命令行的队列信息
+ * @param {*} name 队列名
+ */
+export function GetConfQueueName(name) {
+  return request({
+    url: `/queue/conf/${name}`,
+    method: 'get'
   })
 }

@@ -1,15 +1,17 @@
 <template>
-  <div v-if="showSearch" class="headBut">
-    <el-button type="primary" icon="el-icon-search" @click="showSearch = false" />
-  </div>
-  <div v-else class="headBut">
-    <el-input v-model="input" placeholder="请输入内容" class="input-with-select">
-      <el-select slot="prepend" v-model="select">
-        <el-option v-for="item in items" :key="item.value" :label="item.label" :value="item.value" />
-      </el-select>
-      <i slot="suffix" class="el-input__icon el-icon-circle-close" @click="close()" />
+  <div class="headBut">
+    <div v-show="showSearch" class="headBut">
+      <el-button type="primary" icon="el-icon-search" @click="showSearch = false" />
+    </div>
+    <div v-show="!showSearch" class="headBut">
+      <el-input v-model="input" placeholder="请输入内容" class="input-with-select">
+        <el-select slot="prepend" v-model="select">
+          <el-option v-for="item in items" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+        <i slot="suffix" class="el-input__icon el-icon-circle-close" @click="close()" />
       <!-- <el-button slot="append" icon="el-icon-circle-close" @click="handleSearch(false)"></el-button> -->
-    </el-input>
+      </el-input>
+    </div>
   </div>
 </template>
 

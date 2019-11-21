@@ -58,3 +58,16 @@ export function formatDiff(startTime, endTime) {
     }
   }
 }
+
+export function formatMockData(list, mockProps) {
+  const mockList = []
+  list.map((item, index) => {
+    mockList[index] = {}
+    for (const key in item) {
+      if (mockProps.indexOf(key) >= 0) {
+        mockList[index][key] = item[key]
+      }
+    }
+  })
+  return mockList
+}
