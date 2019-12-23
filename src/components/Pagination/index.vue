@@ -8,6 +8,7 @@
       :layout="layout"
       :page-sizes="pageSizes"
       :total="total"
+      :pager-count="pagerCount"
       v-bind="$attrs"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
@@ -29,6 +30,10 @@ export default {
       type: Number,
       default: 1
     },
+    pagerCount: {
+      type: Number,
+      default: 5
+    },
     limit: {
       type: Number,
       default: 5
@@ -41,7 +46,7 @@ export default {
     },
     layout: {
       type: String,
-      default: 'total, sizes, jumper'
+      default: 'total, sizes, prev, jumper, next'
     },
     background: {
       type: Boolean,

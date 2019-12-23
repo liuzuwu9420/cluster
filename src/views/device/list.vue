@@ -12,7 +12,9 @@
           <el-button type="primary" size="mini" @click="sync">
             <i class="el-icon-refresh" /> 同步
           </el-button>
-          <search :items="selected.items" @change="searchChanged" />
+
+          <tagSearch @change="tagChanged" />
+
           <div class="pagination">
             <pagination
               v-show="page.total>0"
@@ -31,61 +33,26 @@
             element-loading-text="Loading"
             fit
             highlight-current-row
-            style="width: 100%"
+            style="width: 100%; cursor: pointer;"
             height="100%"
-            max-height="807px"
+            @row-click="showSidepage"
           >
-            <el-table-column type="expand">
-              <template slot-scope="props">
-                <el-form label-position="left" inline class="table-expand">
-                  <el-form-item label="物理CPU个数">
-                    <span>{{ props.row.facter_processors.physicalcount }}</span>
-                  </el-form-item>
-                  <el-form-item label="CPU信息">
-                    <span>{{ props.row.facter_processors.models[0] }}</span>
-                  </el-form-item>
-                  <el-form-item label="平台">
-                    <span>{{ props.row.ansible_system }}</span>
-                  </el-form-item>
-                  <el-form-item label="操作系统">
-                    <span>{{ props.row.ansible_distribution }}</span>
-                  </el-form-item>
-                  <el-form-item label="系统版本">
-                    <span>{{ props.row.ansible_distribution_version }}</span>
-                  </el-form-item>
-                  <el-form-item label="标签">
-                    <template v-if="props.row.edit">
-                      <tags :tags="props.row.Tags" size="mini" />
-                    </template>
-                    <span v-else><el-tag v-for="(tag, index) in props.row.Tags" :key="index">{{ tag.LabelName }}:{{ tag.LabelValue }}</el-tag></span>
-                  </el-form-item>
-                  <el-form-item label="描述" class="form-item-finish">
-                    <span>{{ props.row.Desc }}</span>
-                  </el-form-item>
-                </el-form>
-              </template>
-            </el-table-column>
             <el-table-column label="节点名称" width="120">
               <template v-slot="{row}">
                 <template v-if="row.edit">
                   <el-input v-model="row.HostName" class="edit-input" size="small" />
                 </template>
-                <span v-else id="SidepageGroupName" class="hostName" @click.stop="showSidepage(row)">{{ row.HostName }}</span>
+                <span v-else>{{ row.HostName }}</span>
               </template>
             </el-table-column>
-            <!-- <el-table-column label="标签">
-            <template v-slot="{row}">
-              <template v-if="row.edit">
-                <tags :tags="row.Tags" size="mini" />
-              </template>
-              <span v-else>
-                <el-tag v-for="(tag, index) in row.Tags" :key="index">{{ tag }}</el-tag>
-              </span>
-            </template>
-          </el-table-column> -->
             <el-table-column label="状态" width="100" align="center">
               <template v-slot="{row}">
                 <el-tag size="mini" :type="statusMap[row.Status].type">{{ row.Status | Status }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="标签" width="120" align="center">
+              <template v-slot="{row}">
+                <tags :host-u-u-i-d="row.UUID" />
               </template>
             </el-table-column>
             <el-table-column label="IP" width="140" align="center">
@@ -114,7 +81,7 @@
               <span v-else>{{ row.Desc }}</span>
             </template>
           </el-table-column> -->
-            <el-table-column fixed="right" label="操作" width="120" align="center">
+            <el-table-column fixed="right" label="操作" width="200" align="center">
               <template v-slot="{row}">
                 <el-button-group>
                   <!-- 编辑模式：确定 -->
@@ -155,7 +122,7 @@
                       SSH
                     </el-button>
                   </el-tooltip>
-                <!-- <el-tooltip class="item" effect="dark" content="编辑" placement="top-end">
+                  <!-- <el-tooltip class="item" effect="dark" content="编辑" placement="top-end">
                   <el-button
                     v-if="!row.edit"
                     type="warning"
@@ -163,23 +130,23 @@
                     icon="el-icon-edit"
                     @click="row.edit=!row.edit"
                   />
-                </el-tooltip>
-                <el-tooltip class="item" effect="dark" content="删除" placement="top-end">
-                  <el-button
-                    v-if="!row.edit"
-                    type="danger"
-                    size="mini"
-                    icon="el-icon-delete"
-                    @click="deleteItem(row)"
-                  />
                 </el-tooltip> -->
+                  <el-tooltip class="item" effect="dark" content="删除" placement="top-end">
+                    <el-button
+                      v-if="!row.edit"
+                      type="danger"
+                      size="mini"
+                      icon="el-icon-delete"
+                      @click="deleteItem(row)"
+                    />
+                  </el-tooltip>
                 </el-button-group>
               </template>
             </el-table-column>
           </el-table>
-          <sidepage id="SidepageName" :sidepagedata.sync="sidepagedata" />
+          <sidepage ref="SidepageName" :sidepagedata.sync="sidepagedata" />
         </div>
-        <el-dialog :title="titleHead" :visible.sync="dialogCreating" width="50%">
+        <el-dialog :title="titleHead" :visible.sync="dialogCreating" width="600px">
           <el-form
             ref="create"
             :model="create"
@@ -226,15 +193,16 @@ import {
   GetNodeInfo,
   SaveNodeEntity,
   UpdateEntityOne,
-  DeleteEntityOne
+  DeleteEntityOne,
+  GetTagOfHost
 } from '@/api/device'
-import { GetTags } from '@/api/tags'
 import { syncDevices } from '@/api/sync'
+import { GetPrometheus } from '@/api/prometheus'
+import { GetHostsByTag } from '@/api/tags'
 
-import Pagination from '@/components/Pagination'
-import Search from '@/components/Search'
 import Tags from '@/components/Tags'
-
+import tagSearch from '@/components/tagSearch'
+import Pagination from '@/components/Pagination'
 import Sidepage from './components/Sidepage'
 
 const statusMap = {
@@ -246,7 +214,7 @@ const statusMap = {
     name: '正常',
     type: 'success'
   },
-  UNKNOW: {
+  UNKNOWN: {
     name: '未知',
     type: 'info'
   }
@@ -262,11 +230,12 @@ const powerSupplyMap = {
   }
 }
 export default {
+  name: 'List',
   components: {
     Pagination,
-    Search,
-    Tags,
-    Sidepage
+    Sidepage,
+    tagSearch,
+    Tags
   },
   filters: {
     Status(Status) {
@@ -280,17 +249,12 @@ export default {
     return {
       statusMap: statusMap,
       powerSupplyMap: powerSupplyMap,
+      label: {},
       // 查询数据
       selected: {
         items: [
-          {
-            value: 'name',
-            label: '名称'
-          },
-          {
-            value: 'UUID',
-            label: 'UUID'
-          }
+          { value: 'name', label: '名称' },
+          { value: 'UUID', label: 'UUID' }
         ]
       },
       // 分页数据
@@ -352,8 +316,9 @@ export default {
     this.getList()
   },
   methods: {
-    getList(query) {
+    async getList(query) {
       const _this = this
+      let hosts = {}
       _this.loading = true
       const obj = {}
       if (query) {
@@ -367,71 +332,94 @@ export default {
         page: { 'PageSize': _this.page.pageSize, 'PageNumber': _this.page.currentPage },
         query: obj
       }
-      GetList(params)
-        .then(res => {
-          _this.devices = []
-          res.Inventory.ResultData.map(function(item, index) {
-            /* if (item.Tags !== '') {
-              item.Tags = item.Tags.split('|')
-            } else {
-              item.Tags = []
-            } */
-            if (item.HostIP) {
-              const httpRequest = new XMLHttpRequest()
-              httpRequest.open('GET', `http://16.16.18.61:9090/api/v1/query?query=up{job="node",instance="${item.HostIP}:9100"}`, true)
-              httpRequest.send()
-              httpRequest.onreadystatechange = function() {
-                if (httpRequest.readyState === 4 && httpRequest.status === 200) {
-                  const jsonData = httpRequest.responseText
-                  const data = JSON.parse(jsonData)
-                  if (data.data.result.length !== 0) {
-                    if (data.data.result[0].value[1] === '0') {
-                      item.Status = 'OFF'
-                    } else if (data.data.result[0].value[1] === '1') {
-                      item.Status = 'ON'
-                    }
-                  } else {
-                    item.Status = 'UNKNOW'
-                  }
-                }
+      if (this.label.LabelKey) {
+        if (this.label.UUID) {
+          hosts = await GetHostsByTag(this.label.UUID, params)
+        }
+      } else {
+        hosts = await GetList(params)
+      }
+      await _this.freshDevices(hosts)
+    },
+    async checkHostStatus(ip) {
+      const params = {
+        query: `up{job="node",instance="${ip}:9100"}`
+      }
+      return new Promise((resolve) => {
+        GetPrometheus(params)
+          .then(res => {
+            if (res.data.result.length !== 0) {
+              if (res.data.result[0].value[1] === '0') {
+                resolve('OFF')
+              } else if (res.data.result[0].value[1] === '1') {
+                resolve('ON')
               }
+            } else {
+              resolve('UNKNOWN')
             }
-            GetNodeInfo(item.UUID)
-              .then(data => {
-                if (data.Inventory) {
-                  Object.assign(item, data.Inventory)
-                  item.HostInfo = item.ansible_processor_vcpus + '核 / ' + (item.ansible_memtotal_mb / 1024).toFixed(2) + 'GB / ' + item.ansible_architecture
-                  if (!item.facter_processors) {
-                    item.facter_processors = {
-                      'count': '',
-                      'models': [
-                        ''
-                      ],
-                      'physicalcount': ''
-                    }
-                  }
-                } else {
-                  item.HostInfo = ''
-                }
-              })
-              .catch(e => {
-                console.log(e)
-                _this.$message({
-                  type: 'info',
-                  message: '详细信息获取失败'
-                })
-              })
-            GetTags(item.UUID)
-              .then(data => {
-                item.Tags = data.Inventory
-              })
-              .catch(e => {
-                console.log(e)
-                _this.$message({
-                  type: 'info',
-                  message: '标签信息获取失败'
-                })
-              })
+          })
+      })
+    },
+    async formatNodeInfo(item) {
+      const _this = this
+      try {
+        const data = await GetNodeInfo(item.UUID)
+        if (data.Inventory) {
+          Object.assign(item, data.Inventory)
+          item.HostInfo = item.ansible_processor_vcpus + '核 / ' + (item.ansible_memtotal_mb / 1024).toFixed(2) + 'GB / ' + item.ansible_architecture
+          if (!item.facter_processors) {
+            item.facter_processors = {
+              'count': '',
+              'models': [''],
+              'physicalcount': ''
+            }
+          }
+        } else {
+          item.HostInfo = ''
+        }
+      } catch (e) {
+        console.log(e)
+        _this.$message({
+          type: 'info',
+          message: '详细信息获取失败'
+        })
+      }
+    },
+    async formatTags(item) {
+      const _this = this
+      try {
+        const data = await GetTagOfHost(item.UUID)
+        item.Tags = data.Inventory
+        return item
+      } catch (e) {
+        console.log(e)
+        _this.$message({
+          type: 'info',
+          message: '标签信息获取失败'
+        })
+      }
+    },
+    // 搜索
+    tagChanged(label) {
+      this.label = label
+      this.currentPage = 1
+      this.getList()
+    },
+    async freshDevices(hosts) {
+      const _this = this
+      _this.loading = true
+      if (!hosts.Inventory) {
+        _this.devices = []
+        _this.loading = false
+        return
+      }
+      try {
+        _this.devices = []
+        hosts.Inventory.ResultData.map(async function(item, index) {
+          if (item.HostIP) {
+            item.Status = await _this.checkHostStatus(item.HostIP)
+          }
+          Promise.all([_this.formatNodeInfo(item), _this.formatTags(item)]).then(() => {
             // 保存一份原始数据，便于取消编辑的时候还原数据
             const original = _this._.cloneDeep(item)
             item.original = original
@@ -446,51 +434,14 @@ export default {
               _this.devices.push(item)
             }
           })
-          _this.page.total = res.Inventory.TotalNumber
-          _this.loading = false
         })
-        .catch(res => {
-          console.log(res)
-          _this.loading = false
-        })
-    },
-
-    // 搜索
-    searchChanged(data) {
-      const _this = this
-      if (data.value === '') {
-        _this.getList()
-      } else {
-        _this.getList(data)
+        _this.page.total = hosts.Inventory.TotalNumber
+        _this.loading = false
+      } catch (e) {
+        console.log(e)
+        _this.loading = false
       }
-      /* if (data.select === 'name') {
-        _this.$message({
-          message: '名称暂时无法查询',
-          type: 'warning',
-          duration: 1000
-        })
-      } else if (data.select === 'UUID') {
-        _this.loading = true
-        GetNodeList(data.value)
-          .then(res => {
-            _this.devices = []
-            _this.devices.push(res.Inventory.data)
-            _this.devices = _this.devices.map(function(item, index) {
-              // 保存一份原始数据，便于取消编辑的时候还原数据
-              const original = _this._.cloneDeep(item)
-              item.original = original
-              _this.$set(item, 'edit', false)
-              return item
-            })
-            _this.page.total = _this.devices.length
-            _this.loading = false
-          })
-          .catch(res => {
-            console.log(res)
-          })
-      } */
     },
-
     // 同步
     sync() {
       const _this = this
@@ -518,20 +469,25 @@ export default {
     },
 
     // 显示Sidepage
-    showSidepage(row) {
+    showSidepage(row, column, event) {
       const _this = this
-      _this.$refs.tableSidepage.setCurrentRow(row)
-      _this.sidepagedata.devices = row
-      _this.sidepagedata.sidepageShow = true
+      const FixedCli = this.$refs.tableSidepage.$refs.rightFixedWrapper
+      if (FixedCli || !FixedCli.contains(event.target)) {
+        _this.$refs.tableSidepage.setCurrentRow(row)
+        _this.sidepagedata.devices = row
+        _this.sidepagedata.sidepageShow = true
+      }
     },
 
     // 点击其它区域边页隐藏
     closeSidepage(event) {
-      var currentCli1 = document.getElementById('SidepageGroupName')
-      var currentCli2 = document.getElementById('SidepageName')
-      if (currentCli1 || currentCli2) {
-        if (!currentCli1.contains(event.target) && !currentCli2.contains(event.target)) { // 点击到了id为sellineName以外的区域，隐藏下拉框
-          this.sidepagedata.sidepageShow = false
+      if (this.$refs.tableSidepage) {
+        var currentCli1 = this.$refs.tableSidepage.$refs.bodyWrapper.firstChild
+        var currentCli2 = this.$refs.SidepageName.$el
+        if (currentCli1 && currentCli2) {
+          if (!currentCli1.contains(event.target) && !currentCli2.contains(event.target)) { // 点击到了id为sellineName以外的区域，隐藏下拉框
+            this.sidepagedata.sidepageShow = false
+          }
         }
       }
     },
@@ -693,6 +649,7 @@ export default {
   height: 40px;
   margin-bottom: 10px;
   padding: 5px 10px;
+  display: flex;
 }
 /*.hasten .el-form-item__content {
 		width: 300px;
@@ -711,7 +668,7 @@ export default {
   float: left;
 }
 .pagination {
-  float: right;
+  margin-left: auto;
 }
 
 .table-info {

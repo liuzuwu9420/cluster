@@ -21,12 +21,13 @@ service.interceptors.request.use(
 
     if (store.getters.token) {
       // { utf8: '12345678' } 和 { b64: 'MTIzNDU2Nzg=' }两种验证格式
-      var isValid = Jsrsasign.KJUR.jws.JWS.verifyJWT(getToken(), { b64: 'MTIzNDU2Nzg=' }, { alg: ['HS256'], gracePeriod: 60 })
+      var isValid = Jsrsasign.KJUR.jws.JWS.verifyJWT(getToken('Admin-Token'), { b64: 'MTIzNDU2Nzg=' }, { alg: ['HS256'], gracePeriod: 60 })
       if (isValid) {
-        config.headers.Authorization = 'Bearer ' + getToken()
+        config.headers.Authorization = 'Bearer ' + getToken('Admin-Token')
       } else {
-        /* var jwt = Jsrsasign.KJUR.jws.JWS.parse(getToken())
+        /* var jwt = Jsrsasign.KJUR.jws.JWS.parse(getToken('Admin-Token'))
         console.log(jwt) */
+        console.log(isValid)
         store.dispatch('user/logout')
         router.push(`/login?redirect=/dashboard`)
       }
@@ -50,7 +51,7 @@ service.interceptors.response.use(
   response => {
     const res = response.data
     if (response.status !== 200) {
-      if (response.status === 201) {
+      if (response.status === 201 || response.status === 202) {
         return res
       } else {
         return Promise.reject(res)

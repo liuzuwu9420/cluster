@@ -1,29 +1,22 @@
 <template>
   <div class="dashboard-editor-container">
-    <panel-card @handleSetLineChartData="handleSetLineChartData" />
-    <panel-group @handleSetLineChartData="handleSetLineChartData" />
+    <panel-card />
+    <panel-group />
+    <panel-queue />
   </div>
 </template>
 
 <script>
 import PanelCard from './components/PanelCard'
 import PanelGroup from './components/PanelGroup'
+import PanelQueue from './components/PanelQueue'
 
 export default {
   name: 'DashboardAdmin',
   components: {
     PanelCard,
-    PanelGroup
-  },
-  data() {
-    return {
-
-    }
-  },
-  methods: {
-    handleSetLineChartData(type) {
-      console.log(type)
-    }
+    PanelGroup,
+    PanelQueue
   }
 }
 </script>

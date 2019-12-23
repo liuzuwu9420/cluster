@@ -3,9 +3,15 @@
     <el-container>
       <el-main>
         <div class="hasten">
-          <el-button class="headBut" type="primary" size="mini" @click="saveEntity">
+          <!-- <el-button class="headBut" type="primary" size="mini" @click="saveEntity">
             <i class="el-icon-plus" /> 创建计费组
-          </el-button>
+          </el-button> -->
+          <router-link :to="{ name: 'role.addBilling' }">
+            <el-button type="primary" size="mini">
+              <i class="el-icon-plus" />
+              创建计费组
+            </el-button>
+          </router-link>
           <el-button type="primary" size="mini" @click="getList">
             <i class="el-icon-refresh-right" /> 刷新
           </el-button>
@@ -28,24 +34,24 @@
             element-loading-text="Loading"
             fit
             highlight-current-row
-            style="width: 100%"
+            style="width: 100%; cursor: pointer;"
             height="100%"
-            max-height="807px"
+            @row-click="showSidepage"
           >
             <el-table-column label="名称" width="160">
               <template v-slot="{row}">
                 <template v-if="row.edit">
                   <el-input v-model="row.GroupName" class="edit-input" size="small" />
                 </template>
-                <span v-else id="SidepageGroupName" class="groupName" @click.stop="showSidepage(row)">{{ row.GroupName }}</span>
+                <span v-else>{{ row.GroupName }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="收费比率">
+            <el-table-column label="价格" width="230">
               <template v-slot="{row}">
                 <template v-if="row.edit">
                   <el-input v-model="row.CostRate" class="edit-input" size="small" />
                 </template>
-                <span v-else>{{ row.CostRate }}</span>
+                <span v-else>{{ row.Rule }}</span>
               </template>
             </el-table-column>
             <el-table-column label="创建时间">
@@ -54,14 +60,6 @@
                 </span>
               </template>
             </el-table-column>
-            <!-- <el-table-column label="已使用金额" width="140">
-            <template v-slot="{row}">
-              <template v-if="row.edit">
-                <el-input v-model="row.useMoney" class="edit-input" size="small" />
-              </template>
-              <span v-else>{{ row.useMoney }}</span>
-            </template>
-          </el-table-column>-->
             <el-table-column label="描述">
               <template v-slot="{row}">
                 <template v-if="row.edit">
@@ -90,17 +88,7 @@
                     @click="cancelEdit(row)"
                   >取消</el-button>
 
-                  <!-- 查看详情 -->
-                  <el-tooltip class="item" effect="dark" content="查看" placement="top-end">
-                    <el-button
-                      v-if="!row.edit"
-                      type="success"
-                      icon="el-icon-view"
-                      size="mini"
-                      @click="info(row)"
-                    />
-                  </el-tooltip>
-                  <el-tooltip class="item" effect="dark" content="编辑" placement="top-end">
+                  <!-- <el-tooltip class="item" effect="dark" content="编辑" placement="top-end">
                     <el-button
                       v-if="!row.edit"
                       type="warning"
@@ -108,13 +96,14 @@
                       icon="el-icon-edit"
                       @click="row.edit=!row.edit"
                     />
-                  </el-tooltip>
+                  </el-tooltip> -->
                   <el-tooltip class="item" effect="dark" content="删除" placement="top-end">
                     <el-button
                       v-if="!row.edit"
                       type="danger"
                       size="mini"
                       icon="el-icon-delete"
+                      :disabled="row.UUID === 'default'?true:false"
                       @click="deleteItem(row)"
                     />
                   </el-tooltip>
@@ -122,42 +111,8 @@
               </template>
             </el-table-column>
           </el-table>
-          <sidepage id="SidepageName" :sidepagedata.sync="sidepagedata" />
+          <sidepage ref="SidepageName" :sidepagedata.sync="sidepagedata" @handle-change="handleChange" />
         </div>
-        <el-dialog :title="titleHead" :visible.sync="dialogCreating" width="50%">
-          <el-form
-            ref="create"
-            :model="create"
-            :rules="rules"
-            label-width="100px"
-            class="demo-ruleForm"
-          >
-            <el-form-item label="名称" prop="name">
-              <el-input v-model="create.name" class="formInp" />
-            </el-form-item>
-            <el-form-item label="收费比率" prop="ratio">
-              <el-input v-model="create.ratio" class="formInp">
-                <template slot="append">元每CPU&times;小时</template>
-              </el-input>
-            </el-form-item>
-            <!-- <el-form-item label="初始金额" prop="money">
-              <el-input v-model="create.money" class="formInp">
-                <template slot="append">￥</template>
-              </el-input>
-            </el-form-item>-->
-            <el-form-item class="formInp" label="描述" prop="description">
-              <el-input
-                v-model="create.description"
-                type="textarea"
-                :autosize="{ minRows: 2, maxRows: 4}"
-              />
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="submitForm('create')">立即创建</el-button>
-              <el-button @click="resetForm('create')">重置</el-button>
-            </el-form-item>
-          </el-form>
-        </el-dialog>
       </el-main>
     </el-container>
   </div>
@@ -203,31 +158,6 @@ export default {
       },
       billGroupData: [],
       loading: false,
-      dialogCreating: false,
-      titleHead: '',
-      // 节点添加信息
-      create: {
-        name: '',
-        ratio: '',
-        money: '',
-        description: ''
-      },
-      rules: {
-        name: [
-          {
-            required: true,
-            message: '请输入名称',
-            trigger: 'blur'
-          }
-        ],
-        ratio: [
-          {
-            required: true,
-            message: '请输入收费比率',
-            trigger: 'blur'
-          }
-        ]
-      },
       // Sidepage
       sidepagedata: {
         groups: {},
@@ -267,6 +197,7 @@ export default {
           _this.billGroupData = res.Inventory.ResultData.map(function(item, index) {
             item.CreatedAt = formatDate(item.CreatedAt, 'yyyy-MM-dd hh:mm:ss')
             item.UpdatedAt = formatDate(item.UpdatedAt, 'yyyy-MM-dd hh:mm:ss')
+            item.Rule = `${item.RuleName} (${item.RuleType} ￥ ${item.CostRate}/${item.ChargeUnit})`
             // 保存一份原始数据，便于取消编辑的时候还原数据
             const original = _this._.cloneDeep(item)
             item.original = original
@@ -281,45 +212,6 @@ export default {
         })
     },
 
-    saveEntity() {
-      this.dialogCreating = true
-      this.titleHead = '新建计费组'
-    },
-    // 添加节点
-    submitForm(formName) {
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          const _this = this
-          const params = {
-            GroupName: _this.create.name,
-            CostRate: +_this.create.ratio,
-            Desc: _this.create.description
-          }
-          CreateBill(params)
-            .then(res => {
-              _this.getList()
-              _this.dialogCreating = false
-              _this.$message({
-                type: 'success',
-                message: '添加成功!'
-              })
-            })
-            .catch(res => {
-              _this.$message({
-                type: 'error',
-                message: '添加失败'
-              })
-            })
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
-    },
-    resetForm(formName) {
-      this.$refs[formName].resetFields()
-    },
-
     // 搜索
     searchChanged(data) {
       const _this = this
@@ -331,21 +223,32 @@ export default {
     },
 
     // 显示Sidepage
-    showSidepage(row) {
+    showSidepage(row, column, event) {
       const _this = this
-      _this.$refs.tableSidepage.setCurrentRow(row)
-      _this.sidepagedata.groups = row
-      _this.sidepagedata.sidepageShow = true
+      const FixedCli = this.$refs.tableSidepage.$refs.rightFixedWrapper
+      if (!FixedCli.contains(event.target)) {
+        _this.$refs.tableSidepage.setCurrentRow(row)
+        _this.sidepagedata.groups = row
+        _this.sidepagedata.sidepageShow = true
+      }
     },
 
     // 点击其它区域边页隐藏
     closeSidepage(event) {
-      var currentCli1 = document.getElementById('SidepageGroupName')
-      var currentCli2 = document.getElementById('SidepageName')
-      if (currentCli1 || currentCli2) {
-        if (!currentCli1.contains(event.target) && !currentCli2.contains(event.target)) { // 点击到了id为sellineName以外的区域，隐藏下拉框
-          this.sidepagedata.sidepageShow = false
+      if (this.$refs.tableSidepage && this.$refs.SidepageName) {
+        const currentCli1 = this.$refs.tableSidepage.$refs.bodyWrapper.firstChild
+        const currentCli2 = this.$refs.SidepageName.$el
+        if (currentCli1 && currentCli2) {
+          if (!currentCli1.contains(event.target) && !currentCli2.contains(event.target)) { // 点击到了id为sellineName以外的区域，隐藏下拉框
+            this.sidepagedata.sidepageShow = false
+          }
         }
+      }
+    },
+
+    handleChange(bool) {
+      if (bool) {
+        this.getList()
       }
     },
 

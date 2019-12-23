@@ -34,7 +34,7 @@
                 </div>
                 <div class="detail-row">
                   <div class="left-title">CPU信息:</div>
-                  <div class="right-content">{{ sidepagedata.devices.facter_processors.models[0] }}</div>
+                  <div class="right-content" @mouseover="over($event)" @mouseout="out($event)" @mousemove="move($event)">{{ sidepagedata.devices.facter_processors.models[0] }}</div>
                 </div>
                 <div class="detail-row">
                   <div class="left-title">操作系统:</div>
@@ -91,7 +91,10 @@
   </div>
 </template>
 <script>
+import { getAddressByName } from '@/api/addresses'
+import { getToken } from '@/utils/auth'
 import Tags from '@/components/Tags'
+import { mouseover, mouseout, mousemove } from '../../../../utils/hover'
 
 const statusMap = {
   OFF: {
@@ -165,23 +168,47 @@ export default {
     iframeTime(IP) {
       const _this = this
       const timeInterval = '1h'
-      const httpUrl = `http://16.16.18.61:3000/d/9CWBz0bik/prometheus-node-exporterjian-kong-zhan-shi-kan-ban?orgId=1&var-node=${IP}:9100&var-maxmount=%2F&from=now-${timeInterval}&to=now&kiosk`
+      const httpUrl = `http://${_this.getGrafanaAddress()}/d/9CWBz0bik/prometheus-node-exporterjian-kong-zhan-shi-kan-ban?orgId=1&var-node=${IP}:9100&var-maxmount=%2F&from=now-${timeInterval}&to=now&kiosk`
       _this.NodeSrc = httpUrl
+    },
+    getGrafanaAddress() {
+      let grafanaAddress
+      if (getToken('grafana.address')) {
+        grafanaAddress = getToken('grafana.address')
+      } else {
+        getAddressByName('grafana.address')
+          .then(res => {
+            grafanaAddress = res.Inventory
+          })
+          .catch(error => console.log(`can't get grafana.address:${error}`))
+      }
+      return grafanaAddress
+    },
+    /*
+			 *隐藏字体显示
+			 * */
+    over(e) {
+      mouseover(e)
+    },
+    out(e) {
+      mouseout(e)
+    },
+    move(e) {
+      mousemove(e)
     }
   }
 }
 </script>
 <style lang="scss" scoped>
 .tableInfo {
-  left: 170px;
+  left: 130px;
   position: absolute;
   top: 0;
   top: 0;
   bottom: 0;
   right: 0;
-  max-height: 805px;
   border-right: 1px solid #fff;
-  z-index: 3000;
+  z-index: 1500;
   background: #fff;
   .el-tabs {
     background-color: #eff9ff;
@@ -250,6 +277,7 @@ export default {
     height: 40px;
     font-size: 14px;
     line-height: 24px;
+    margin-right: 60px;
   }
   .left-title {
     width: 130px;
@@ -261,7 +289,9 @@ export default {
     overflow: auto;
   }
   .right-content {
-    overflow: auto;
+    overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
   }
 }
 </style>

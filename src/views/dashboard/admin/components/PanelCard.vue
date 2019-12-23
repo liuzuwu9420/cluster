@@ -1,132 +1,133 @@
 <template>
-  <el-row :gutter="10" class="panel-group">
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class="card-panel">
-        <el-row>
-          <el-col :span="9">
-            <div class="card-panel-icon-wrapper icon-cpu">
-              <div class="card-panel-text">CPU</div>
-              <i class="el-icon-cpu card-panel-icon" />
+  <div class="metirc-data">
+    <div class="metirc-data-item" style="flex: 7 7 auto; margin-left: 0px;">
+      <div class="line-chart-header" style="margin-left: 30px; width: calc(100% - 30px);">
+        <div class="title">CPU负载率</div>
+        <div class="current-value">
+          <count-to :start-val="CPU.ratioOld" :end-val="CPU.ratio" :decimals="2" :duration="1000" />
+          <span>%</span>
+        </div>
+      </div>
+      <div
+        class="metric-chart"
+        style="-webkit-tap-highlight-color: transparent; user-select: none; position: relative;"
+      >
+        <line-chart id="CPUChart" :lists.sync="CPULists" :color="color" />
+      </div>
+    </div>
+    <div class="metirc-data-item" style="flex: 7 7 auto; margin-left: 0px;">
+      <div class="line-chart-header" style="margin-left: 30px; width: calc(100% - 30px);">
+        <div class="title">内存负载率</div>
+        <div class="current-value">
+          <count-to :start-val="RAM.ratioOld" :end-val="RAM.ratio" :decimals="2" :duration="1000" />
+          <span>%</span>
+        </div>
+      </div>
+      <div
+        class="metric-chart"
+        style="-webkit-tap-highlight-color: transparent; user-select: none; position: relative;"
+      >
+        <line-chart id="RAMChart" :lists.sync="RAMLists" :color="color" />
+      </div>
+    </div>
+    <div class="metirc-data-item">
+      <div class="line-chart-header" style="margin-left: 50px; width: calc(100% - 50px);">
+        <div class="title">网络吞吐量</div>
+        <div class="double-value">
+          <div class="item">
+            <div class="value">{{ Net.down }}</div>
+            <div class="description">
+              <span class="line" style="background: rgb(0, 127, 223);" />
+              <span class="text">下载</span>
             </div>
-          </el-col>
-          <el-col :span="15">
-            <el-row class="card-panel-description">
-              <el-col :span="8">
-                <div class="card-iframe">
-                  <iframe :src="CPUUseSrc" width="100%" height="100%" frameborder="0" />
-                </div>
-              </el-col>
-              <el-col :span="2">
-                <div class="segmentationCPU">/</div>
-              </el-col>
-              <el-col :span="10">
-                <div class="card-iframe">
-                  <iframe :src="CPUAllSrc" width="100%" height="100%" frameborder="0" />
-                </div>
-              </el-col>
-              <el-col :span="4">
-                <div class="nuclear">核</div>
-              </el-col>
-            </el-row>
-          </el-col>
-        </el-row>
-      </div>
-    </el-col>
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class="card-panel">
-        <el-row>
-          <el-col :span="9">
-            <div class="card-panel-icon-wrapper icon-coin">
-              <div class="card-panel-text">内存</div>
-              <i class="el-icon-coin card-panel-icon" />
+          </div>
+          <div class="item">
+            <div class="value">{{ Net.up }}</div>
+            <div class="description">
+              <span class="line" style="background: rgb(82, 196, 255);" />
+              <span class="text">上传</span>
             </div>
-          </el-col>
-          <el-col :span="15">
-            <el-row class="card-panel-description">
-              <el-col :span="11">
-                <div class="card-iframe">
-                  <iframe :src="RAMUseSrc" width="100%" height="100%" frameborder="0" />
-                </div>
-              </el-col>
-              <el-col :span="2">
-                <div class="segmentationRAM">/</div>
-              </el-col>
-              <el-col :span="11">
-                <div class="card-iframe">
-                  <iframe :src="RAMAllSrc" width="100%" height="100%" frameborder="0" />
-                </div>
-              </el-col>
-            </el-row>
-          </el-col>
-        </el-row>
-      </div>
-    </el-col>
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class="card-panel" @click="handleSetLineChartData('RUN')">
-        <div class="card-panel-icon-wrapper icon-loading">
-          <div class="card-panel-text">运行作业</div>
-          <i class="el-icon-refresh card-panel-icon card-task-icon" />
-        </div>
-        <div class="card-panel-task-description">
-          <count-to
-            :start-val="runTaskOld"
-            :end-val="runTask"
-            :duration="1000"
-            class="card-panel-runnum"
-          />
-          <span class="segmentationRun">/</span>
-          <count-to :start-val="TotalOld" :end-val="Total" :duration="1200" class="card-panel-all" />
+          </div>
         </div>
       </div>
-    </el-col>
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class="card-panel" @click="handleSetLineChartData('PEND')">
-        <div class="card-panel-icon-wrapper icon-time">
-          <div class="card-panel-text">等待作业</div>
-          <i class="el-icon-time card-panel-icon card-task-icon" />
-        </div>
-        <div class="card-panel-task-description">
-          <count-to
-            :start-val="pendTaskOld"
-            :end-val="pendTask"
-            :duration="1200"
-            class="card-panel-waitnum"
-          />
-          <span class="segmentationPend">/</span>
-          <count-to :start-val="TotalOld" :end-val="Total" :duration="1400" class="card-panel-all" />
+      <div
+        class="metric-chart"
+        style="-webkit-tap-highlight-color: transparent; user-select: none; position: relative;"
+      >
+        <line-chart id="NetChart" :lists.sync="NetLists" />
+      </div>
+    </div>
+    <div class="metirc-data-item">
+      <div class="line-chart-header" style="margin-left: 50px; width: calc(100% - 50px);">
+        <div class="title">磁盘IO</div>
+        <div class="double-value">
+          <div class="item">
+            <div class="value">{{ Disk.read }}</div>
+            <div class="description">
+              <span class="line" style="background: rgb(0, 127, 223);" />
+              <span class="text">读取</span>
+            </div>
+          </div>
+          <div class="item">
+            <div class="value">{{ Disk.write }}</div>
+            <div class="description">
+              <span class="line" style="background: rgb(82, 196, 255);" />
+              <span class="text">写入</span>
+            </div>
+          </div>
         </div>
       </div>
-    </el-col>
-  </el-row>
+      <div
+        class="metric-chart"
+        style="-webkit-tap-highlight-color: transparent; user-select: none; position: relative;"
+      >
+        <line-chart id="DiskChart" :lists.sync="DiskLists" />
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 import CountTo from 'vue-count-to'
-import { GetTaskNum } from '@/api/task'
+import lineChart from '@/components/Chart/lineChart'
+
+import { GetPrometheus } from '@/api/prometheus'
+import { formatBytes, formatDate } from '@/utils/format'
+
 export default {
   components: {
-    CountTo
+    CountTo,
+    lineChart
   },
   data() {
     return {
       // 计时器
       setTime: null,
-      // 引入grafana
-      CPUAllSrc: '',
-      CPUUseSrc: '',
-      RAMAllSrc: '',
-      RAMUseSrc: '',
-      // 作业
-      runTask: 0,
-      pendTask: 0,
-      Total: 0,
-      runTaskOld: 0,
-      pendTaskOld: 0,
-      TotalOld: 0
+      // 监控数值
+      CPU: {
+        ratio: 0,
+        ratioOld: 0
+      },
+      CPULists: [],
+      RAM: {
+        ratio: 0,
+        ratioOld: 0
+      },
+      RAMLists: [],
+      color: ['#007fdf'],
+      Net: {
+        up: '0B/s',
+        down: '0B/s'
+      },
+      NetLists: [],
+      Disk: {
+        read: '0B/s',
+        write: '0B/s'
+      },
+      DiskLists: []
     }
   },
-  created() {
-    this.iframeTime()
+  mounted() {
     this.getList()
     this.start()
   },
@@ -134,23 +135,113 @@ export default {
     this.stop()
   },
   methods: {
-    getList() {
+    async getList() {
       const _this = this
-      _this.runTaskOld = _this.runTask
-      _this.pendTaskOld = _this.pendTask
-      _this.TotalOld = _this.Total
-      GetTaskNum()
-        .then(body => {
-          _this.runTask = body.Inventory.Run
-          _this.pendTask = body.Inventory.Pend
-          _this.Total = body.Inventory.Total
-        })
-        .catch(res => {
-          console.log(res)
-        })
+      _this.CPU.ratioOld = _this.CPU.ratio
+      _this.RAM.ratioOld = _this.RAM.ratio
+
+      const paramsCPURatio = { query: 'cluster:cpu_load5:ratio' }
+      const paramsCPULists = { query: 'cluster:cpu_load5:ratio[5m]' }
+      const paramsRAMRatio = { query: 'cluster:memory_available:ratio' }
+      const paramsRAMLists = { query: 'cluster:memory_available:ratio[5m]' }
+      const paramsNetUp = { query: 'cluster:network_transmit_iops' }
+      const paramsNetDown = { query: 'cluster:network_receive_iops' }
+      const paramsNetUpLists = { query: 'cluster:network_transmit_iops[5m]' }
+      const paramsNetDownLists = { query: 'cluster:network_receive_iops[5m]' }
+      const paramsDiskRead = { query: 'cluster:disk_reads_iops' }
+      const paramsDiskWrite = { query: 'cluster:disk_writes_iops' }
+      const paramsDiskReadLists = { query: 'cluster:disk_reads_iops[5m]' }
+      const paramsDiskWriteLists = { query: 'cluster:disk_writes_iops[5m]' }
+
+      const CPURatio = await _this.getPrometheus(paramsCPURatio)
+      const CPUList = await _this.getPrometheus(paramsCPULists)
+      const RAMRatio = await _this.getPrometheus(paramsRAMRatio)
+      const RAMList = await _this.getPrometheus(paramsRAMLists, true)
+      const NetUp = await _this.getPrometheus(paramsNetUp)
+      const NetDown = await _this.getPrometheus(paramsNetDown)
+      let NetUpList = await _this.getPrometheus(paramsNetUpLists)
+      let NetDownList = await _this.getPrometheus(paramsNetDownLists)
+      const DiskRead = await _this.getPrometheus(paramsDiskRead)
+      const DiskWrite = await _this.getPrometheus(paramsDiskWrite)
+      let DiskReadList = await _this.getPrometheus(paramsDiskReadLists)
+      let DiskWriteList = await _this.getPrometheus(paramsDiskWriteLists)
+
+      _this.CPU.ratio = CPURatio * 100
+      _this.RAM.ratio = (1 - RAMRatio) * 100
+      _this.Net.up = formatBytes(+NetUp, 2) + '/s'
+      _this.Net.down = formatBytes(+NetDown, 2) + '/s'
+      _this.Disk.read = formatBytes(+DiskRead, 2) + '/s'
+      _this.Disk.write = formatBytes(+DiskWrite, 2) + '/s'
+
+      NetUpList = _this.handlePrometheus(NetUpList, '上传', true)
+      NetDownList = _this.handlePrometheus(NetDownList, '下载', true)
+      DiskReadList = _this.handlePrometheus(DiskReadList, '读取', true)
+      DiskWriteList = _this.handlePrometheus(DiskWriteList, '写入', true)
+      _this.NetLists = NetUpList.concat(NetDownList)
+      _this.DiskLists = DiskReadList.concat(DiskWriteList)
+
+      _this.CPULists = _this.handlePrometheus(CPUList, '负载率')
+      _this.RAMLists = _this.handlePrometheus(RAMList, '负载率')
     },
 
-    // 定时获取作业
+    getPrometheus(params, bool) {
+      return new Promise((resolve) => {
+        GetPrometheus(params)
+          .then(res => {
+            if (res.data.result.length !== 0) {
+              if (res.data.result[0].value) {
+                const value = res.data.result[0].value[1]
+                resolve(value)
+              } else if (res.data.result[0].values) {
+                const values = res.data.result[0].values
+                if (bool) {
+                  values.map(item => {
+                    item[1] = 1 - item[1]
+                  })
+                }
+                resolve(values)
+              }
+            } else {
+              resolve(0)
+            }
+          })
+          .catch(res => {
+            console.log(res)
+          })
+      })
+    },
+
+    /**
+      * 处理Prometheus传输的数据
+      * @param {Array} list
+      * @param {String} name
+      * @param {Boolean} bytes
+      * @returns {Array}
+      */
+    handlePrometheus(list, name, bytes) {
+      const _this = this
+      if (list) {
+        list = list.map(item => {
+          item = Object.assign({}, item)
+          item.time = formatDate(item[0] * 1000, 'yyyy-MM-dd hh:mm:ss')
+          if (bytes) {
+            const valueArr = _this._.split(formatBytes(+item[1], 2), ' ', 2)
+            item.value = +valueArr[0]
+            item.unit = valueArr[1]
+          } else {
+            item.value = _this._.ceil(item[1] * 100, 2)
+            item.unit = '%'
+          }
+          item.name = name
+          return item
+        })
+      } else {
+        list = []
+      }
+      return list
+    },
+
+    // 定时
     start() {
       const _this = this
       if (_this.setTime != null) {
@@ -159,197 +250,85 @@ export default {
       }
       _this.setTime = setInterval(function() {
         _this.getList()
-      }, 1000)
+      }, 30000)
     },
 
     stop() {
       const _this = this
       clearInterval(_this.setTime)
       _this.setTime = null
-    },
-
-    handleSetLineChartData(Status) {
-      this.$router.push({
-        name: 'task.taskList',
-        params: {
-          Status: Status
-        }
-      })
-    },
-    iframeTime() {
-      const _this = this
-      const httpUrl =
-        'http://16.16.18.61:3000/d-solo/fafSLghZz/dashboard?orgId=1'
-      const timeInterval = '&from=now-30m&to=now'
-      const CPUAllId = '&panelId=12'
-      const CPUUseId = '&panelId=14'
-      const RAMAllId = '&panelId=16'
-      const RAMUseId = '&panelId=18'
-      _this.CPUAllSrc = httpUrl + timeInterval + CPUAllId
-      _this.CPUUseSrc = httpUrl + timeInterval + CPUUseId
-      _this.RAMAllSrc = httpUrl + timeInterval + RAMAllId
-      _this.RAMUseSrc = httpUrl + timeInterval + RAMUseId
     }
   }
 }
 </script>
-
 <style lang="scss" scoped>
-.panel-group {
-  margin-top: 18px;
-
-  .card-panel-col {
-    margin-bottom: 16px;
-  }
-
-  .card-panel {
-    height: 108px;
-    cursor: pointer;
-    font-size: 12px;
-    position: relative;
-    overflow: hidden;
-    color: #666;
-    background: #fff;
-    box-shadow: 4px 4px 40px rgba(0, 0, 0, 0.05);
-    border-color: rgba(0, 0, 0, 0.05);
-
-    &:hover {
-      .card-panel-icon-wrapper {
-        color: #fff;
-      }
-
-      .icon-cpu {
-        background: #40c9c6;
-      }
-
-      .icon-coin {
-        background: #36a3f7;
-      }
-
-      .icon-loading {
-        background: #f4516c;
-      }
-
-      .icon-time {
-        background: #34bfa3;
-      }
-    }
-
-    .icon-cpu {
-      color: #40c9c6;
-    }
-
-    .icon-coin {
-      color: #36a3f7;
-    }
-
-    .icon-loading {
-      color: #f4516c;
-    }
-
-    .icon-time {
-      color: #34bfa3;
-    }
-
-    .card-panel-icon-wrapper {
-      float: left;
-      margin-top: 10px;
-      margin-left: 14px;
-      padding: 10px;
-      transition: all 0.38s ease-out;
-      border-radius: 6px;
-
-      .card-panel-text {
-        text-align: center;
-        line-height: 18px;
-        font-size: 18px;
-      }
-    }
-
-    .card-panel-icon {
-      float: left;
-      font-size: 48px;
-      margin-top: 4px;
-    }
-
-    .card-task-icon {
-      margin-left: 10px;
-    }
-
-    .card-panel-description {
-      float: right;
-      font-weight: bold;
-      margin-left: 0px;
-
-      .segmentationCPU {
-        font-size: 35px;
-        color: #40c9c6;
-        margin-top: 55px;
-      }
-
-      .segmentationRAM {
-        font-size: 40px;
-        color: #36a3f7;
-        margin-top: 50px;
-      }
-
-      .nuclear {
-        margin-top: 68px;
+.metirc-data {
+  display: -ms-flexbox;
+  display: flex;
+  height: 300px;
+  width: 100%;
+  background-color: #fff;
+  margin-bottom: 20px;
+  position: relative;
+  .metirc-data-item {
+    -ms-flex: 6 6 auto;
+    flex: 6 6 auto;
+    width: 0;
+    .line-chart-header {
+      width: calc(100% - 30px);
+      padding: 26px 0 0;
+      margin-bottom: 10px;
+      top: -4px;
+      position: relative;
+      margin-left: 30px;
+      .title {
         font-size: 16px;
-        color: #40c9c6;
+        color: #1a2736;
+        letter-spacing: 0;
+      }
+      .current-value {
+        font-size: 32px;
+        color: #1a2736;
+        letter-spacing: 0;
+        height: 60px;
+        padding-top: 5px;
+      }
+      .double-value {
+        height: 60px;
+        display: -ms-flexbox;
+        display: flex;
+        padding-top: 4px;
+        .item {
+          -ms-flex: 1;
+          flex: 1;
+          padding-top: 5px;
+        }
+        .value {
+          font-size: 20px;
+          color: #1a2736;
+          letter-spacing: 0;
+        }
+        .line {
+          width: 20px;
+          height: 3px;
+          display: inline-block;
+          margin-right: 10px;
+          border-radius: 100px;
+          position: relative;
+          top: -2px;
+        }
+        .text {
+          font-family: PingFangSC-Regular;
+          font-size: 12px;
+          color: #5e6978;
+          letter-spacing: 0;
+        }
       }
     }
-
-    .card-panel-task-description {
-      width: 53.46%;
-      text-align: center;
-      margin-top: 50px;
-      float: right;
-      font-weight: bold;
-
-      .card-panel-runnum {
-        font-size: 30px;
-        color: #f4516c;
-      }
-
-      .card-panel-waitnum {
-        font-size: 30px;
-        color: #34bfa3;
-      }
-
-      .segmentationRun {
-        font-size: 35px;
-        color: #f4516c;
-      }
-
-      .segmentationPend {
-        font-size: 35px;
-        color: #34bfa3;
-      }
-
-      .card-panel-all {
-        font-size: 30px;
-        color: #4994e9;
-      }
-    }
-  }
-}
-
-@media (max-width: 550px) {
-  .card-panel-description {
-    display: none;
-  }
-
-  .card-panel-icon-wrapper {
-    float: none !important;
-    width: 100%;
-    height: 100%;
-    margin: 0 !important;
-
-    .svg-icon {
-      display: block;
-      margin: 14px auto !important;
-      float: none !important;
+    .metric-chart {
+      height: 160px;
+      left: -2px;
+      margin: 0;
     }
   }
 }

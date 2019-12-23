@@ -5,6 +5,8 @@
 </template>
 
 <script>
+import { getAddressIP } from '@/utils/address'
+
 export default {
   data() {
     return {
@@ -21,10 +23,11 @@ export default {
     // this.fetchProductList();
   },
   methods: {
-    iframeTime(IP) {
+    async iframeTime(IP) {
       const _this = this
+      const address = await getAddressIP('grafana.address')
       const timeInterval = '1h'
-      const httpUrl = `http://16.16.18.61:3000/d/9CWBz0bik/prometheus-node-exporterjian-kong-zhan-shi-kan-ban?orgId=1&var-node=${IP}:9100&var-maxmount=%2F&from=now-${timeInterval}&to=now&kiosk`
+      const httpUrl = `http://${address}/d/9CWBz0bik/prometheus-node-exporterjian-kong-zhan-shi-kan-ban?orgId=1&var-node=${IP}:9100&var-maxmount=%2F&from=now-${timeInterval}&to=now&kiosk`
       _this.NodeSrc = httpUrl
     }
   }

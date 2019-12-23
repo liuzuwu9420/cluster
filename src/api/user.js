@@ -36,7 +36,7 @@ export function logout() {
 
 export function centrifugeToken() {
   return request({
-    url: '/centrifuge/token',
+    url: '/centrifugo/token',
     method: 'post'
   })
 }

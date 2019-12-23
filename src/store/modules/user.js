@@ -1,9 +1,11 @@
-import { login, logout } from '@/api/user'
+import { login } from '@/api/user'
+import { getAddress } from '@/api/addresses'
 import { getToken, setToken, removeToken } from '@/utils/auth'
+import { disconnectCentrifuge } from '@/utils/centrifugo' // get centrifugo Message
 import router, { resetRouter } from '@/router'
 
 const state = {
-  token: getToken(),
+  token: getToken('Admin-Token'),
   name: '',
   avatar: '',
   introduction: '',
@@ -41,11 +43,23 @@ const actions = {
         if (res.Success) {
           const token = res.Inventory
           commit('SET_TOKEN', token)
-          setToken(token)
+          setToken('Admin-Token', token)
           // const { data } = res
           // commit('SET_TOKEN', data.token)
           // setToken(data.token)
-          resolve(true)
+
+          // 获取ip
+          getAddress().then(
+            res => {
+              const addresses = res.Inventory
+              Object.entries(addresses).forEach(([key, value]) => {
+                setToken(key, value)
+              })
+              resolve(true)
+            }
+          ).catch(error => {
+            console.log(error)
+          })
         } else {
           resolve(false)
         }
@@ -105,8 +119,12 @@ const actions = {
     return new Promise((resolve, reject) => {
       commit('SET_TOKEN', '')
       commit('SET_ROLES', [])
-      removeToken()
+      removeToken('Admin-Token')
+      removeToken('prometheus.address')
+      removeToken('grafana.address')
+      removeToken('centrifugo.address')
       resetRouter()
+      disconnectCentrifuge()
       resolve()
       /* logout(state.token).then(() => {
         commit('SET_TOKEN', '')
@@ -125,7 +143,7 @@ const actions = {
     return new Promise(resolve => {
       commit('SET_TOKEN', '')
       commit('SET_ROLES', [])
-      removeToken()
+      removeToken('Admin-Token')
       resolve()
     })
   },
@@ -136,7 +154,7 @@ const actions = {
       const token = role + '-token'
 
       commit('SET_TOKEN', token)
-      setToken(token)
+      setToken('Admin-Token', token)
 
       const { roles } = await dispatch('getInfo')
 

@@ -20,9 +20,19 @@
                   <i class="el-icon-notebook-1" />
                   <span class="head-title">概览</span>
                 </div>
+                <div v-if="sidepagedata.groups.GroupID" class="detail-row">
+                  <div class="left-title">ID:</div>
+                  <div class="right-content">{{ sidepagedata.groups.GroupID }}</div>
+                </div>
                 <div class="detail-row">
                   <div class="left-title">UUID:</div>
                   <div class="right-content">{{ sidepagedata.groups.UUID }}</div>
+                </div>
+                <div v-if="sidepagedata.groups.Rule" class="detail-row">
+                  <div class="left-title">价格:</div>
+                  <el-tooltip class="item" effect="dark" content="跳转计费规则" placement="top-start">
+                    <div class="right-content jumpLink" @click="jumpBillingRule(sidepagedata.groups)">{{ sidepagedata.groups.Rule }}</div>
+                  </el-tooltip>
                 </div>
                 <div class="detail-row">
                   <div class="left-title">创建时间:</div>
@@ -44,7 +54,7 @@
       <el-tab-pane label="用户" name="UserData">
         <div class="container el-scrollbar">
           <div class="hasten">
-            <el-dropdown class="headBut" trigger="click" @command="handleCommand">
+            <el-dropdown class="headBut" trigger="click" @command="handleCommandUsers">
               <el-button type="primary">
                 操作<i class="el-icon-arrow-down el-icon--right" />
               </el-button>
@@ -73,7 +83,6 @@
               style="width: 100%; background-color: #e8f4ff;"
               row-class-name="table-row-class"
               height="100%"
-              max-height="765px"
               @selection-change="handleSelectionChange"
             >
               <el-table-column
@@ -82,7 +91,9 @@
               />
               <el-table-column label="ID" width="120">
                 <template v-slot="{row}">
-                  <span class="userLink" @click="getUserID(row)">{{ row.UserID }}</span>
+                  <el-tooltip class="item" effect="dark" content="跳转用户" placement="top">
+                    <span class="jumpLink" @click="jumpUser(row)">{{ row.UserID }}</span>
+                  </el-tooltip>
                 </template>
               </el-table-column>
 
@@ -94,6 +105,74 @@
               <el-table-column label="创建时间">
                 <template v-slot="{row}">
                   <span>{{ row.CreatedAt }}</span>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </div>
+      </el-tab-pane>
+      <el-tab-pane v-if="sidepagedata.groups.Rule" label="选择计费规则" name="clooseBillingRule">
+        <div class="container el-scrollbar">
+          <div class="hasten">
+            <el-dropdown class="headBut" trigger="click" @command="handleCommandBilling">
+              <el-button type="primary">
+                操作<i class="el-icon-arrow-down el-icon--right" />
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="change" :disabled="selectBillingRule">修改计费规则</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <search :items="selectedBillingRule.items" @change="searchChanged" />
+            <div class="pagination">
+              <pagination
+                v-show="page.total>0"
+                :total="page.total"
+                :page.sync="page.currentPage"
+                :limit.sync="page.pageSize"
+                @pagination="getBillingRule"
+              />
+            </div>
+          </div>
+          <div class="table-info el-scrollbar">
+            <el-table
+              v-loading="loading"
+              :data="RuleData"
+              element-loading-text="Loading"
+              fit
+              style="width: 100%; background-color: #e8f4ff; cursor: pointer;"
+              row-class-name="table-row-class"
+              height="100%"
+              highlight-current-row
+              @cell-click="handleCurrentChange"
+            >
+              <el-table-column label="名称">
+                <template v-slot="{row}">
+                  <i v-show="row.Selected" class="el-icon-location radio-icon" />
+                  <el-tooltip class="item" effect="dark" content="跳转计费规则" placement="top">
+                    <span class="jumpLink" @click="jumpBillingRule(row)">{{ row.RuleName }}</span>
+                  </el-tooltip>
+                </template>
+              </el-table-column>
+              <el-table-column label="类型" width="160">
+                <template v-slot="{row}">
+                  <span>{{ row.RuleType }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="价格" width="230">
+                <template v-slot="{row}">
+                  <span>￥ {{ row.CostRate }} / {{ row.ChargeUnit }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="创建时间" show-overflow-tooltip>
+                <template v-slot="{row}">
+                  <span>{{ row.CreatedAt }}
+                  </span>
+                </template>
+              </el-table-column>
+              <el-table-column label="更新时间" show-overflow-tooltip>
+                <template v-slot="{row}">
+                  <span>{{ row.UpdatedAt }}
+                  </span>
                 </template>
               </el-table-column>
             </el-table>
@@ -130,7 +209,6 @@
               style="width: 100%; background-color: #e8f4ff;"
               row-class-name="table-row-class"
               height="100%"
-              max-height="650px"
               @selection-change="handleSelectionChange"
             >
               <el-table-column
@@ -139,7 +217,9 @@
               />
               <el-table-column label="ID" width="120">
                 <template v-slot="{row}">
-                  <span class="userLink" @click="getUserID(row)">{{ row.UserID }}</span>
+                  <el-tooltip class="item" effect="dark" content="跳转用户" placement="top">
+                    <span class="jumpLink" @click="jumpUser(row)">{{ row.UserID }}</span>
+                  </el-tooltip>
                 </template>
               </el-table-column>
 
@@ -165,7 +245,8 @@
   </div>
 </template>
 <script>
-import { GetBillUser, ChangeBillUser, DeleteBillGroupUser, GetGroupIDUser } from '@/api/role'
+import { GetBillUser, ChangeBillUser, DeleteBillGroupUser, GetGroupIDUser, ChangeBillGroupRule } from '@/api/role'
+import { GetBillingRuleList } from '@/api/rule'
 import { formatDate } from '../../../../utils/format'
 // import Tags from '@/components/Tags'
 import Pagination from '@/components/Pagination'
@@ -198,12 +279,23 @@ export default {
       loading: false,
       usersData: [],
       multipleSelection: [],
+      selectBillingRule: true,
+      RuleData: [],
+      billingRuleSelection: {},
       // 查询数据
       selected: {
         items: [
           {
             value: 'ID',
             label: 'ID'
+          }
+        ]
+      },
+      selectedBillingRule: {
+        items: [
+          {
+            value: 'name',
+            label: '名称'
           }
         ]
       },
@@ -223,7 +315,7 @@ export default {
     sidepagedata: {
       handler: function(val, oldVal) {
         this.choseUsers = true
-        if (this.activeName === 'UserData') {
+        if (this.activeName === 'UserData' || this.activeName === 'clooseBillingRule') {
           this.getList()
         }
       },
@@ -246,7 +338,8 @@ export default {
         _this.sidepagedata.sidepageShow = false
         _this.multipleSelection = []
         return false
-      } else if (tab === 'UserData') {
+      } else if (tab === 'UserData' || tab === 'clooseBillingRule') {
+        _this.activeName = tab
         _this.getList()
       }
     },
@@ -276,6 +369,9 @@ export default {
           _this.getBillUsers(data, boolean)
         } else {
           _this.getBillUsers(data)
+        }
+        if (_this.activeName === 'clooseBillingRule') {
+          _this.getBillingRule(data)
         }
       }
     },
@@ -349,6 +445,36 @@ export default {
           _this.loading = false
         })
     },
+    getBillingRule(query) {
+      const _this = this
+      const obj = {}
+      if (query) {
+        if (query.select === 'name') {
+          obj.RuleName = query.value
+        }
+      }
+      const params = {
+        page: {
+          PageNumber: _this.page.currentPage, // 当前页数
+          PageSize: _this.page.pageSize // 每一页显示条数
+        },
+        query: obj
+      }
+      GetBillingRuleList(params)
+        .then(res => {
+          _this.RuleData = res.Inventory.ResultData.map(function(item, index) {
+            item.CreatedAt = formatDate(item.CreatedAt, 'yyyy-MM-dd hh:mm:ss')
+            item.UpdatedAt = formatDate(item.UpdatedAt, 'yyyy-MM-dd hh:mm:ss')
+            _this.$set(item, 'Selected', false)
+            return item
+          })
+          _this.page.total = res.Inventory.TotalNumber
+          _this.page.pageCount = res.Inventory.PageNumber
+        })
+        .catch(res => {
+          console.log(res)
+        })
+    },
 
     // 搜索
     searchChanged(data) {
@@ -360,7 +486,7 @@ export default {
       }
     },
     // 跳转用户
-    getUserID(data) {
+    jumpUser(data) {
       const _this = this
       _this.$router.push({
         name: 'role.user',
@@ -370,8 +496,19 @@ export default {
         }
       })
     },
+    // 跳转计费规则
+    jumpBillingRule(data) {
+      const _this = this
+      _this.$router.push({
+        name: 'rule.billingRule',
+        params: {
+          select: 'name',
+          value: data.RuleName
+        }
+      })
+    },
 
-    handleCommand(command) {
+    handleCommandUsers(command) {
       if (command === 'add') {
         this.multipleSelection = []
         this.choseUsers = false
@@ -382,6 +519,37 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val
+    },
+
+    // 修改计费组绑定的计费规则
+    handleCommandBilling(command) {
+      this.changeBillingRule(this.billingRuleSelection)
+    },
+    handleCurrentChange(row) {
+      this.RuleData.map(item => {
+        item.Selected = false
+      })
+      this.billingRuleSelection = row
+      row.Selected = true
+      this.selectBillingRule = false
+    },
+    changeBillingRule(data) {
+      const _this = this
+      const GroupUUID = _this.sidepagedata.groups.UUID
+      const RuleUUID = data.UUID
+      ChangeBillGroupRule(GroupUUID, RuleUUID)
+        .then(res => {
+          _this.$message({
+            showClose: true,
+            message: '修改计费规则成功！',
+            type: 'success'
+          })
+          _this.sidepagedata.sidepageShow = false
+          _this.multipleSelection = []
+          _this.$emit('handle-change', true)
+        }).catch(res => {
+          console.log(res)
+        })
     },
 
     // 移除组中用户
@@ -466,12 +634,12 @@ export default {
           }
           await ChangeBillUser(params)
         })
-        _this.choseUsers = true
-        _this.getList()
         _this.$message({
           type: 'success',
           message: '修改成功!'
         })
+        _this.choseUsers = true
+        setTimeout(function() { _this.getList() }, 500)
       } catch (e) {
         _this.$message({
           type: 'error',
@@ -490,10 +658,17 @@ export default {
   top: 0;
   bottom: 0;
   right: 0;
-  max-height: 805px;
   border-right: 1px solid #fff;
-  z-index: 2000;
+  z-index: 1500;
   background: #fff;
+  .jumpLink {
+    cursor: pointer;
+    color: #49b0f9;
+  }
+  .radio-icon {
+    font-size: 18px;
+    color: #1890ff;
+  }
   .el-tabs {
     background-color: #eff9ff;
   }
@@ -606,10 +781,6 @@ export default {
   .table-info-choose-uses {
     height: calc(100vh - 294px);
     overflow: auto;
-  }
-  .el-table .userLink {
-    cursor: pointer;
-    color: #49b0f9;
   }
   .foot-table-users {
     width: 100%;

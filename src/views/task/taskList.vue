@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container" @click="sidepagedata.sidepageShow = false">
+  <div class="app-container" @click="closeSidepage($event)">
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane name="RUN">
         <span slot="label" class="tab-label">
@@ -20,9 +20,6 @@
               <el-button type="primary" size="mini" @click="getList">
                 <i class="el-icon-refresh-right" /> 手动刷新
               </el-button>
-              <el-button type="primary" size="mini" @click="sync">
-                <i class="el-icon-refresh" /> 同步
-              </el-button>
               <search :items="selected.items" @change="searchChanged" />
               <div class="pagination">
                 <pagination
@@ -36,66 +33,17 @@
             </div>
             <div class="table-info el-scrollbar">
               <el-table
+                ref="tableSidepageRUN"
                 v-loading="loading"
                 element-loading-text="作业同步中，请稍后..."
                 :data="taskData"
                 fit
                 highlight-current-row
-                style="width: 100%"
+                style="width: 100%; cursor: pointer;"
                 height="100%"
-                max-height="750px"
+                @row-click="showSidepage"
               >
-                <el-table-column type="expand">
-                  <template slot-scope="props">
-                    <el-form label-position="left" inline class="table-expand">
-                      <el-form-item label="作业名">
-                        <span>{{ props.row.JobName }}</span>
-                      </el-form-item>
-                      <el-form-item label="作业id">
-                        <span>{{ props.row.JobID }}</span>
-                      </el-form-item>
-                      <el-form-item label="UUID">
-                        <span>{{ props.row.UUID }}</span>
-                      </el-form-item>
-                      <el-form-item label="作业组">
-                        <span>{{ props.row.JobGroup }}</span>
-                      </el-form-item>
-                      <el-form-item label="队列名">
-                        <span>{{ props.row.QueueName }}</span>
-                      </el-form-item>
-                      <el-form-item label="项目名">
-                        <span>{{ props.row.ProjectName }}</span>
-                      </el-form-item>
-                      <el-form-item label="用户名">
-                        <span>{{ props.row.UserName }}</span>
-                      </el-form-item>
-                      <el-form-item label="作业状态">
-                        <span>
-                          <el-tag size="mini" :type="statusMap[props.row.JobStatus].type">
-                            <i :class="statusMap[props.row.JobStatus].icon" />
-                            {{ props.row.JobStatus | JobStatus }}
-                          </el-tag>
-                        </span>
-                      </el-form-item>
-                      <el-form-item label="作业提交主机">
-                        <span>{{ props.row.SubmissionHostName }}</span>
-                      </el-form-item>
-                      <el-form-item label="开始时间">
-                        <span>{{ props.row.ExecuteTime }}</span>
-                      </el-form-item>
-                      <el-form-item label="运行时长">
-                        <span>{{ props.row.time }}</span>
-                      </el-form-item>
-                      <el-form-item label="运行节点">
-                        <span v-for="(item, index) in props.row.Host" :key="index">&nbsp;&nbsp;&nbsp;&nbsp;{{ item.NumSlots }} * {{ item.HostName }}</span>
-                      </el-form-item>
-                      <el-form-item label="描述">
-                        <span>{{ props.row.JobDescription }}</span>
-                      </el-form-item>
-                    </el-form>
-                  </template>
-                </el-table-column>
-                <el-table-column label="ID" width="100">
+                <el-table-column label="ID" width="120">
                   <template v-slot="{row}">
                     <span>{{ row.JobID }}</span>
                   </template>
@@ -134,6 +82,7 @@
                   </template>
                 </el-table-column>
               </el-table>
+              <sidepage ref="SidepageNameRUN" :sidepagedata.sync="sidepagedata" />
             </div>
           </el-main>
         </el-container>
@@ -166,62 +115,17 @@
             </div>
             <div class="table-info el-scrollbar">
               <el-table
+                ref="tableSidepagePEND"
                 v-loading="loading"
                 element-loading-text="作业同步中，请稍后..."
                 :data="taskData"
                 fit
                 highlight-current-row
-                style="width: 100%"
+                style="width: 100%; cursor: pointer;"
                 height="100%"
-                max-height="750px"
+                @row-click="showSidepage"
               >
-                <el-table-column type="expand">
-                  <template slot-scope="props">
-                    <el-form label-position="left" inline class="table-expand">
-                      <el-form-item label="作业名">
-                        <span>{{ props.row.JobName }}</span>
-                      </el-form-item>
-                      <el-form-item label="作业id">
-                        <span>{{ props.row.JobID }}</span>
-                      </el-form-item>
-                      <el-form-item label="UUID">
-                        <span>{{ props.row.UUID }}</span>
-                      </el-form-item>
-                      <el-form-item label="作业组">
-                        <span>{{ props.row.JobGroup }}</span>
-                      </el-form-item>
-                      <el-form-item label="队列名">
-                        <span>{{ props.row.QueueName }}</span>
-                      </el-form-item>
-                      <el-form-item label="项目名">
-                        <span>{{ props.row.ProjectName }}</span>
-                      </el-form-item>
-                      <el-form-item label="用户名">
-                        <span>{{ props.row.UserName }}</span>
-                      </el-form-item>
-                      <el-form-item label="作业状态">
-                        <span>
-                          <el-tag size="mini" :type="statusMap[props.row.JobStatus].type">
-                            <i :class="statusMap[props.row.JobStatus].icon" />
-                            {{ props.row.JobStatus | JobStatus }}
-                          </el-tag>
-                        </span>
-                      </el-form-item>
-                      <el-form-item label="作业提交主机">
-                        <span>{{ props.row.SubmissionHostName }}</span>
-                      </el-form-item>
-                      <el-form-item label="作业提交时间">
-                        <span>{{ props.row.SubmitTime }}</span>
-                      </el-form-item>
-                      <el-form-item label="等待时长">
-                        <span>{{ props.row.time }}</span>
-                      </el-form-item>
-                      <el-form-item label="描述">
-                        <span>{{ props.row.JobDescription }}</span>
-                      </el-form-item>
-                    </el-form>
-                  </template>
-                </el-table-column>
+
                 <el-table-column label="ID" width="120">
                   <template v-slot="{row}">
                     <span>{{ row.JobID }}</span>
@@ -257,139 +161,11 @@
                   </template>
                 </el-table-column>
               </el-table>
+              <sidepage ref="SidepageNamePEND" :sidepagedata.sync="sidepagedata" />
             </div>
           </el-main>
         </el-container>
       </el-tab-pane>
-      <!-- <el-tab-pane name="EXIT">
-        <span slot="label" class="tab-label">
-          <i class="el-icon-document-delete" /> 已退出
-        </span>
-        <el-container>
-          <el-main>
-            <div class="hasten">
-              <el-button type="primary" size="mini" @click="getFinishList">
-                <i class="el-icon-refresh-right" /> 刷新
-              </el-button>
-              <search :items="selected.items" @change="searchChanged" />
-              <div class="pagination">
-                <pagination
-                  v-show="page.total>0"
-                  :total="page.total"
-                  :page.sync="page.currentPage"
-                  :limit.sync="page.pageSize"
-                  @pagination="getFinishList"
-                />
-              </div>
-            </div>
-            <div class="table-info el-scrollbar">
-            <el-table
-              v-loading="loading"
-              element-loading-text="作业同步中，请稍后..."
-              :data="taskData"
-              fit
-              highlight-current-row
-              style="width: 100%"
-                height="100%"
-              max-height="750px"
-            >
-              <el-table-column type="expand">
-                <template slot-scope="props">
-                  <el-form label-position="left" inline class="table-expand">
-                    <el-form-item label="作业名">
-                      <span>{{ props.row.JobName }}</span>
-                    </el-form-item>
-                    <el-form-item label="作业id">
-                      <span>{{ props.row.JobID }}</span>
-                    </el-form-item>
-                    <el-form-item label="UUID">
-                      <span>{{ props.row.UUID }}</span>
-                    </el-form-item>
-                    <el-form-item label="作业组">
-                      <span>{{ props.row.JobGroup }}</span>
-                    </el-form-item>
-                    <el-form-item label="队列名">
-                      <span>{{ props.row.QueueName }}</span>
-                    </el-form-item>
-                    <el-form-item label="项目名">
-                      <span>{{ props.row.ProjectName }}</span>
-                    </el-form-item>
-                    <el-form-item label="用户名">
-                      <span>{{ props.row.UserName }}</span>
-                    </el-form-item>
-                    <el-form-item label="作业状态">
-                      <span>
-                        <el-tag size="mini" :type="statusMap[props.row.JobStatus].type">
-                          <i :class="statusMap[props.row.JobStatus].icon" />
-                          {{ props.row.JobStatus | JobStatus }}
-                        </el-tag>
-                      </span>
-                    </el-form-item>
-                    <el-form-item label="作业提交主机">
-                      <span>{{ props.row.SubmissionHostName }}</span>
-                    </el-form-item>
-                    <el-form-item label="开始时间">
-                      <span>{{ props.row.ExecuteTime }}</span>
-                    </el-form-item>
-                    <el-form-item label="运行时间">
-                      <span>{{ props.row.time }}</span>
-                    </el-form-item>
-                    <el-form-item label="结束时间">
-                      <span>{{ props.row.EndTime }}</span>
-                    </el-form-item>
-                    <el-form-item label="退出原因" class="form-item-exit">
-                      <span>{{ props.row.ExitReason }}</span>
-                    </el-form-item>
-                    <el-form-item label="描述" class="form-item-exit">
-                      <span>{{ props.row.JobDescription }}</span>
-                    </el-form-item>
-                  </el-form>
-                </template>
-              </el-table-column>
-              <el-table-column label="ID" width="120">
-                <template v-slot="{row}">
-                  <span>{{ row.JobID }}</span>
-                </template>
-              </el-table-column>
-
-              <el-table-column label="作业名" show-overflow-tooltip>
-                <template v-slot="{row}">
-                  <span>{{ row.JobName }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="作业状态">
-                <template v-slot="{row}">
-                  <el-tag size="mini" :type="statusMap[row.JobStatus].type">
-                    <i :class="statusMap[row.JobStatus].icon" />
-                    {{ row.JobStatus | JobStatus }}
-                  </el-tag>
-                </template>
-              </el-table-column>
-              <el-table-column label="队列">
-                <template v-slot="{row}">
-                  <span>{{ row.QueueName }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="开始时间" show-overflow-tooltip>
-                <template v-slot="{row}">
-                  <span>{{ row.ExecuteTime }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="运行时间">
-                <template v-slot="{row}">
-                  <span>{{ row.time }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="提交用户" width="140">
-                <template v-slot="{row}">
-                  <span>{{ row.UserName }}</span>
-                </template>
-              </el-table-column>
-            </el-table>
-            </div>
-          </el-main>
-        </el-container>
-      </el-tab-pane> -->
       <el-tab-pane name="FINISH">
         <span slot="label" class="tab-label">
           <i class="el-icon-finished" /> 已完成
@@ -425,72 +201,19 @@
             </div>
             <div class="table-info el-scrollbar">
               <el-table
-                ref="tableSidepage"
+                ref="tableSidepageFINISH"
                 v-loading="loading"
                 element-loading-text="作业同步中，请稍后..."
                 :data="taskData"
                 fit
                 highlight-current-row
-                style="width: 100%"
+                style="width: 100%; cursor: pointer;"
                 height="100%"
-                max-height="750px"
+                @row-click="showSidepage"
               >
-                <el-table-column type="expand">
-                  <template slot-scope="props">
-                    <el-form label-position="left" inline class="table-expand">
-                      <el-form-item label="作业名">
-                        <span>{{ props.row.JobName }}</span>
-                      </el-form-item>
-                      <el-form-item label="作业id">
-                        <span>{{ props.row.JobID }}</span>
-                      </el-form-item>
-                      <el-form-item label="UUID">
-                        <span>{{ props.row.UUID }}</span>
-                      </el-form-item>
-                      <el-form-item label="作业组">
-                        <span>{{ props.row.JobGroup }}</span>
-                      </el-form-item>
-                      <el-form-item label="队列名">
-                        <span>{{ props.row.QueueName }}</span>
-                      </el-form-item>
-                      <el-form-item label="项目名">
-                        <span>{{ props.row.ProjectName }}</span>
-                      </el-form-item>
-                      <el-form-item label="用户名">
-                        <span>{{ props.row.UserName }}</span>
-                      </el-form-item>
-                      <el-form-item label="作业状态">
-                        <span>
-                          <el-tag size="mini" :type="statusMap[props.row.JobStatus].type">
-                            <i :class="statusMap[props.row.JobStatus].icon" />
-                            {{ props.row.JobStatus | JobStatus }}
-                          </el-tag>
-                        </span>
-                      </el-form-item>
-                      <el-form-item label="作业提交主机">
-                        <span>{{ props.row.SubmissionHostName }}</span>
-                      </el-form-item>
-                      <el-form-item label="开始时间">
-                        <span>{{ props.row.ExecuteTime }}</span>
-                      </el-form-item>
-                      <el-form-item label="运行时长">
-                        <span>{{ props.row.time }}</span>
-                      </el-form-item>
-                      <el-form-item label="结束时间">
-                        <span>{{ props.row.EndTime }}</span>
-                      </el-form-item>
-                      <el-form-item label="运行节点" class="form-item-finish">
-                        <span v-for="(item, index) in props.row.Host" :key="index">&nbsp;&nbsp;&nbsp;&nbsp;{{ item.NumSlots }} * {{ item.HostName }}</span>
-                      </el-form-item>
-                      <el-form-item label="描述" class="form-item-finish">
-                        <span>{{ props.row.JobDescription }}</span>
-                      </el-form-item>
-                    </el-form>
-                  </template>
-                </el-table-column>
                 <el-table-column label="ID" width="120">
                   <template v-slot="{row}">
-                    <span class="JobInfoSidepage" @click.stop="showSidepage(row)">{{ row.JobID }}</span>
+                    <span>{{ row.JobID }}</span>
                   </template>
                 </el-table-column>
 
@@ -524,7 +247,7 @@
                 </el-table-column>
                 <el-table-column label="费用">
                   <template v-slot="{row}">
-                    <span>{{ row.TotalCost }}</span>
+                    <span>￥ {{ row.TotalCost }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="提交用户" width="140">
@@ -533,7 +256,7 @@
                   </template>
                 </el-table-column>
               </el-table>
-              <sidepage :sidepagedata.sync="sidepagedata" />
+              <sidepage ref="SidepageNameFINISH" :sidepagedata.sync="sidepagedata" />
             </div>
           </el-main>
         </el-container>
@@ -550,7 +273,6 @@ import {
   GetJobIDList,
   GetJobIDHost
 } from '@/api/task'
-import { syncHost } from '@/api/sync'
 
 import { formatDate, formatDiff } from '@/utils/format'
 
@@ -737,7 +459,9 @@ export default {
       // Sidepage
       sidepagedata: {
         list: {},
-        sidepageShow: false
+        tabName: '',
+        sidepageShow: false,
+        TaskShow: true
       }
     }
   },
@@ -751,17 +475,17 @@ export default {
       const tab = {}
       tab.name = this.$route.params.Status
       this.activeName = tab.name
-      console.log(this.activeName)
       this.handleClick(tab)
+      if (this.$route.params.select) {
+        this.searchChanged(this.$route.params)
+      }
     } else {
       this.getList()
     }
   },
-  /*  beforeDestroy() {
-    if (this.stompClient) {
-      this.disconnect()
-    }
-  }, */
+  beforeDestroy() {
+    this.stop()
+  },
   methods: {
     getList() {
       const _this = this
@@ -916,7 +640,6 @@ export default {
             }
           })
           _this.page.total = res.Inventory.TotalNumber
-          // _this.page.pageCount = res.Inventory.totalCount;
           _this.ExportList.list = _this.taskData
           _this.loading = false
         })
@@ -928,32 +651,70 @@ export default {
     },
 
     // 显示Sidepage
-    showSidepage(row) {
+    showSidepage(row, column, event) {
       const _this = this
-      _this.$refs.tableSidepage.setCurrentRow(row)
-      _this.sidepagedata.list = row
-      _this.sidepagedata.sidepageShow = true
+      let FixedCli
+      if (_this.activeName === 'RUN') {
+        FixedCli = this.$refs.tableSidepageRUN.$refs.rightFixedWrapper
+      } else if (_this.activeName === 'PEND') {
+        FixedCli = this.$refs.tableSidepagePEND.$refs.rightFixedWrapper
+      } else if (_this.activeName === 'FINISH') {
+        FixedCli = this.$refs.tableSidepageFINISH.$refs.rightFixedWrapper
+      }
+      if (!FixedCli || !FixedCli.contains(event.target)) {
+        if (_this.activeName === 'RUN') {
+          this.$refs.tableSidepageRUN.setCurrentRow(row)
+        } else if (_this.activeName === 'PEND') {
+          this.$refs.tableSidepagePEND.setCurrentRow(row)
+        } else if (_this.activeName === 'FINISH') {
+          this.$refs.tableSidepageFINISH.setCurrentRow(row)
+        }
+        _this.sidepagedata.list = row
+        _this.sidepagedata.tabName = _this.activeName
+        _this.sidepagedata.sidepageShow = true
+      }
+    },
+
+    // 点击其它区域边页隐藏
+    closeSidepage(event) {
+      let FixedCli1
+      let FixedCli2
+      if (this.activeName === 'RUN') {
+        FixedCli1 = this.$refs.tableSidepageRUN
+        FixedCli2 = this.$refs.SidepageNameRUN
+      } else if (this.activeName === 'PEND') {
+        FixedCli1 = this.$refs.tableSidepagePEND
+        FixedCli2 = this.$refs.SidepageNamePEND
+      } else if (this.activeName === 'FINISH') {
+        FixedCli1 = this.$refs.tableSidepageFINISH
+        FixedCli2 = this.$refs.SidepageNameFINISH
+      }
+      if (FixedCli1 && FixedCli2) {
+        const currentCli1 = FixedCli1.$refs.bodyWrapper.firstChild
+        const currentCli2 = FixedCli2.$el
+        if (currentCli1 && currentCli2) {
+          if (!currentCli1.contains(event.target) && !currentCli2.contains(event.target)) { // 点击到了id为sellineName以外的区域，隐藏下拉框
+            this.sidepagedata.sidepageShow = false
+          }
+        }
+      }
     },
 
     // tab点击事件
     handleClick(tab, event) {
       if (tab.name === 'RUN') {
         this.getList()
+        this.start(+this.dropdown.selected.key)
       } else if (tab.name === 'PEND') {
+        this.stop()
         this.getPendList()
       } else if (tab.name === 'EXIT') {
+        this.stop()
         this.getFinishList()
       } else if (tab.name === 'FINISH') {
+        this.stop()
         this.getFinishList()
       }
-    },
-
-    // tongbu
-    sync() {
-      syncHost()
-        .then(res => {
-          console.log(res)
-        })
     },
 
     // 下拉选择发生改变触发事件
@@ -1025,8 +786,7 @@ export default {
                 _this.$set(item, 'edit', false)
                 return item
               })
-              _this.page.total = res.Inventory.TotalNumber
-              _this.page.pageCount = res.Inventory.PageNumber
+              _this.page.total = _this.taskData.length
               _this.loading = false
             })
             .catch(res => {
@@ -1126,7 +886,7 @@ export default {
 }
 
 .el-main-finish {
-  min-width: 1176px;
+  min-width: 1185px;
   overflow-x: auto;
 }
 

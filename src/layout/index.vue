@@ -21,6 +21,8 @@ import { AppMain, Navbar, Settings, Sidebar, TagsView } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
 import { mapState } from 'vuex'
 
+import { getCentrifuge } from '@/utils/centrifugo'
+
 export default {
   name: 'Layout',
   components: {
@@ -48,6 +50,9 @@ export default {
         mobile: this.device === 'mobile'
       }
     }
+  },
+  created() {
+    getCentrifuge()
   },
   methods: {
     handleClickOutside() {

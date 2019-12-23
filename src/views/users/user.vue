@@ -1,11 +1,11 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" @click="closeSidepage($event)">
     <el-container>
       <el-main>
         <div class="hasten">
-          <el-button class="headBut" type="primary" size="mini" @click="saveEntity">
+          <!-- <el-button class="headBut" type="primary" size="mini" @click="saveEntity">
             <i class="el-icon-plus" /> 创建用户
-          </el-button>
+          </el-button> -->
           <el-button type="primary" size="mini" @click="getList">
             <i class="el-icon-refresh-right" /> 刷新
           </el-button>
@@ -25,22 +25,17 @@
         </div>
         <div class="table-info el-scrollbar">
           <el-table
+            ref="tableSidepage"
             v-loading="loading"
             :data="usersData"
             element-loading-text="Loading"
             fit
             highlight-current-row
-            style="width: 100%"
+            style="width: 100%; cursor: pointer;"
             height="100%"
-            max-height="807px"
+            @row-click="showSidepage"
           >
-            <el-table-column label="ID" width="120">
-              <template v-slot="{row}">
-                <span>{{ row.UserID }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column label="用户">
+            <el-table-column label="用户" min-width="160" show-overflow-tooltip>
               <template v-slot="{row}">
                 <template v-if="row.edit">
                   <el-input v-model="row.UserName" class="edit-input" size="small" />
@@ -48,28 +43,29 @@
                 <span v-else>{{ row.UserName }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="角色" width="110">
+            <el-table-column label="ID">
               <template v-slot="{row}">
-                <template v-if="row.edit">
-                  <el-input v-model="row.role" class="edit-input" size="small" />
-                </template>
-                <span v-else>{{ row.role }}</span>
+                <span>{{ row.UserID }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="用户组">
+
+            <el-table-column label="更新时间" show-overflow-tooltip>
+              <template v-slot="{row}">
+                <span>{{ row.UpdatedAt }}</span>
+              </template>
+            </el-table-column>
+            <!-- <el-table-column label="用户组">
               <template v-slot="{row}">
                 <span v-for="(item, index) in row.userGroup" :key="index" class="GroupLink">
                   <span @click="jumpUserGroup(item)">&nbsp;{{ item.GroupName }}</span>
                 </span>
               </template>
             </el-table-column>
-            <el-table-column label="计费组">
+            <el-table-column label="计费组" width="160" show-overflow-tooltip>
               <template v-slot="{row}">
-                <span v-for="(item, index) in row.billGroup" :key="index" class="GroupLink">
-                  <span @click="jumpBillGroup(item)">&nbsp;{{ item.GroupName }}</span>
-                </span>
+                <span class="GroupLink" @click="jumpBillGroup(item)">{{ row.billGroup.GroupName }}</span>
               </template>
-            </el-table-column>
+            </el-table-column> -->
             <!-- <el-table-column label="登录时间" width="110">
             <template v-slot="{row}">
               <template v-if="row.edit">
@@ -91,10 +87,9 @@
               <el-switch v-model="row.type" active-color="#13ce66"></el-switch>
             </template>
           </el-table-column>-->
-            <el-table-column fixed="right" label="操作" width="200">
+            <!-- <el-table-column fixed="right" label="操作" width="200">
               <template v-slot="{row}">
                 <el-button-group>
-                  <!-- 编辑模式：确定 -->
                   <el-button
                     v-if="row.edit"
                     type="warning"
@@ -102,7 +97,6 @@
                     icon="el-icon-circle-check-outline"
                     @click="confirmEdit(row)"
                   >确定</el-button>
-                  <!-- 编辑模式：取消 -->
                   <el-button
                     v-if="row.edit"
                     type="success"
@@ -111,7 +105,6 @@
                     @click="cancelEdit(row)"
                   >取消</el-button>
 
-                  <!-- 查看详情 -->
                   <el-tooltip class="item" effect="dark" content="查看" placement="top-end">
                     <el-button
                       v-if="!row.edit"
@@ -141,10 +134,11 @@
                   </el-tooltip>
                 </el-button-group>
               </template>
-            </el-table-column>
+            </el-table-column> -->
           </el-table>
+          <sidepage ref="SidepageName" :sidepagedata.sync="sidepagedata" />
         </div>
-        <el-dialog :title="titleHead" :visible.sync="dialogCreating" width="50%">
+        <el-dialog :title="titleHead" :visible.sync="dialogCreating" width="600px">
           <el-form
             ref="create"
             :model="create"
@@ -218,13 +212,17 @@ import {
 } from '@/api/role'
 import { syncUser } from '@/api/sync'
 
+import { formatDate } from '@/utils/format'
+
 import Pagination from '@/components/Pagination'
 import Search from '@/components/Search'
+import Sidepage from './components/Sidepage/userSidepage'
 
 export default {
   components: {
     Pagination,
-    Search
+    Search,
+    Sidepage
   },
   data() {
     var validatePass = (rule, value, callback) => {
@@ -269,6 +267,14 @@ export default {
       },
       usersData: [],
       loading: false,
+      // Sidepage
+      sidepagedata: {
+        users: {
+          billGroup: {},
+          userGroup: []
+        },
+        sidepageShow: false
+      },
       dialogCreating: false,
       titleHead: '',
       // 节点添加信息
@@ -374,6 +380,8 @@ export default {
         .then(res => {
           _this.usersData = []
           res.Inventory.ResultData.map(function(item, index) {
+            item.CreatedAt = formatDate(item.CreatedAt, 'yyyy-MM-dd hh:mm:ss')
+            item.UpdatedAt = formatDate(item.UpdatedAt, 'yyyy-MM-dd hh:mm:ss')
             GetIDUserGroup(item.UserID)
               .then(data => {
                 item.userGroup = data.Inventory
@@ -382,20 +390,19 @@ export default {
               })
             GetIDUserBill(item.UserID)
               .then(data => {
-                item.billGroup.push(data.Inventory)
+                item.billGroup = data.Inventory
               }).catch(res => {
                 console.log(res)
               })
             // 保存一份原始数据，便于取消编辑的时候还原数据
             const original = _this._.cloneDeep(item)
             item.original = original
-            _this.$set(item, 'role', '用户')
             _this.$set(item, 'edit', false)
             if (item.userGroup && item.billGroup) {
               _this.usersData.push(item)
             } else {
               item.userGroup = []
-              item.billGroup = []
+              item.billGroup = {}
               _this.usersData.push(item)
             }
           })
@@ -512,28 +519,28 @@ export default {
         })
     },
 
-    // 跳转用户组
-    jumpUserGroup(data) {
+    // 显示Sidepage
+    showSidepage(row, column, event) {
       const _this = this
-      _this.$router.push({
-        name: 'role.userGroup',
-        params: {
-          select: 'ID',
-          value: data.GroupID
-        }
-      })
+      const FixedCli = this.$refs.tableSidepage.$refs.rightFixedWrapper
+      if (!FixedCli || !FixedCli.contains(event.target)) {
+        _this.$refs.tableSidepage.setCurrentRow(row)
+        _this.sidepagedata.users = row
+        _this.sidepagedata.sidepageShow = true
+      }
     },
 
-    // 跳转计费组
-    jumpBillGroup(data) {
-      const _this = this
-      _this.$router.push({
-        name: 'role.billing',
-        params: {
-          select: 'UUID',
-          value: data.UUID
+    // 点击其它区域边页隐藏
+    closeSidepage(event) {
+      if (this.$refs.tableSidepage && this.$refs.SidepageName) {
+        const currentCli1 = this.$refs.tableSidepage.$refs.bodyWrapper.firstChild
+        const currentCli2 = this.$refs.SidepageName.$el
+        if (currentCli1 && currentCli2) {
+          if (!currentCli1.contains(event.target) && !currentCli2.contains(event.target)) { // 点击到了id为sellineName以外的区域，隐藏下拉框
+            this.sidepagedata.sidepageShow = false
+          }
         }
-      })
+      }
     },
 
     // 查看用户详情

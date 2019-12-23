@@ -36,7 +36,7 @@ export function GetIDUser(id) {
  */
 export function GetIDUserGroup(id) {
   return request({
-    url: `/users/${id}/groups`,
+    url: `/users/${id}/usergroups`,
     method: 'get'
   })
 }
@@ -47,43 +47,8 @@ export function GetIDUserGroup(id) {
  */
 export function GetIDUserBill(id) {
   return request({
-    url: `/users/${id}/chargedgroups`,
+    url: `/users/${id}/billinggroups`,
     method: 'get'
-  })
-}
-
-/**
- * 创建用户
- * @param {*} data 用户参数
- */
-export function CreateUser(data) {
-  return request({
-    url: `/hosts`,
-    method: 'post',
-    data
-  })
-}
-
-/**
- * 删除用户
- * @param {*} uuid 用户ID
- */
-export function DeleteUser(uuid) {
-  return request({
-    url: `/hosts/${uuid}`,
-    method: 'delete'
-  })
-}
-
-/**
- * 修改用户
- * @param {*} params 用户参数
- */
-export function ChangeUser(data) {
-  return request({
-    url: `/hosts`,
-    method: 'post',
-    data
   })
 }
 
@@ -93,7 +58,7 @@ export function ChangeUser(data) {
  */
 export function GetBillList(params) {
   return request({
-    url: `/chargedgroups`,
+    url: `/billing/groups`,
     method: 'get',
     params
   })
@@ -105,7 +70,7 @@ export function GetBillList(params) {
  */
 export function CreateBill(data) {
   return request({
-    url: `/chargedgroups`,
+    url: `/billing/groups`,
     method: 'post',
     data
   })
@@ -118,7 +83,7 @@ export function CreateBill(data) {
  */
 export function GetBillUser(uuid, params) {
   return request({
-    url: `/chargedgroups/${uuid}/users`,
+    url: `/billing/groups/${uuid}/users`,
     method: 'get',
     params
   })
@@ -130,9 +95,21 @@ export function GetBillUser(uuid, params) {
  */
 export function ChangeBillUser(data) {
   return request({
-    url: `/chargedgroups/user`,
+    url: `/billing/groups/user`,
     method: 'post',
     data
+  })
+}
+
+/**
+ * 绑定计费规则和组
+ * @param {*} GroupUUID 计费组UUID
+ * @param {*} RuleUUID 计费规则UUID
+ */
+export function ChangeBillGroupRule(GroupUUID, RuleUUID) {
+  return request({
+    url: `/billing/groups/${GroupUUID}/rules/${RuleUUID}`,
+    method: 'post'
   })
 }
 
@@ -142,7 +119,7 @@ export function ChangeBillUser(data) {
  */
 export function DeleteBillGroup(uuid) {
   return request({
-    url: `/chargedgroups/${uuid}`,
+    url: `/billing/groups/${uuid}`,
     method: 'delete'
   })
 }
@@ -153,7 +130,7 @@ export function DeleteBillGroup(uuid) {
  */
 export function DeleteBillGroupUser(id) {
   return request({
-    url: `/chargedgroups/user/${id}`,
+    url: `/billing/groups/user/${id}`,
     method: 'delete'
   })
 }
@@ -164,7 +141,7 @@ export function DeleteBillGroupUser(id) {
  */
 export function GetUserGroupList(params) {
   return request({
-    url: `/groups`,
+    url: `/usergroups`,
     method: 'get',
     params
   })
@@ -176,7 +153,7 @@ export function GetUserGroupList(params) {
  */
 export function GetGroupIDList(id) {
   return request({
-    url: `/groups/${id}`,
+    url: `/usergroups/${id}`,
     method: 'get'
   })
 }
@@ -188,43 +165,9 @@ export function GetGroupIDList(id) {
  */
 export function GetGroupIDUser(id, params) {
   return request({
-    url: `/groups/${id}/users`,
+    url: `/usergroups/${id}/users`,
     method: 'get',
     params
   })
 }
 
-/**
- * 创建用户组
- * @param {*} data 用户组参数
- */
-export function CreateUserGroup(data) {
-  return request({
-    url: `/hosts`,
-    method: 'post',
-    data
-  })
-}
-
-/**
- * 删除用户组
- * @param {*} uuid 用户组id
- */
-export function DeleteUserGroup(uuid) {
-  return request({
-    url: `/hosts/${uuid}`,
-    method: 'delete'
-  })
-}
-
-/**
- * 修改用户组
- * @param {*} data 用户组参数
- */
-export function ChangeUserGroup(data) {
-  return request({
-    url: `/hosts`,
-    method: 'post',
-    data
-  })
-}

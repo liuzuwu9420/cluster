@@ -3,7 +3,8 @@ import store from './store'
 import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
-import { getToken } from '@/utils/auth' // get token from cookie
+import { getToken } from '@/utils/auth' // get token from localStorage
+import { disconnectCentrifuge } from '@/utils/centrifugo'
 import getPageTitle from '@/utils/get-page-title'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
@@ -13,12 +14,11 @@ const whiteList = ['/login', '/auth-redirect'] // no redirect whitelist
 router.beforeEach(async(to, from, next) => {
   // start progress bar
   NProgress.start()
-
   // set page title
   document.title = getPageTitle(to.meta.title)
 
   // determine whether the user has logged in
-  const hasToken = getToken()
+  const hasToken = getToken('Admin-Token')
 
   if (hasToken) {
     if (to.path === '/login') {
@@ -26,6 +26,7 @@ router.beforeEach(async(to, from, next) => {
       next({ path: '/' })
       NProgress.done()
     } else {
+      // await disconnectCentrifuge()
       // determine whether the user has obtained his permission roles through getInfo
       const hasRoles = store.getters.roles && store.getters.roles.length > 0
       if (hasRoles) {
@@ -63,6 +64,7 @@ router.beforeEach(async(to, from, next) => {
     } else {
       // other pages that do not have permission to access are redirected to the login page.
       next(`/login?redirect=${to.path}`)
+      disconnectCentrifuge()
       NProgress.done()
     }
   }

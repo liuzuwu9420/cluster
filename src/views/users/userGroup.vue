@@ -3,9 +3,9 @@
     <el-container>
       <el-main>
         <div class="hasten">
-          <el-button class="headBut" type="primary" size="mini" @click="saveEntity">
+          <!-- <el-button class="headBut" type="primary" size="mini" @click="saveEntity">
             <i class="el-icon-plus" /> 创建用户组
-          </el-button>
+          </el-button> -->
           <el-button type="primary" size="mini" @click="getList">
             <i class="el-icon-refresh-right" /> 刷新
           </el-button>
@@ -31,17 +31,11 @@
             element-loading-text="Loading"
             fit
             highlight-current-row
-            style="width: 100%"
-            max-height="807px"
+            style="width: 100%; cursor: pointer;"
             height="100%"
+            @row-click="showSidepage"
           >
-            <el-table-column label="ID" width="150">
-              <template v-slot="{row}">
-                <span id="SidepageGroupName" class="groupName" @click.stop="showSidepage(row)">{{ row.GroupID }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column label="名称">
+            <el-table-column label="名称" width="160">
               <template v-slot="{row}">
                 <template v-if="row.edit">
                   <el-input v-model="row.GroupName" class="edit-input" size="small" />
@@ -49,6 +43,12 @@
                 <span v-else>{{ row.GroupName }}</span>
               </template>
             </el-table-column>
+            <el-table-column label="ID">
+              <template v-slot="{row}">
+                <span>{{ row.GroupID }}</span>
+              </template>
+            </el-table-column>
+
             <el-table-column label="创建时间">
               <template v-slot="{row}">
                 <span>{{ row.CreatedAt }}
@@ -63,10 +63,9 @@
               <span v-else>{{ row.description }}</span>
             </template>
           </el-table-column>-->
-            <el-table-column fixed="right" label="操作" width="200">
+            <!-- <el-table-column fixed="right" label="操作" width="200">
               <template v-slot="{row}">
                 <el-button-group>
-                  <!-- 编辑模式：确定 -->
                   <el-button
                     v-if="row.edit"
                     type="warning"
@@ -74,7 +73,6 @@
                     icon="el-icon-circle-check-outline"
                     @click="confirmEdit(row)"
                   >确定</el-button>
-                  <!-- 编辑模式：取消 -->
                   <el-button
                     v-if="row.edit"
                     type="success"
@@ -83,7 +81,6 @@
                     @click="cancelEdit(row)"
                   >取消</el-button>
 
-                  <!-- 查看详情 -->
                   <el-tooltip class="item" effect="dark" content="查看" placement="top-end">
                     <el-button
                       v-if="!row.edit"
@@ -113,11 +110,11 @@
                   </el-tooltip>
                 </el-button-group>
               </template>
-            </el-table-column>
+            </el-table-column> -->
           </el-table>
-          <sidepage id="SidepageName" :sidepagedata.sync="sidepagedata" />
+          <sidepage ref="SidepageName" :sidepagedata.sync="sidepagedata" />
         </div>
-        <el-dialog :title="titleHead" :visible.sync="dialogCreating" width="50%">
+        <el-dialog :title="titleHead" :visible.sync="dialogCreating" width="600px">
           <el-form
             ref="create"
             :model="create"
@@ -370,20 +367,25 @@ export default {
     },
 
     // 显示Sidepage
-    showSidepage(row) {
+    showSidepage(row, column, event) {
       const _this = this
-      _this.$refs.tableSidepage.setCurrentRow(row)
-      _this.sidepagedata.groups = row
-      _this.sidepagedata.sidepageShow = true
+      const FixedCli = this.$refs.tableSidepage.$refs.rightFixedWrapper
+      if (!FixedCli || !FixedCli.contains(event.target)) {
+        _this.$refs.tableSidepage.setCurrentRow(row)
+        _this.sidepagedata.groups = row
+        _this.sidepagedata.sidepageShow = true
+      }
     },
 
     // 点击其它区域边页隐藏
     closeSidepage(event) {
-      var currentCli1 = document.getElementById('SidepageGroupName')
-      var currentCli2 = document.getElementById('SidepageName')
-      if (currentCli1 || currentCli2) {
-        if (!currentCli1.contains(event.target) && !currentCli2.contains(event.target)) { // 点击到了id为sellineName以外的区域，隐藏下拉框
-          this.sidepagedata.sidepageShow = false
+      if (this.$refs.tableSidepage && this.$refs.SidepageName) {
+        const currentCli1 = this.$refs.tableSidepage.$refs.bodyWrapper.firstChild
+        const currentCli2 = this.$refs.SidepageName.$el
+        if (currentCli1 && currentCli2) {
+          if (!currentCli1.contains(event.target) && !currentCli2.contains(event.target)) { // 点击到了id为sellineName以外的区域，隐藏下拉框
+            this.sidepagedata.sidepageShow = false
+          }
         }
       }
     },

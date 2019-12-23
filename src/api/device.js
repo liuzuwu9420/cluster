@@ -18,16 +18,6 @@ export function GetList(params) {
     params
   })
 }
-/**
- * 根据uuid获取单个节点(无用)
- * @param {*} uuid 节点uuid
- */
-export function GetNodeList(uuid) {
-  return request({
-    url: `/hosts/${uuid}`,
-    method: 'get'
-  })
-}
 
 /**
  * 根据uuid获取节点详细信息
@@ -72,6 +62,42 @@ export function UpdateEntityOne(params) {
     url: '/updateNodeEntityOne',
     method: 'post',
     params
+  })
+}
+
+/**
+ * 对单个主机绑定标签
+ * @param  uuid 主机uuid
+ * @param data 标签uuid和资源类别 {{LabelUUID,ResourceType}}
+ */
+export function StickLabelToHost(uuid, data) {
+  return request({
+    url: `/hosts/${uuid}/labels`,
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 获取单个主机所有绑定标签信息
+ * @param  uuid hostUUID
+ */
+export function GetTagOfHost(uuid) {
+  return request({
+    url: `/hosts/${uuid}/labels`,
+    method: 'get'
+  })
+}
+
+/**
+ * 取消单个主机下某个标签的绑定关系
+ * @param hostUUID 主机uuid
+ * @param labelUUID 标签uuid
+ */
+export function DeleteTagOfHost(hostUUID, labelUUID) {
+  return request({
+    url: `/hosts/${hostUUID}/labels/${labelUUID}`,
+    method: 'delete'
   })
 }
 

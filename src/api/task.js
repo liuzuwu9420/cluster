@@ -12,7 +12,7 @@ import request from '@/utils/request'
  */
 export function GetTaskNum() {
   return request({
-    url: `/jobs/statistics`,
+    url: `/lsf/jobs/statistics`,
     method: 'get'
   })
 }
@@ -23,7 +23,7 @@ export function GetTaskNum() {
  */
 export function GetRunTaskList(params) {
   return request({
-    url: `/jobs/status/run`,
+    url: `/lsf/jobs/status/run`,
     method: 'get',
     params
   })
@@ -35,7 +35,7 @@ export function GetRunTaskList(params) {
  */
 export function GetPendTaskList(params) {
   return request({
-    url: `/jobs/status/pend`,
+    url: `/lsf/jobs/status/pend`,
     method: 'get',
     params
   })
@@ -47,7 +47,7 @@ export function GetPendTaskList(params) {
  */
 export function GetTaskList(params) {
   return request({
-    url: `/jobs`,
+    url: `/lsf/jobs`,
     method: 'get',
     params
   })
@@ -59,7 +59,7 @@ export function GetTaskList(params) {
  */
 export function GetPendTaskTOPList(params) {
   return request({
-    url: `/jobs/top/15?status=pend`,
+    url: `/lsf/jobs/top/5?status=pend`,
     method: 'get',
     params
   })
@@ -71,7 +71,7 @@ export function GetPendTaskTOPList(params) {
  */
 export function GetRunTaskTOPList(params) {
   return request({
-    url: `/jobs/top/15?status=run`,
+    url: `/lsf/jobs/top/5?status=run`,
     method: 'get',
     params
   })
@@ -83,7 +83,7 @@ export function GetRunTaskTOPList(params) {
  */
 export function GetJobIDList(jobID) {
   return request({
-    url: `/jobs/${jobID}`,
+    url: `/lsf/jobs/${jobID}`,
     method: 'get'
   })
 }
@@ -94,7 +94,7 @@ export function GetJobIDList(jobID) {
  */
 export function GetJobIDHost(jobID) {
   return request({
-    url: `/jobs/${jobID}/hosts`,
+    url: `/lsf/jobs/${jobID}/hosts`,
     method: 'get'
   })
 }
@@ -105,7 +105,7 @@ export function GetJobIDHost(jobID) {
  */
 export function GetJobIDEvents(jobID) {
   return request({
-    url: `/jobs/${jobID}/events`,
+    url: `/lsf/jobs/${jobID}/events`,
     method: 'get'
   })
 }
@@ -116,7 +116,19 @@ export function GetJobIDEvents(jobID) {
  */
 export function GetCmdQueueList(params) {
   return request({
-    url: `/queue/cmd`,
+    url: `/lsf/queues/status`,
+    method: 'get',
+    params
+  })
+}
+
+/**
+ * 获取任务数前五的队列
+ * @param {*} params 查询参数
+ */
+export function GetQueueTOPList(params) {
+  return request({
+    url: `/lsf/queues/top/5`,
     method: 'get',
     params
   })
@@ -128,7 +140,7 @@ export function GetCmdQueueList(params) {
  */
 export function GetCmdQueueName(name) {
   return request({
-    url: `/queue/cmd/${name}`,
+    url: `/lsf/queues/${name}/status`,
     method: 'get'
   })
 }
@@ -139,7 +151,7 @@ export function GetCmdQueueName(name) {
  */
 export function GetConfQueueList(params) {
   return request({
-    url: `/queue/conf`,
+    url: `/lsf/queues/spec`,
     method: 'get',
     params
   })
@@ -151,7 +163,44 @@ export function GetConfQueueList(params) {
  */
 export function GetConfQueueName(name) {
   return request({
-    url: `/queue/conf/${name}`,
+    url: `/lsf/queues/${name}/spec`,
     method: 'get'
   })
 }
+
+/**
+ * 获取作业主机的信息
+ * @param {*} params 查询参数
+ */
+export function GetLsfHostList(params) {
+  return request({
+    url: `/lsf/hosts`,
+    method: 'get',
+    params
+  })
+}
+
+/**
+ * 根据名字查询作业节点信息
+ * @param {*} name 节点名
+ */
+export function GetLsfHostName(name) {
+  return request({
+    url: `/lsf/hosts/${name}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 获取作业主机的信息
+ * @param {*} params 查询参数
+ * @param {*} name 节点名
+ */
+export function GetLsfHostTask(params, name) {
+  return request({
+    url: `/lsf/hosts/${name}/jobs`,
+    method: 'get',
+    params
+  })
+}
+

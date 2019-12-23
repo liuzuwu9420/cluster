@@ -55,6 +55,11 @@ export const constantRoutes = [{
   hidden: true
 },
 {
+  path: '/overview',
+  component: () =>
+      import('@/components/overview')
+},
+{
   path: '/404',
   component: () =>
       import('@/views/error-page/404'),
@@ -89,79 +94,121 @@ export const constantRoutes = [{
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
-  // 用户
+  // 管理
   {
-    path: '/role',
+    path: '/manage',
     component: Layout,
-    redirect: '/role/user',
-    name: 'role',
+    redirect: '/manage/role/user',
+    name: 'manage',
     meta: {
-      title: '用户',
-      icon: 'user'
+      title: '平台管理',
+      icon: 'manage'
     },
-    children: [{
-      path: 'userGroup',
-      name: 'role.userGroup',
-      component: () =>
+    children: [
+      {
+        path: 'role',
+        component: () => import('@/views/users/layout'),
+        redirect: '/manage/role/user',
+        name: 'role',
+        meta: {
+          title: '用户管理',
+          icon: 'userManage'
+        },
+        children: [{
+          path: 'userGroup',
+          name: 'role.userGroup',
+          component: () =>
           import('@/views/users/userGroup'),
-      meta: {
-        title: '用户组',
-        icon: 'peoples'
-      }
-    },
-    {
-      path: 'user',
-      name: 'role.user',
-      component: () =>
+          meta: {
+            title: '用户组',
+            icon: 'peoples'
+          }
+        },
+        {
+          path: 'user',
+          name: 'role.user',
+          component: () =>
           import('@/views/users/user'),
-      meta: {
-        title: '用户',
-        icon: 'people'
-      }
-    },
-    {
-      path: 'billing',
-      name: 'role.billing',
-      component: () =>
+          meta: {
+            title: '用户',
+            icon: 'people'
+          }
+        }
+        ]
+      },
+      {
+        path: 'billing',
+        component: () => import('@/views/users/layout'),
+        redirect: '/manage/billing/user',
+        name: 'billing',
+        meta: {
+          title: '计费管理',
+          icon: 'billManage'
+        },
+        children: [
+          {
+            path: 'billingGroup',
+            name: 'role.billing',
+            component: () =>
           import('@/views/users/billing'),
-      meta: {
-        title: '计费组',
-        icon: 'money'
-      }
-    }
-    ]
-  },
-
-  // 设备
-  {
-    path: '/device',
-    component: Layout,
-    redirect: '/device/list',
-    name: 'device',
-    meta: {
-      title: '设备管理',
-      icon: 'iot'
-    },
-    children: [{
-      path: 'list',
-      name: 'device.list',
-      component: () =>
+            meta: {
+              title: '计费组',
+              icon: 'money'
+            }
+          },
+          {
+            path: 'billingRule',
+            component: () => import('@/views/rule/billingRule'),
+            name: 'rule.billingRule',
+            meta: {
+              title: '计费规则',
+              icon: 'billingRule'
+            }
+          },
+          {
+            path: 'addBilling',
+            component: () => import('@/views/users/addBilling'),
+            name: 'role.addBilling',
+            hidden: true,
+            meta: {
+              title: '创建计费组',
+              icon: 'billingRule'
+            }
+          }
+        ]
+      },
+      // 设备
+      {
+        path: 'device',
+        component: () => import('@/views/device/layout'),
+        redirect: 'manage/device/list',
+        name: 'device',
+        meta: {
+          title: '资源管理',
+          icon: 'iot'
+        },
+        children: [{
+          path: 'list',
+          name: 'device.list',
+          component: () =>
           import('@/views/device/list'),
-      meta: {
-        title: '主机',
-        icon: 'table'
-      }
-    },
-    {
-      path: 'info',
-      name: 'device.info',
-      component: () =>
+          meta: {
+            title: '主机',
+            icon: 'table'
+          }
+        },
+        {
+          path: 'info',
+          name: 'device.info',
+          component: () =>
           import('@/views/device/info'),
-      hidden: true,
-      meta: {
-        title: '设备详情'
+          hidden: true,
+          meta: {
+            title: '设备详情'
+          }
+        }
+        ]
       }
-    }
     ]
   },
 
@@ -172,8 +219,8 @@ export const asyncRoutes = [
     redirect: '/task/taskList',
     name: 'task',
     meta: {
-      title: '作业',
-      icon: 'form'
+      title: '作业监控',
+      icon: 'monitor'
     },
     children: [{
       path: 'taskList',
@@ -192,12 +239,21 @@ export const asyncRoutes = [
         title: '队列信息',
         icon: 'queue'
       }
+    },
+    {
+      path: 'hostList',
+      component: () => import('@/views/task/hostList'),
+      name: 'task.hostList',
+      meta: {
+        title: '主机信息',
+        icon: 'host'
+      }
     }
     ]
   },
 
   // 消息列表
-  {
+  /* {
     path: '/monitor',
     component: Layout,
     redirect: '/monitor/alarmList',
@@ -216,7 +272,7 @@ export const asyncRoutes = [
       }
     }
     ]
-  },
+  }, */
 
   {
     path: '*',
