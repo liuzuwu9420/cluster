@@ -1,4 +1,5 @@
 import Mock from 'mockjs'
+import { formatMockData } from '../src/utils/format'
 
 const list = []
 const count = 30
@@ -12,7 +13,13 @@ for (let i = 0; i < count; i++) {
     'State': /pend|run/,
     'Desc': '@cword(2,8)',
     'Tags': '',
-    'HostDetails': ''
+    'HostDetails': '',
+    'ResourcesUUID': '@guid',
+    'ResourcesType': 'hosts',
+    'LabelName': '123',
+    'LabelValue': '12355',
+    'Color': '#ffffff',
+    'LabelType': 'user'
   }))
 }
 export default [
@@ -65,7 +72,8 @@ export default [
     type: 'get',
     response: config => {
       const { PageNumber, PageSize } = JSON.parse(config.query.page)
-      const pageList = list.filter((item, index) => index < PageNumber * PageSize && index >= PageSize * (PageNumber - 1))
+      const mockList = formatMockData(list, ['UUID', 'HostName', 'HostIP', 'State', 'Desc', 'HostDetails'])
+      const pageList = mockList.filter((item, index) => index < PageNumber * PageSize && index >= PageSize * (PageNumber - 1))
       return {
         'Success': true, 'Message': '', 'Code': '',
         'Inventory':
@@ -103,17 +111,57 @@ export default [
     }
   },
   {
-    url: '/labels/.*',
+    url: '/labels/infos',
     type: 'get',
     response: config => {
-      return { 'Success': true, 'Message': '', 'Code': '', 'Inventory': [] }
+      const mockList = formatMockData(list, ['LabelName', 'LabelValue'])
+      return { 'Success': true, 'Message': '', 'Code': '',
+        'Inventory': mockList
+      }
+    }
+  },
+  {
+    url: '/labels/label=\.*',
+    type: 'get',
+    response: config => {
+      const mockList = formatMockData(list, ['HostName', 'HostIP'])
+      return { 'Success': true, 'Message': '', 'Code': '',
+        'Inventory': mockList
+      }
+    }
+  },
+  {
+    url: '/labels\.*',
+    type: 'get',
+    response: config => {
+      const mockList = formatMockData(list, ['LabelName', 'LabelValue'])
+      return { 'Success': true, 'Message': '', 'Code': '',
+        'Inventory': mockList
+      }
+    }
+  },
+  {
+    url: '/labels/.*',
+    type: 'delete',
+    response: config => {
+      return { 'Success': true, 'Message': '', 'Code': '',
+        'Inventory': {
+          'Message': 'delete Success',
+          'Status': 'success'
+        }
+      }
     }
   },
   {
     url: '/labels',
     type: 'post',
     response: config => {
-      return { 'Success': true, 'Message': '', 'Code': '', 'Inventory': [] }
+      return { 'Success': true, 'Message': '', 'Code': '',
+        'Inventory': {
+          'Message': 'post Success',
+          'Status': 'success'
+        }
+      }
     }
   }
 

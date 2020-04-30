@@ -53,16 +53,52 @@
 .el-table th {
   background-color: #eff9ff;
 }
-
-.el-table .table-row-class {
-  background-color: #e8f4ff;
+.el-table tr{
+  background-color: transparent;
 }
-.tableInfo .el-table__body tr.current-row>td {
-  background-color: #d4e8fc;
+
+.el-table__body tr.current-row>td {
+  background-color: #fff;
+}
+.el-table__body tr.current-row{
+  box-shadow: 0 0 10px rgba(0,0,0,.4);
+}
+
+.el-table__body tr.current-row>td:first-child{
+  z-index: 1;
+}
+.el-table::before{
+  z-index: 0;
+}
+
+.el-table__body-wrapper::-webkit-scrollbar {
+  width: 6px; // 横向滚动条
+  height: 6px; // 纵向滚动条 必写
+}
+// 滚动条的滑块
+.el-table__body-wrapper::-webkit-scrollbar-thumb {
+  background-color: #ddd;
+  border-radius: 3px;
 }
 //tab
-.el-tabs {
-  height: 100%;
+.tableSidepage>.el-tabs {
+  display: flex;
+  flex-flow: column;
+  flex-grow: 1;
+  >.el-tabs__content{
+    flex-grow: 1;
+    display: flex;
+    >.el-tab-pane{
+      display: flex;
+      flex-grow: 1;
+      flex-flow: column;
+      padding: 0 20px;
+    }
+  }
+  >.el-tabs__header{
+    padding-left: 50px;
+    background-color: #e8f4ff
+  }
 }
 
 .el-tabs__item {
@@ -70,17 +106,6 @@
   line-height: 44px;
 }
 
-.tableInfo .el-tabs__header {
-  margin: 0;
-}
-
-.tableInfo .el-tabs__content {
-  height: calc(100vh - 184px);
-}
-
-.tableInfoEvents  .el-tabs__content {
-  height: calc(100vh - 245px);
-}
 
 // to fixed https://github.com/ElemeFE/element/issues/2461
 .el-dialog {
@@ -90,13 +115,40 @@
   margin: 0 auto;
 }
 
-.el-dialog__header{
-  padding: 10px 20px 0 20px;
+ .el-dialog__header {
+  text-align: left;
+  font-weight: 600;
+  border: 1px solid #dae0e6;
+  margin-bottom: 10px;
 }
-.el-dialog__body {
-   padding: 10px 20px;
- }
 
+.el-dialog__body {
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+.el-main .el-dialog .el-row {
+  margin-bottom: 5px;
+}
+
+.el-main .el-dialog .el-row .el-col:nth-child(1) {
+  line-height: 40px;
+  padding-left: 12px;
+}
+
+.el-main .el-dialog .el-row .el-col .cont,
+.el-main .el-dialog .el-row .el-col .radio {
+  line-height: 40px;
+}
+
+.el-main .el-dialog .el-row .el-col .input {
+  margin-right: 5px;
+}
+
+.el-dialog__footer {
+  text-align: center;
+  padding: 0 5% 15px;
+}
 
 // refine element ui upload
 .upload-container {
@@ -122,6 +174,17 @@
     font-size: 22px !important;
     color: #20a0ff;
   }
+}
+
+//el-popover
+.el-popover{
+  min-width: 0;
+}
+
+// Navbar el-badge
+.navbar .el-badge .el-badge__content.is-fixed {
+  top: 12px;
+  right: 18px;
 }
 
 // Pagination
@@ -151,6 +214,11 @@
 .ExportExcel .el-radio-button__inner {
   font-size: 35px;
 }
+//el-form
+
+.el-form-item{
+  margin-bottom:15px;
+}
 
 //icon 时间选择器
 .el-date-editor {
@@ -161,36 +229,12 @@
   }
 }
 
-// el-steps步骤条
-.el-step__icon {
-  background-color: #e8f4ff;
-}
-
 // fix date-picker ui bug in filter-item
 .el-range-editor.el-input__inner {
   display: inline-flex !important;
 }
 
 //el-dialog
-.el-container .el-dialog {
-  margin: 40px auto !important;
-  border-radius: 10px;
-}
-
-.el-container .el-dialog__header {
-  text-align: left;
-  font-weight: 600;
-  padding: 15px 5% 10px 10px;
-  border-radius: 10px 10px 0 0;
-  background: red;
-}
-
-.el-container .el-dialog__body {
-  padding: 10px 0 15px;
-  font-size: 16px;
-  color: #000000;
-}
-
 .el-container .el-main .el-dialog .el-row {
   margin-bottom: 5px;
 }
@@ -207,15 +251,6 @@
 
 .el-container .el-main .el-dialog .el-row .el-col .input {
   margin-right: 5px;
-}
-
-.el-container .el-dialog__title {
-  text-align: left;
-  color: #FFF;
-}
-
-.el-container .el-dialog__headerbtn .el-dialog__close {
-  color: #FFF;
 }
 
 .el-container .el-dialog__footer {
@@ -271,4 +306,8 @@
 
 ::-webkit-scrollbar-track:horizontal {
   background-color: #fff;
+}
+
+.el-popover .el-scrollbar .el-scrollbar__wrap {
+  overflow-x: hidden;
 }

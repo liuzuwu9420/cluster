@@ -1,11 +1,11 @@
 <template>
-  <div class="headBut">
-    <div v-show="showSearch" class="headBut">
-      <el-button type="primary" icon="el-icon-search" @click="showSearch = false" />
+  <div>
+    <div v-show="showSearch">
+      <el-button type="primary" class="head-button" size="small" icon="el-icon-search" @click="showSearch = false" />
     </div>
-    <div v-show="!showSearch" class="headBut">
-      <el-input v-model="input" placeholder="请输入内容" class="input-with-select">
-        <el-select slot="prepend" v-model="select">
+    <div v-show="!showSearch">
+      <el-input v-model="input" placeholder="请输入内容" class="input-with-select" @keyup.enter.native="debouncedGetList">
+        <el-select slot="prepend" v-model="select" style="width:100px;">
           <el-option v-for="item in items" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
         <i slot="suffix" class="el-input__icon el-icon-circle-close" @click="close()" />
@@ -25,21 +25,18 @@ export default {
       default() {
         return []
       }
+    },
+    visiable: {
+      required: false,
+      type: Boolean,
+      default: true
     }
   },
   data() {
     return {
-      showSearch: true,
+      showSearch: this.visiable,
       input: '',
       select: this.items[0].value
-    }
-  },
-  watch: {
-    select() {
-      this.debouncedGetList()
-    },
-    input() {
-      this.debouncedGetList()
     }
   },
   created() {
@@ -49,6 +46,7 @@ export default {
     close() {
       this.showSearch = true
       this.input = ''
+      this.handleSearch()
     },
     handleSearch() {
       const Params = {
@@ -57,12 +55,15 @@ export default {
       }
       this.$emit('change', Params)
     }
+  },
+  debouncedGetList() {
+    this._.debounce(this.handleSearch, 500)
   }
 }
 </script>
 <style scoped>
 .el-input__icon {
-  font-size: 26px;
+  font-size: 24px;
   color: #1890ff;
   cursor: pointer;
 }

@@ -14,7 +14,10 @@ for (let i = 0; i < count; i++) {
     'UUID': '@guid',
     'UserHomeDir': /\w{4,8}/,
     'GroupID': '@increment(120)',
-    'GroupName': /\w{3,6}/
+    'GroupName': /\w{3,6}/,
+    'Message': '同步开始',
+    'Status': 'success',
+    'ResultID': '@guid'
   }))
 }
 
@@ -48,7 +51,8 @@ export default [
     url: '/users/sync',
     type: 'post',
     response: config => {
-      return { 'Success': true, 'Message': '', 'Code': '', 'Inventory': { 'Message': '同步完成', 'Status': 'success' }}
+      const mockList = formatMockData(list, ['Message', 'Status', 'ResultID'])
+      return { 'Success': true, 'Message': '', 'Code': '', 'Inventory': mockList }
     }
   },
   // get user Info by userId

@@ -4,6 +4,7 @@
 
 <script>
 import { Area } from '@antv/g2plot'
+import { formatDate } from '@/utils/format'
 export default {
   props: {
     lists: {
@@ -29,12 +30,30 @@ export default {
         }
       }
     },
+    xAxis: {
+      type: Object,
+      default() {
+        return {
+          visible: true,
+          type: 'dateTime',
+          tickCount: 5,
+          tickLine: false,
+          label: {
+            formatter: (val) => formatDate(val, 'hh:mm')
+          }
+        }
+      }
+    },
     yAxis: {
       type: Object,
       default() {
         return {
-          visible: false,
+          visible: true,
+          grid: {
+            visible: false
+          },
           label: {
+            visible: false,
             // 数值格式化为千分位
             formatter: (v) => `${v}`.replace(/\d{1,3}(?=(\d{3})+$)/g, (s) => `${s},`)
           }
@@ -44,7 +63,7 @@ export default {
     color: {
       type: Array,
       default() {
-        return ['#007fdf', '#52c4ff']
+        return ['#007fdf', '#ffb412']
       }
     },
     width: {
@@ -75,10 +94,11 @@ export default {
       handler: function(val, oldVal) {
         const _this = this
         if (_this.chart) {
-          _this.chart.updateConfig({
+          _this.chart.changeData(val)
+          /* _this.chart.updateConfig({
             data: val
           })
-          _this.chart.render()
+          _this.chart.render() */
         }
       },
       deep: true
@@ -97,53 +117,31 @@ export default {
         },
         padding: 'auto',
         color: _this.color,
-        width: '100%',
-        height: '100%',
+        // width: '100%',
+        // height: '100%',
         forceFit: true,
         data: _this.lists,
-        tooltip: {
-          htmlContent: (title, items) => {
-            if (_this.color.length && items) {
-              let lis = ''
-              for (let i = 0; i < _this.color.length; i++) {
-                lis += `<li data-index="${i}">
-                      <span
-                        style="background-color:${_this.color[i]};width:8px;height:8px;border-radius:50%;             display:inline-block;margin-right:8px;"
-                      ></span>
-                      ${items[i].name}: ${items[i].value} ${items[0].point._origin.unit}
-                    </li>`
-              }
-              return `
-                <div class="g2-tooltip">
-                  <div class="g2-tooltip-title" style="margin:10px 0;">${items[0].point._origin.time}</div>
-                  <ul class="g2-tooltip-list">
-                    ${lis}
-                  </ul>
-                </div>`
-            } else {
-              return `
-                <div class="g2-tooltip">
-                  <div class="g2-tooltip-title" style="margin:10px 0;"></div>
-                  <ul class="g2-tooltip-list">
-                    <li></li>
-                  </ul>
-                </div>`
-            }
-          }
-        },
-        xField: 'time',
+        xField: 'date',
         yField: 'value',
-        xAxis: {
-          type: 'time',
-          tickCount: 6,
-          tickLine: false
-        },
+        xAxis: _this.xAxis,
         yAxis: _this.yAxis,
         legend: _this.legend,
         smooth: true,
         stackField: 'name',
+        tooltip: {
+          visible: true,
+          shared: true,
+          showCrosshairs: true,
+          fields: ['date', 'value', 'name', 'unit'],
+          formatter: (date, value, name, unit) => {
+            return {
+              name: name,
+              value: value + ' ' + unit
+            }
+          }
+        },
         areaStyle: {
-          opacity: 0.05
+          fillOpacity: 0.05
         },
         responsive: true
       })

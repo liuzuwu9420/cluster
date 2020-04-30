@@ -2,7 +2,7 @@
   <div class="login-container">
     <div class="middle-box loginscreen bg-white container">
       <div class="login-title text-center">
-        <img src="../../assets/login_images/login.png">
+        <img src="~@/assets/login_images/login.png">
       </div>
       <el-form
         ref="loginForm"
@@ -104,15 +104,15 @@ export default {
       }
     }
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+      if (value.length < 1) {
+        callback(new Error('The password can not be less than 1 digits'))
       } else {
         callback()
       }
     }
     return {
       loginForm: {
-        username: 'root',
+        username: 'bmcadmin',
         password: 'password'
       },
       loginRules: {
@@ -212,8 +212,6 @@ export default {
 </script>
 
 <style lang="scss">
-/* 修复input 背景不协调 和光标变色 */
-/* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
 $bg: #283443;
 $light_gray: #fff;
@@ -263,7 +261,7 @@ $dark_gray: #889aa4;
 $light_gray: #eee;
 
 .login-container {
-	background: url("../../assets/login_images/loginbackground.jpg") no-repeat center fixed;
+	background: url("~@/assets/login_images/technology-background.jpg") no-repeat center fixed;
 	background-size: cover;
   min-height: 100%;
   width: 100%;
@@ -274,19 +272,19 @@ $light_gray: #eee;
 	}
 
   .middle-box {
-		width: 450px;
-    height: 345px;
+		width: 400px;
+    height: 335px;
     z-index: 100;
     padding-bottom: 10px;
     border-radius: 4px;
     position: absolute;
-    left: 50%;
+    left: 78.4%;
     top: 50%;
     transform: translate(-50%,-50%);
 	}
 
 	.loginscreen .middle-box {
-		width: 300px;
+		width: 200px;
 	}
 
 	.login-title {

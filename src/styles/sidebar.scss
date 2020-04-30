@@ -149,6 +149,40 @@
     min-width: $sideBarWidth !important;
   }
 
+  
+  .app-container {
+    height: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+    .head {
+      width: 100%;
+      display: flex;
+      flex-flow: row wrap;
+      margin-bottom:10px;
+      
+      .head-buttons{
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+      }
+      .head-button{
+          cursor: pointer;
+          color: #ffffff;
+          font-size: 18px
+        }
+      .search{
+        margin-left: 10px;
+      }
+      .pagination {
+        margin-left: auto;
+      }
+    }
+    .table-info{
+      position: relative;
+      flex-grow: 1;
+    }
+  }
+
   // mobile responsive
   .mobile {
     .main-container {

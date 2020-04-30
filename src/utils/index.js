@@ -206,6 +206,26 @@ export function objectMerge(target, source) {
   return target
 }
 
+export function deepMerge(target, merged) {
+  for (var key in merged) {
+    if (target[key] && typeof target[key] === 'object') {
+      deepMerge(target[key], merged[key])
+
+      continue
+    }
+
+    if (typeof merged[key] === 'object') {
+      target[key] = deepClone(merged[key], true)
+
+      continue
+    }
+
+    target[key] = merged[key]
+  }
+
+  return target
+}
+
 /**
  * @param {HTMLElement} element
  * @param {string} className
@@ -286,19 +306,45 @@ export function debounce(func, wait, immediate) {
  * @param {Object} source
  * @returns {Object}
  */
-export function deepClone(source) {
-  if (!source && typeof source !== 'object') {
-    throw new Error('error arguments', 'deepClone')
-  }
-  const targetObj = source.constructor === Array ? [] : {}
-  Object.keys(source).forEach(keys => {
-    if (source[keys] && typeof source[keys] === 'object') {
-      targetObj[keys] = deepClone(source[keys])
-    } else {
-      targetObj[keys] = source[keys]
+// export function deepClone(source) {
+//   if (!source && typeof source !== 'object') {
+//     throw new Error('error arguments', 'deepClone')
+//   }
+//   const targetObj = source.constructor === Array ? [] : {}
+//   Object.keys(source).forEach(keys => {
+//     if (source[keys] && typeof source[keys] === 'object') {
+//       targetObj[keys] = deepClone(source[keys])
+//     } else {
+//       targetObj[keys] = source[keys]
+//     }
+//   })
+//   return targetObj
+// }
+var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault')
+
+var _typeof2 = _interopRequireDefault(require('@babel/runtime/helpers/typeof'))
+
+export function deepClone(object) {
+  var recursion = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false
+  if (!object) return object
+  var parse = JSON.parse
+  var stringify = JSON.stringify
+  if (!recursion) return parse(stringify(object))
+  var clonedObj = object instanceof Array ? [] : {}
+
+  if (object && (0, _typeof2['default'])(object) === 'object') {
+    for (var key in object) {
+      if (object.hasOwnProperty(key)) {
+        if (object[key] && (0, _typeof2['default'])(object[key]) === 'object') {
+          clonedObj[key] = deepClone(object[key], true)
+        } else {
+          clonedObj[key] = object[key]
+        }
+      }
     }
-  })
-  return targetObj
+  }
+
+  return clonedObj
 }
 
 /**

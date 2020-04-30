@@ -28,7 +28,7 @@
 </template>
 <script>
 import flopNumber from './components/flopNumber'
-import { GetTaskNum } from '@/api/task'
+import { GetRunJobs, GetPendJobs, GetTotalJobs } from '@/api/prometheus'
 export default {
   name: 'Center',
   components: {
@@ -39,7 +39,7 @@ export default {
       number: 0,
       option: {},
       list: [],
-      color: ['#37a2da', '#9fe6b8', '#1d4082']
+      color: ['#37a2da', '#9fe6b8']
     }
   },
   mounted() {
@@ -49,17 +49,14 @@ export default {
   },
   methods: {
     updateData() {
-      const _this = this
-      this.getData().then(() => {
-        _this.setOption()
-      })
+      this.getData()
     },
     setOption() {
       this.option = {
         series: [
           {
             type: 'pie',
-            data: this.list.filter(item => item.name !== '已完成'),
+            data: this.list,
             radius: ['70%', '80%'],
             outsideLabel: { show: false }
           }
@@ -68,19 +65,23 @@ export default {
       }
     },
     async getData() {
-      const res = await GetTaskNum()
-      const data = res.Inventory.LsfJobsTotal
-      this.list = []
-      for (const key in data) {
-        if (key.toLowerCase() === 'pend') {
-          this.list.push({ name: '等待中', value: data[key], color: this.color[0] })
-        } else if (key.toLowerCase() === 'run') {
-          this.list.push({ name: '运行中', value: data[key], color: this.color[1] })
-        } else if (key.toLowerCase() === 'finish') {
-          this.list.push({ name: '已完成', value: data[key], color: this.color[2] })
-        } else if (key.toLowerCase() === 'total') {
-          this.number = data[key]
-        }
+      const run = parseInt((await GetRunJobs()).data.result[0].value[1])
+      const pend = parseInt((await GetPendJobs()).data.result[0].value[1])
+      const total = parseInt((await GetTotalJobs()).data.result[0].value[1])
+      this.list = [
+        { name: '运行中', value: run, color: this.color[0] },
+        { name: '等待中', value: pend, color: this.color[1] }]
+      this.number = total
+      this.option = {
+        series: [
+          {
+            type: 'pie',
+            data: this.list,
+            radius: ['70%', '80%'],
+            outsideLabel: { show: false }
+          }
+        ],
+        color: this.color
       }
     }
   }

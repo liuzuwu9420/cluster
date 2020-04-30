@@ -11,20 +11,47 @@
 
     <div class="right-menu">
       <template v-if="device!=='mobile'">
-        <!--<search id="header-search" class="right-menu-item" />-->
-
-        <!--        <error-log class="errLog-container right-menu-item hover-effect" />-->
-
-        <screenfull id="screenfull" class="right-menu-item hover-effect" />
-
-        <!--<el-tooltip :content="$t('navbar.size')" effect="dark" placement="bottom">
-          <size-select id="size-select" class="right-menu-item hover-effect" />
-        </el-tooltip>
-        -->
-        <!-- <lang-select class="right-menu-item hover-effect" /> -->
-        <div class="right-menu-item">
-          <router-link router-link tag="a" target="_blank" to="/overview"><svg-icon icon-class="computer" /></router-link>
-        </div>
+        <el-popover placement="bottom" trigger="hover" content="文件管理">
+          <div slot="reference" v-permission="['root','admin']" class="right-menu-item hover-effect">
+            <a @click="linkToFileStash">
+              <svg-icon icon-class="link" />
+            </a>
+          </div>
+        </el-popover>
+        <el-popover placement="bottom" trigger="hover" content="大屏监控">
+          <div slot="reference" v-permission="['root','admin']" class="right-menu-item hover-effect">
+            <router-link router-link tag="a" target="_blank" to="/overview">
+              <svg-icon icon-class="computer" />
+            </router-link>
+          </div>
+        </el-popover>
+        <el-popover placement="bottom" trigger="hover" content="全屏">
+          <screenfull id="screenfull" slot="reference" class="right-menu-item hover-effect" />
+        </el-popover>
+        <el-popover el-scrollbar placement="bottom-end" trigger="click">
+          <div el-scrollbar>
+            <div style="border-bottom: 0;line-height: 30px;margin-bottom: 14px;height: 20px;width: 300px;">
+              <span style="font-size: 16px;color: #1a2736;">最近消息</span>
+              <span><el-button type="text" @click="changeAlarm()">清空</el-button></span>
+              <span style="font-size: 12px;color: #007fdf;float: right;margin-right: 20px;cursor: pointer;" @click="jumpAlarm()">查看全部 &gt;<span />
+              </span>
+            </div>
+            <el-scrollbar :style="{ height: alarmHeight }">
+              <div v-for="(item, index) in alarm" :key="index">
+                <div v-html="item" />
+              </div>
+            </el-scrollbar>
+          </div>
+          <el-badge
+            slot="reference"
+            v-permission="['root','admin']"
+            :value="alarm.length"
+            :max="99"
+            class="right-menu-item el-badge-item hover-effect"
+          >
+            <svg-icon icon-class="bell" />
+          </el-badge>
+        </el-popover>
       </template>
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
@@ -32,20 +59,17 @@
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
-          <!--<router-link to="/profile/index">
-            <el-dropdown-item>
-              {{ $t('navbar.profile') }}
-            </el-dropdown-item>
-          </router-link>-->
           <router-link to="/">
             <el-dropdown-item>{{ $t('navbar.dashboard') }}</el-dropdown-item>
+          </router-link>
+          <router-link to="/main/about">
+            <el-dropdown-item v-permission="['root','admin']">关于</el-dropdown-item>
           </router-link>
           <el-dropdown-item divided>
             <span style="display:block;" @click="logout">{{ $t('navbar.logOut') }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
-
     </div>
   </div>
 </template>
@@ -59,8 +83,9 @@ import Screenfull from '@/components/Screenfull'
 // import SizeSelect from '@/components/SizeSelect'
 // import LangSelect from '@/components/LangSelect'
 // import Search from '@/components/HeaderSearch'
-
+import permission from '@/directive/permission/index.js'
 export default {
+  directives: { permission },
   components: {
     Breadcrumb,
     Hamburger,
@@ -72,15 +97,19 @@ export default {
   },
   data() {
     return {
-      userImgUrl: require('../../assets/user_images/user.png')
+      userImgUrl: require('@/assets/user_images/user.png')
     }
   },
   computed: {
     ...mapGetters([
       'sidebar',
       'avatar',
-      'device'
-    ])
+      'device',
+      'alarm'
+    ]),
+    alarmHeight() {
+      return this.alarm.length === 0 ? '0px' : '612px'
+    }
   },
   methods: {
     toggleSideBar() {
@@ -89,6 +118,18 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    linkToFileStash() {
+      const url = `http://filestash.xtc.home/`
+      window.open(url, '_blank')
+    },
+    changeAlarm() {
+      this.$store.dispatch('alarm/clearAlarm')
+    },
+    jumpAlarm() {
+      this.$router.push({
+        name: 'Alarm list'
+      })
     }
   }
 }
@@ -149,6 +190,10 @@ export default {
           background: rgba(0, 0, 0, 0.025);
         }
       }
+    }
+    .el-badge-item {
+      margin-right: 20px;
+      font-size: 20px;
     }
 
     .avatar-container {

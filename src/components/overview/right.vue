@@ -6,9 +6,8 @@
 </template>
 <script>
 import card from './components/card'
-import { GetAllFs, GetUnusedFs } from '@/api/prometheus'
+import { GetAllFs, GetUnusedFs, GetAllHosts, GetUnusedHosts } from '@/api/prometheus'
 import { formatBytes } from '@/utils/format'
-import { GetTaskNum } from '@/api/task'
 
 export default {
   name: 'Right',
@@ -24,7 +23,8 @@ export default {
         lineWidth: 10,
         activeTimeGap: 6000,
         animationFrame: 200,
-        color: ['#27c9e7', '#1d4082']
+        color: ['#27c9e7', '#1d4082'],
+        digitalFlopToFixed: 2
       },
       fsAll: 0,
       fsUsed: 0,
@@ -47,14 +47,14 @@ export default {
         fsConfig.data = [{ name: '已用', value: (this.fsUsed) }, { name: '未用', value: (this.fsAll - this.fsUsed) }]
         nodeConfig.data = [{ name: '已用', value: this.nodeUsed }, { name: '未用', value: this.nodeAll - this.nodeUsed }]
         this.fsData = {
-          title: '硬盘已用量',
+          title: '硬盘用量',
           current: formatBytes(this.fsUsed),
           total: formatBytes(this.fsAll),
           unit: '',
           config: fsConfig
         }
         this.nodeData = {
-          title: '集群节点已用量',
+          title: '集群节点用量',
           current: this.nodeUsed,
           total: this.nodeAll,
           unit: '个',
@@ -65,8 +65,8 @@ export default {
     async getAllData() {
       this.fsAll = (await GetAllFs()).data.result[0].value[1]
       this.fsUsed = this.fsAll - (await GetUnusedFs()).data.result[0].value[1]
-      this.nodeAll = (await GetTaskNum()).Inventory.LsfClusterStatus.total
-      this.nodeUsed = this.nodeAll - (await GetTaskNum()).Inventory.LsfClusterStatus.usable
+      this.nodeAll = (await GetAllHosts()).data.result[0].value[1]
+      this.nodeUsed = this.nodeAll - (await GetUnusedHosts()).data.result[0].value[1]
     }
   }
 }

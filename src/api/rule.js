@@ -18,7 +18,7 @@ export function GetBillingRuleList(params) {
  */
 export function GetBillingRuleGroup(uuid, params) {
   return request({
-    url: `/billing/rules/${uuid}/groups`,
+    url: `/billing/rules/:${uuid}/groups`,
     method: 'get',
     params
   })
@@ -53,7 +53,7 @@ export function ChangeBillRule(data) {
  */
 export function DeleteBillRule(uuid) {
   return request({
-    url: `/billing/rules/${uuid}`,
+    url: `/billing/rules/:${uuid}`,
     method: 'delete'
   })
 }

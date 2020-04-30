@@ -71,8 +71,8 @@ export default {
         height: calc(100% - 50px);
       .border-box-content{
         display: grid;
-        grid-template-columns: 28% 1fr 28%;
-        grid-template-rows: repeat(2,35%) 30%;
+        grid-template-columns: 31% 1fr 31%;
+        grid-template-rows: repeat(2,34%) 32%;
         grid-template-areas: 'a c b'
         'a c b'
         'd d d';

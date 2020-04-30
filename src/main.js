@@ -6,6 +6,7 @@ Vue.prototype._ = _
 import Cookies from 'js-cookie'
 
 import 'normalize.css/normalize.css' // a modern alternative to CSS resets
+import ace from 'ace-builds'
 
 import Element from 'element-ui'
 import './styles/element-variables.scss'
@@ -26,6 +27,7 @@ import dataV from '@jiaminghi/data-view'
 
 import { onInput } from './utils/format'
 
+Vue.use(ace)
 Vue.use(dataV)
 Vue.use(Element, {
   size: Cookies.get('size') || 'medium', // set element-ui default size

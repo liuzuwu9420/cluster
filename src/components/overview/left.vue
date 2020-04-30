@@ -6,8 +6,7 @@
 </template>
 <script>
 import card from './components/card'
-import { GetAllMem, GetUnusedMem } from '@/api/prometheus'
-import { GetTaskNum } from '@/api/task'
+import { GetAllMem, GetUnusedMem, GetAllCpu, GetUsedCpu } from '@/api/prometheus'
 import { formatBytes } from '@/utils/format'
 
 export default {
@@ -24,7 +23,8 @@ export default {
         lineWidth: 10,
         activeTimeGap: 5000,
         animationFrame: 200,
-        color: ['#27c9e7', '#1d4082']
+        color: ['#27c9e7', '#1d4082'],
+        digitalFlopToFixed: 2
       },
       cpuAll: 0,
       cpuUsed: 0,
@@ -54,7 +54,7 @@ export default {
           config: cpuConfig
         }
         this.memData = {
-          title: '内存已用量',
+          title: '内存用量',
           current: formatBytes(this.memUsed),
           total: formatBytes(this.memAll),
           unit: '',
@@ -63,11 +63,10 @@ export default {
       })
     },
     async getAllData() {
-      this.cpuAll = Math.round((await GetTaskNum()).Inventory.LsfClusterCPUStatus.total)
-      this.cpuUsed = Math.round((await GetTaskNum()).Inventory.LsfClusterCPUStatus.used)
+      this.cpuAll = parseInt((await GetAllCpu()).data.result[0].value[1])
+      this.cpuUsed = parseInt((await GetUsedCpu()).data.result[0].value[1])
       this.memAll = (await GetAllMem()).data.result[0].value[1]
       this.memUsed = this.memAll - (await GetUnusedMem()).data.result[0].value[1]
-      // console.log(`cpuAll:${this.cpuAll},cpuUsed:${this.cpuUsed},memAll:${this.memAll},memUsed:${this.memUsed}`)
     }
   }
 

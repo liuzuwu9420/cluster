@@ -1,6 +1,6 @@
 <template>
   <div class="metirc-data">
-    <div class="metirc-data-item" style="flex: 7 7 auto; margin-left: 0px;">
+    <div v-loading="!CPULists[0]" class="metirc-data-item" style="flex: 7 7 auto; margin-left: 0px;">
       <div class="line-chart-header" style="margin-left: 30px; width: calc(100% - 30px);">
         <div class="title">CPU负载率</div>
         <div class="current-value">
@@ -9,13 +9,14 @@
         </div>
       </div>
       <div
+        v-if="CPULists[0]"
         class="metric-chart"
         style="-webkit-tap-highlight-color: transparent; user-select: none; position: relative;"
       >
         <line-chart id="CPUChart" :lists.sync="CPULists" :color="color" />
       </div>
     </div>
-    <div class="metirc-data-item" style="flex: 7 7 auto; margin-left: 0px;">
+    <div v-loading="!RAMLists[0]" class="metirc-data-item" style="flex: 7 7 auto; margin-left: 0px;">
       <div class="line-chart-header" style="margin-left: 30px; width: calc(100% - 30px);">
         <div class="title">内存负载率</div>
         <div class="current-value">
@@ -24,13 +25,14 @@
         </div>
       </div>
       <div
+        v-if="RAMLists[0]"
         class="metric-chart"
         style="-webkit-tap-highlight-color: transparent; user-select: none; position: relative;"
       >
         <line-chart id="RAMChart" :lists.sync="RAMLists" :color="color" />
       </div>
     </div>
-    <div class="metirc-data-item">
+    <div v-loading="!NetLists[0]" class="metirc-data-item">
       <div class="line-chart-header" style="margin-left: 50px; width: calc(100% - 50px);">
         <div class="title">网络吞吐量</div>
         <div class="double-value">
@@ -51,13 +53,14 @@
         </div>
       </div>
       <div
+        v-if="NetLists[0]"
         class="metric-chart"
         style="-webkit-tap-highlight-color: transparent; user-select: none; position: relative;"
       >
-        <line-chart id="NetChart" :lists.sync="NetLists" />
+        <line-chart id="NetChart" :lists.sync="NetLists" :color="lineColor" />
       </div>
     </div>
-    <div class="metirc-data-item">
+    <div v-loading="!DiskLists[0]" class="metirc-data-item">
       <div class="line-chart-header" style="margin-left: 50px; width: calc(100% - 50px);">
         <div class="title">磁盘IO</div>
         <div class="double-value">
@@ -78,10 +81,11 @@
         </div>
       </div>
       <div
+        v-if="DiskLists[0]"
         class="metric-chart"
         style="-webkit-tap-highlight-color: transparent; user-select: none; position: relative;"
       >
-        <line-chart id="DiskChart" :lists.sync="DiskLists" />
+        <line-chart id="DiskChart" :lists.sync="DiskLists" :color="lineColor" />
       </div>
     </div>
   </div>
@@ -124,7 +128,8 @@ export default {
         read: '0B/s',
         write: '0B/s'
       },
-      DiskLists: []
+      DiskLists: [],
+      lineColor: ['#007fdf', '#52c4ff']
     }
   },
   mounted() {
@@ -223,7 +228,8 @@ export default {
       if (list) {
         list = list.map(item => {
           item = Object.assign({}, item)
-          item.time = formatDate(item[0] * 1000, 'yyyy-MM-dd hh:mm:ss')
+          item.time = item[0]
+          item.date = formatDate(item[0] * 1000, 'yyyy-MM-dd hh:mm:ss')
           if (bytes) {
             const valueArr = _this._.split(formatBytes(+item[1], 2), ' ', 2)
             item.value = +valueArr[0]
@@ -250,7 +256,7 @@ export default {
       }
       _this.setTime = setInterval(function() {
         _this.getList()
-      }, 30000)
+      }, 5000)
     },
 
     stop() {
@@ -268,7 +274,7 @@ export default {
   height: 300px;
   width: 100%;
   background-color: #fff;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   position: relative;
   .metirc-data-item {
     -ms-flex: 6 6 auto;

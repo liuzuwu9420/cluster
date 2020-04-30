@@ -1,11 +1,5 @@
 import request from '@/utils/request'
-
-/**
- * 版本
- * @constant
- * @type {string}
- * @default
- * */
+const masteragentUrl = `/masteragent/api/v1`
 
 /**
  * 登录
@@ -13,7 +7,7 @@ import request from '@/utils/request'
  */
 export function login(data) {
   return request({
-    url: `/users/login`,
+    url: `${masteragentUrl}/ldap/login`,
     method: 'post',
     data
   })
@@ -30,13 +24,6 @@ export function getInfo(token) {
 export function logout() {
   return request({
     url: '/user/logout',
-    method: 'post'
-  })
-}
-
-export function centrifugeToken() {
-  return request({
-    url: '/centrifugo/token',
     method: 'post'
   })
 }

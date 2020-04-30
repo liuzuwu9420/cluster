@@ -2,6 +2,7 @@
   <div class="dashboard-editor-container">
     <panel-card />
     <panel-group />
+    <panel-task />
     <panel-queue />
   </div>
 </template>
@@ -9,6 +10,7 @@
 <script>
 import PanelCard from './components/PanelCard'
 import PanelGroup from './components/PanelGroup'
+import PanelTask from './components/PanelTask'
 import PanelQueue from './components/PanelQueue'
 
 export default {
@@ -16,6 +18,7 @@ export default {
   components: {
     PanelCard,
     PanelGroup,
+    PanelTask,
     PanelQueue
   }
 }

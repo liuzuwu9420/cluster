@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { StackColumn } from '@antv/g2plot'
+import { StackedColumn } from '@antv/g2plot'
 export default {
   props: {
     lists: {
@@ -39,10 +39,11 @@ export default {
       handler: function(val, oldVal) {
         const _this = this
         if (_this.chart) {
-          _this.chart.updateConfig({
+          _this.chart.changeData(val)
+          /* _this.chart.updateConfig({
             data: val
           })
-          _this.chart.render()
+          _this.chart.render() */
         }
       },
       deep: true
@@ -54,7 +55,7 @@ export default {
   methods: {
     initChart() {
       const _this = this
-      _this.chart = new StackColumn(document.getElementById(_this.id), {
+      _this.chart = new StackedColumn(document.getElementById(_this.id), {
         title: {
           visible: true,
           text: '队列'
@@ -65,6 +66,7 @@ export default {
         forceFit: true,
         animation: false,
         data: _this.lists,
+        color: ['#007fdf', '#ffb412'],
         xField: 'name',
         yField: 'value',
         xAxis: {

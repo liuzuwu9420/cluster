@@ -53,6 +53,11 @@ export default {
   },
   created() {
     getCentrifuge()
+
+    // 在页面刷新时将vuex里的信息保存到sessionStorage里
+    window.addEventListener('beforeunload', () => {
+      sessionStorage.setItem('alarm', JSON.stringify(this.$store.state.alarm))
+    })
   },
   methods: {
     handleClickOutside() {

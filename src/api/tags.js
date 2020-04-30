@@ -13,7 +13,7 @@ import request from '@/utils/request'
  */
 export function GetTagsByUUID(UUID) {
   return request({
-    url: `/labels/${UUID}`,
+    url: `/labels/:${UUID}`,
     method: 'get'
   })
 }
@@ -49,7 +49,7 @@ export function GetAllKeys(params) {
  */
 export function GetValuesByKey(key, params) {
   return request({
-    url: `/labels/keys/${key}/values`,
+    url: `/labels/keys/:${key}/values`,
     method: 'get',
     params
   })
@@ -62,7 +62,7 @@ export function GetValuesByKey(key, params) {
  */
 export function GetHostsByTag(tagUUID, params) {
   return request({
-    url: `/labels/${tagUUID}/resources`,
+    url: `/labels/:${tagUUID}/resources`,
     method: 'get',
     params
   })
@@ -82,11 +82,12 @@ export function CreateTag(data) {
 
 /**
  * 更新标签
- * @param {{"UUID","LabelKey","LabelValue"}} data 修改后的标签内容
+ * @param UUID tag uuid
+ * @param {{,"LabelKey","LabelValue"}} data 修改后的标签内容
  */
-export function ModifyTag(data) {
+export function ModifyTag(UUID, data) {
   return request({
-    url: `/labels`,
+    url: `/labels/:${UUID}`,
     method: 'put',
     data
   })
@@ -96,9 +97,9 @@ export function ModifyTag(data) {
  * 根据uuid删除label，同时解绑所有已经关联的资源
  * @param {*} UUID tags的UUID
  */
-export function DeleteTags(UUID) {
+export function DeleteTag(UUID) {
   return request({
-    url: `/labels/${UUID}`,
+    url: `/labels/:${UUID}`,
     method: 'delete'
   })
 }

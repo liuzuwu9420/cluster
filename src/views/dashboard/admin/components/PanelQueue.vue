@@ -1,10 +1,10 @@
 <template>
   <el-row class="panel-group">
     <el-col>
-      <el-card shadow="hover">
+      <el-card v-loading="!queues[0]" shadow="hover">
         <div class="card-panel">
           <div class="bar-ratio">
-            <div class="chart">
+            <div v-if="queues[0]" class="chart">
               <column-chart :lists.sync="queues" />
             </div>
           </div>
@@ -42,8 +42,8 @@ export default {
   methods: {
     async getList() {
       const _this = this
-      const paramsQueueRun = { query: 'lsf_job_queue_count{status="run"}' }
-      const paramsQueuePend = { query: 'lsf_job_queue_count{status="pend"}' }
+      const paramsQueueRun = { query: 'sort_desc(lsf_queue_rjobs)' }
+      const paramsQueuePend = { query: 'sort_desc(lsf_queue_pjobs)' }
 
       const QueueRun = await _this.getPrometheus(paramsQueueRun, 'RUN')
       const QueuePend = await _this.getPrometheus(paramsQueuePend, 'PEND')
@@ -58,7 +58,7 @@ export default {
               const values = []
               res.data.result.map(item => {
                 const obj = {}
-                obj.name = item.metric.name
+                obj.name = item.metric.queue_name
                 const value = Object.assign({}, item.value)
                 obj.time = formatDate(value[0] * 1000, 'yyyy-MM-dd hh:mm:ss')
                 obj.value = +value[1]

@@ -33,13 +33,17 @@ export function formatDate(times, pattern) {
   return d.toLocaleString()
 }
 
-export function formatDiff(startTime, endTime) {
-  const Time1 = new Date(startTime)
+export function formatDiff(startTime, endTime, time) {
+  let Time1
   let Time2
-  if (endTime) {
+  if (startTime && endTime) {
+    Time1 = new Date(startTime)
     Time2 = (new Date(endTime).getTime() - Time1.getTime()) / 1000
-  } else {
+  } else if (startTime && !endTime) {
+    Time1 = new Date(startTime)
     Time2 = (new Date().getTime() - Time1.getTime()) / 1000
+  } else if (time || time === 0) {
+    Time2 = time
   }
   const m = 60
   const h = 3600
@@ -153,4 +157,18 @@ export function onInput(el, ele, binding, vnode) {
     ele.value = val
   }
   return handle
+}
+
+/**
+ * 对小于1的数保留一位有效数字
+ */
+export function formatFloat(num) {
+  if (!num) { return `0.00` }
+  if (num >= 1) {
+    return num.toFixed(2)
+  } else if (num < 1) {
+    const float = num.toString().match(/0\.(0*)[1-9]{1,2}/)
+    const times = Math.pow(10, float[1].length + 1)
+    return parseFloat(`0.${float[1]}${Math.round(float[0] * times)}`)
+  }
 }

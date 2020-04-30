@@ -23,7 +23,8 @@ export default {
     ])
   },
   created() {
-    if (!this.roles.includes('admin')) {
+    if (!this.roles.includes('admin') && !this.roles.includes('root')) {
+      // this.currentRole = 'adminDashboard'
       this.currentRole = 'editorDashboard'
     }
   }
@@ -33,5 +34,6 @@ export default {
 .dashboard-container {
   height: 100%;
   overflow-y: auto;
+  min-width: 995px;
 }
 </style>

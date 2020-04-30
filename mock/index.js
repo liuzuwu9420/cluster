@@ -5,12 +5,14 @@ import user from './user'
 import groups from './groups'
 import device from './device'
 import jobs from './jobs'
+import addresses from './addresses'
 
 const mocks = [
   ...user,
   ...groups,
   ...device,
-  ...jobs
+  ...jobs,
+  ...addresses
 ]
 
 // for front mock

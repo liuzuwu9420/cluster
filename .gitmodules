@@ -1,0 +1,3 @@
+[submodule "docs/apis"]
+	path = docs/apis
+	url = git@gitlab.xtc.home:xtc/doc/apis.git

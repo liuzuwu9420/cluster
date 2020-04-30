@@ -1,0 +1,44 @@
+# image: registry.xtc.home/node:10
+
+cache:
+  paths:
+    - node_modules/
+
+stages:
+  - build
+  - deploy
+
+before_script:
+
+build:
+  stage: build
+  tags:
+    - shell
+  except:
+    - develop
+  script:
+    - export PATH=$HOME/.nvm/versions/node/v10.17.0/bin:$PATH
+    - npm install --registry=http://nexus.xtc.home/repository/npm
+    - echo "start build....."
+    - npm run build:prod
+
+build-docker:
+  stage: build
+  only:
+    - develop
+  tags:
+    - shell
+  script:
+    - echo "start build-docker....."
+    - docker build -t registry.xtc.home/xtc/clustermom-front .
+    - docker push registry.xtc.home/xtc/clustermom-front
+
+# deploy:
+#   stage: deploy
+#   only:
+#    - develop
+#   tags:
+#     - shell
+#   script:
+#     - echo "start deploy....."
+    

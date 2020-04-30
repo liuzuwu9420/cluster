@@ -4,7 +4,17 @@
     <div class="chart">
       <dv-active-ring-chart :config="content.config" />
     </div>
-    <div class="count">{{ content.current }} / {{ content.total }} {{ content.unit }}</div>
+    <div class="count">
+      <div class="count-text">
+        <span class="title">已用</span>
+        <span>{{ content.current }} {{ content.unit }}</span>
+      </div>
+      <dv-decoration-2 />
+      <div class="count-text">
+        <span class="title">总量</span>
+        <span>{{ content.total }} {{ content.unit }}</span>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -29,7 +39,7 @@ export default {
     height: 50%;
     display: flex;
     flex-flow: row wrap;
-    .title{
+    >.title{
       width: 100%;
       display: flex;
       align-self: center;
@@ -39,7 +49,8 @@ export default {
     .chart{
       width: 50%;
       height: calc(100% - 20px);
-      margin-right: -30px;
+      margin-right: -5%;
+      margin-left: -5%;
       .dv-active-ring-chart{
         width: 100%;
         height: 100%;
@@ -47,7 +58,21 @@ export default {
     }
     .count{
       display: flex;
-      align-items: center;
+      justify-content: center;
+      flex-flow: column nowrap;
+      width: 50%;
+      .dv-decoration-2{
+        width: 100%;
+        height: 30px;
+      }
+      .count-text{
+        >.title{
+          font-size: 30px;
+        }
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+      }
     }
   }
 </style>

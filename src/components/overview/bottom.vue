@@ -7,8 +7,7 @@
   </div>
 </template>
 <script>
-import { GetRunTaskTOPList, GetPendTaskTOPList, GetQueueTOPList } from '@/api/task'
-import { formatDiff } from '@/utils/format'
+import { GetQueueRunJobs, GetQueuePendJobs, GetHostRunJobs } from '@/api/prometheus'
 
 export default {
   name: 'Bottom',
@@ -20,11 +19,11 @@ export default {
           config: {}
         },
         {
-          title: '作业运行时间',
+          title: '队列等待作业量',
           config: {}
         },
         {
-          title: '作业等待时间',
+          title: '节点运行作业量',
           config: {}
         }]
     }
@@ -38,64 +37,35 @@ export default {
   },
   methods: {
     setData() {
-      this.getQueueTopJobs(GetQueueTOPList).then(value => {
-        if (!value) { return }
-        this.configs[0].config = value
-      })
-      this.getTopJobs(GetRunTaskTOPList).then(value => {
-        if (!value) { return }
-        this.configs[1].config = value
-        this.$nextTick(() => {
-          value.data.map((item, index) => {
-            this.$el.querySelectorAll('.top:nth-of-type(2) .ranking-value')[index].innerHTML = formatDiff(item.startTime)
-          })
-        })
-      })
-      this.getTopJobs(GetPendTaskTOPList).then(value => {
-        if (!value) { return }
-        this.configs[2].config = value
-        this.$nextTick(() => {
-          value.data.map((item, index) => {
-            this.$el.querySelectorAll('.top:nth-of-type(3) .ranking-value')[index].innerHTML = formatDiff(item.startTime)
-          })
-        })
-      })
-    },
-    async getTopJobs(api) {
-      const jobList = (await api()).Inventory
-      if (!jobList || !jobList.length > 0) { return }
-      let prop = 'ExecuteTime'
-      if (api.toString().toLowerCase().indexOf('run') >= 0) {
-        prop = 'ExecuteTime'
-      } else if (api.toString().toLowerCase().indexOf('pend') >= 0) {
-        prop = 'SubmitTime'
-      }
-      const config = { data: [] }
-      jobList.forEach((item, index) => {
-        if (item.ReqNumProcsMax !== 0) {
-          config.data.push({ name: `作业ID： ${item.JobID} , 占用核数： ${item.ReqNumProcsMax} , 用户： ${item.UserName} `, value: this.getDiffTime(item[prop]), startTime: item[prop] })
-        } else {
-          config.data.push({ name: `作业ID： ${item.JobID} , 用户： ${item.UserName}`, value: this.getDiffTime(item[prop]), startTime: item[prop] })
+      this.getData().then((data) => {
+        for (let i = 0; i < this.configs.length; i++) {
+          this.configs[i].config = { data: data[i] }
         }
-        return config
+        this.$nextTick(() => {
+          for (let i = 0; i < this.configs.length; i++) {
+            this.configs[i].config.data.map((item, index) => {
+              this.$el.querySelectorAll(`.top:nth-of-type(${i + 1}) .ranking-value`)[index].innerHTML = `${item.value} 项作业`
+            })
+          }
+        })
       })
-      return config
     },
-    getDiffTime(time) {
-      const startTime = new Date(time)
-      const endTime = new Date()
-      return endTime.getTime() - startTime.getTime()
+    async getData() {
+      const queueRunJobs = await this.get(GetQueueRunJobs, 'queue_name')
+      const queuePendJobs = await this.get(GetQueuePendJobs, 'queue_name')
+      const hostJobs = await this.get(GetHostRunJobs, 'host_name')
+      return [queueRunJobs, queuePendJobs, hostJobs]
     },
-    async getQueueTopJobs(api) {
-      const list = (await api()).Inventory
-      if (!list.length > 0) { return }
-      const valueSorted = list.sort((a, b) => { return b[0] - a[0] })
-      const config = { data: [] }
-      valueSorted.map(item => {
-        config.data.push({ name: Object.keys(item)[0], value: `${Object.values(item)[0]} 项作业` })
-        return config
-      })
-      return config
+    async get(api, propName) {
+      const res = await api()
+      if (res.status !== 'success') { return }
+      const data = res.data.result.map(item => {
+        const obj = {}
+        obj.name = item.metric[propName]
+        obj.value = item.value[1]
+        return obj
+      }).slice(0, 5)
+      return data
     }
   }
 }

@@ -10,14 +10,23 @@ for (let i = 0; i < count; i++) {
     'NJOBS': '@integer(10,30)',
     'SUSP': '@integer(0,10)',
     'STATUS': 'Open:Active',
-    'MAX': '@integer(30,50)'
+    'MAX': '@integer(30,50)',
+    'CreatedAt': '@datetime()',
+    'Desc': '',
+    'HostDetails': '',
+    'HostIP': '@ip',
+    'HostName': 'node-arm02',
+    'State': '',
+    'Tags': '',
+    'UUID': '@uuid',
+    'UpdatedAt': '@datetime()'
   }))
 }
 
 export default [
   // queues info
   {
-    url: '/queues.*',
+    url: '/lsf/jobs\?',
     type: 'get',
     response: config => {
       const { PageNumber, PageSize } = JSON.parse(config.query.page)
